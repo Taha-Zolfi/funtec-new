@@ -1,6 +1,6 @@
 
 import { db } from '../../api';
-import NewsDetail from '../../News/NewsDetails';
+import NewsDetail from '../NewsDetails';
 
 export default async function NewsDetailPage({ params }) {
   const { id } = params;
