@@ -1,0 +1,505 @@
+/* Services Page Styles - Simple, Elegant, Full-Page Sections */
+
+/* Base Page Styles */
+.services-page {
+  min-height: 100vh;
+  /* Even darker, more intense gradient */
+  background: linear-gradient(135deg, #000000 0%, #0a0a0a 20%, #10101a 50%, #0a0a0a 80%, #000000 100%);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  direction: rtl;
+  overflow-x: hidden;
+  color: #fff;
+}
+
+/* Loading and Error States */
+.services-page.loading,
+.services-page.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.services-loading-container,
+.services-error-container {
+  text-align: center;
+  color: #fff;
+  z-index: 10;
+  position: relative;
+  padding: 40px;
+  background: rgba(0, 0, 0, 0.4); /* Darker glassmorphism */
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08); /* More subtle border */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6); /* Deeper shadow */
+}
+
+.services-loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid #13c8ff;
+  border-radius: 50%;
+  animation: services-spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes services-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.services-loading-container h2,
+.services-error-container h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  background: linear-gradient(45deg, #13c8ff, #ffb527);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.services-loading-container p,
+.services-error-container p {
+  font-size: 1.1rem;
+  opacity: 0.8;
+  margin-bottom: 20px;
+}
+
+.services-retry-btn {
+  background: linear-gradient(45deg, #13c8ff, #ffb527);
+  border: none;
+  border-radius: 15px;
+  padding: 15px 30px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.services-retry-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(19, 200, 255, 0.4);
+}
+
+/* Main Header Section (for the whole page) */
+.services-main-header {
+  min-height: 80vh; /* Slightly less than 100vh to allow scroll to first service */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 20px;
+  position: relative;
+  overflow: hidden;
+  /* More subtle, darker background elements */
+  background: radial-gradient(circle at 30% 20%, rgba(19, 200, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(255, 181, 39, 0.05) 0%, transparent 50%);
+}
+
+.services-main-title {
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-weight: 900;
+  margin-bottom: 30px;
+  line-height: 1.1;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.7); /* Darker shadow */
+}
+
+.services-title-word {
+  display: inline-block;
+  margin: 0 15px;
+  animation: services-titleFloat 3s ease-in-out infinite;
+}
+
+.services-title-word:first-child {
+  color: #fff;
+  animation-delay: 0s;
+}
+
+.services-title-word.highlight {
+  background: linear-gradient(45deg, #13c8ff, #ffb527);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation-delay: 0.5s;
+}
+
+.services-main-subtitle {
+  font-size: clamp(1.2rem, 3vw, 1.6rem);
+  color: rgba(255, 255, 255, 0.8); /* Slightly less opaque */
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  animation: services-fadeInUp 1s ease-out 0.6s both;
+}
+
+/* Individual Service Section */
+.service-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px; /* Padding for content inside 100vh */
+  position: relative;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.1); /* Darker, more subtle background for each section */
+  border-top: 1px solid rgba(255, 255, 255, 0.03); /* Even more subtle border */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  transition: background 0.5s ease; /* Smooth transition for background on hover */
+}
+
+.service-section:hover {
+  background: rgba(0, 0, 0, 0.2); /* Slightly lighter on hover */
+}
+
+.service-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle at 25% 25%, rgba(19, 200, 255, 0.03) 2px, transparent 2px),
+    radial-gradient(circle at 75% 75%, rgba(255, 181, 39, 0.03) 2px, transparent 2px);
+  background-size: 100px 100px, 150px 150px;
+  opacity: 0.2; /* More subtle pattern */
+  animation: services-patternFloat 40s linear infinite; /* Slower animation */
+  z-index: 1;
+}
+
+.service-section.odd::before {
+  animation-direction: reverse;
+}
+
+.service-content-wrapper {
+  display: flex;
+  align-items: center;
+  max-width: 1600px; /* Even wider content wrapper */
+  width: 100%;
+  gap: 120px; /* Increased space between image and text */
+  position: relative;
+  z-index: 2;
+}
+
+/* Alternating layout based on index */
+.service-section.odd .service-content-wrapper {
+  flex-direction: row; /* Image on left, text on right */
+}
+
+.service-section.even .service-content-wrapper {
+  flex-direction: row-reverse; /* Image on right, text on left */
+}
+
+.service-image-container {
+  flex-shrink: 0;
+  width: 40%; /* Slightly less width for image */
+  max-width: 650px; /* Larger max width for image container */
+  height: 650px;
+  border-radius: 50%; /* Circular image */
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.7); /* Deeper, more prominent shadow */
+  border: 6px solid rgba(255, 255, 255, 0.05); /* More subtle border */
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smoother animation */
+}
+
+.service-section:hover .service-image-container {
+  transform: scale(1.03) rotate(2deg); /* Subtle rotation on hover */
+  box-shadow: 0 35px 100px rgba(19, 200, 255, 0.3); /* Blue glow on hover */
+}
+
+.service-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease, opacity 1s ease; /* Slower fade-in */
+  opacity: 0; /* Start hidden for fade-in */
+}
+
+.service-image.loaded {
+  opacity: 1; /* Fade in when loaded */
+}
+
+.service-section:hover .service-image {
+  transform: scale(1.1);
+}
+
+.service-featured-badge {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  background: linear-gradient(45deg, #ffb527, #ff9ff3);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 6px 25px rgba(255, 181, 39, 0.4);
+  animation: services-pulse 2s infinite;
+  z-index: 10;
+}
+
+.service-text-container {
+  flex: 1;
+  padding: 20px;
+  /* Text alignment will be handled by parent flex-direction */
+}
+
+.service-section.odd .service-text-container {
+  text-align: right; /* Text on right for image left */
+}
+
+.service-section.even .service-text-container {
+  text-align: left; /* Text on left for image right */
+}
+
+.service-title {
+  font-size: clamp(2.8rem, 5.5vw, 5rem); /* Larger title */
+  font-weight: 900; /* Bolder title */
+  margin-bottom: 40px; /* More space below title */
+  line-height: 1.2;
+  background: linear-gradient(45deg, #13c8ff, #ffb527);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: services-fadeInUp 1s ease-out;
+  text-shadow: 0 5px 25px rgba(0, 0, 0, 0.6); /* Deeper text shadow */
+}
+
+.service-description {
+  font-size: clamp(1.2rem, 2.8vw, 1.6rem); /* Slightly larger description */
+  line-height: 1.9; /* More comfortable line height */
+  color: rgba(255, 255, 255, 0.85); /* Slightly less opaque */
+  max-width: 700px; /* Wider description */
+  margin-bottom: 0;
+  animation: services-fadeInUp 1s ease-out 0.2s both;
+}
+
+/* Adjust margin for description based on text alignment */
+.service-section.odd .service-description {
+  margin-right: auto; /* Push description to the left for right-aligned text */
+}
+
+.service-section.even .service-description {
+  margin-left: auto; /* Push description to the right for left-aligned text */
+}
+
+/* Empty State */
+.services-empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.4); /* Darker glassmorphism */
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  max-width: 800px;
+  margin: 100px auto; /* Center the empty state */
+}
+
+.services-empty-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.services-empty-icon {
+  margin-bottom: 30px;
+  opacity: 0.5;
+  color: #13c8ff;
+}
+
+.services-empty-state h3 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: #ffb527;
+}
+
+.services-empty-state p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  opacity: 0.8;
+}
+
+.services-reset-btn {
+  background: linear-gradient(45deg, #13c8ff, #ffb527);
+  border: none;
+  border-radius: 15px;
+  padding: 15px 30px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.services-reset-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(19, 200, 255, 0.4);
+}
+
+/* Animations */
+@keyframes services-titleFloat {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px); /* More pronounced float */
+  }
+}
+
+@keyframes services-fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px); /* Starts lower */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes services-patternFloat {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  100% {
+    transform: translateX(150px) translateY(150px); /* Larger float distance */
+  }
+}
+
+@keyframes services-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08); /* More pronounced pulse */
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .service-content-wrapper {
+    gap: 80px; /* Reduce gap for slightly smaller screens */
+  }
+
+  .service-image-container {
+    width: 45%;
+    height: 550px;
+  }
+
+  .service-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .service-description {
+    font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+  }
+}
+
+@media (max-width: 992px) {
+  .service-content-wrapper {
+    flex-direction: column !important; /* Stack image and content for all items */
+    text-align: center;
+    gap: 50px; /* Adjusted gap */
+  }
+
+  .service-image-container {
+    width: 80%; /* Adjust width for smaller screens */
+    max-width: 450px; /* Max width for image container */
+    height: 450px;
+    margin: 0 auto;
+  }
+
+  .service-text-container {
+    padding: 0;
+    text-align: center !important; /* Center text for stacked layout */
+  }
+
+  .service-description {
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .service-section {
+    padding: 60px 15px;
+  }
+
+  .services-main-header {
+    min-height: 60vh;
+    padding: 0 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .services-main-title {
+    font-size: clamp(2.5rem, 10vw, 4rem);
+  }
+
+  .services-main-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .service-section {
+    padding: 40px 10px;
+  }
+
+  .service-image-container {
+    width: 90%;
+    height: 350px;
+  }
+
+  .service-title {
+    font-size: clamp(2rem, 6vw, 3rem);
+    margin-bottom: 20px;
+  }
+
+  .service-description {
+    font-size: 1rem;
+  }
+
+  .service-featured-badge {
+    top: 20px;
+    right: 20px;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .services-main-header {
+    min-height: 50vh;
+    padding: 0 10px;
+  }
+
+  .service-section {
+    padding: 30px 10px;
+  }
+
+  .service-image-container {
+    height: 280px;
+  }
+
+  .service-title {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+  }
+
+  .service-description {
+    font-size: 0.9rem;
+  }
+}
