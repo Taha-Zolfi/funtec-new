@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import "./Nav.css";
 import logo from "./logo.png";
@@ -18,19 +19,23 @@ const menuItems = [
     children: [
       {
         title: "لیزرتگ",
-        href: "/products/",
+        id: 8,
+        href: "/products/#8",
       },
       {
         title: "لیزرماز",
-        href: "/products/",
+        id: 7,
+        href: "/products/#7",
       },
       {
         title: "اتاق وحشت",
-        href: "/products/",
+        id: 9,
+        href: "/products/#9",
       },
       {
-        title: "سرسره",
-        href: "/products/",
+        title: "سینما فرار",
+        id: 10,
+        href: "/products/#10",
       },
     ],
   },
@@ -52,6 +57,8 @@ const menuItems = [
 ];
 
 const Nav = () => {
+  const router = useRouter();
+  const pathname = usePathname();
   const [showNav, setShowNav] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -98,13 +105,17 @@ const Nav = () => {
       toggleMobileDropdown(key);
     } else {
       if (item.href) {
-        if (item.href.startsWith("#")) {
+        if (item.href === "#about" || item.href === "#contact") {
+          // Always go to root with hash for about/contact
+          router.push(`/#${item.href.replace('#', '')}`);
+        } else if (item.href.startsWith("/products/#")) {
+          router.push(item.href);
+        } else if (item.href.startsWith("#")) {
           const element = document.querySelector(item.href);
           if (element) {
             element.scrollIntoView({ behavior: "smooth" });
           }
         } else {
-          // استفاده از next/link، پس ریدایرکت با لینک انجام میشه
           window.location.href = item.href;
         }
       }
@@ -209,13 +220,27 @@ const Nav = () => {
             {renderDesktopDropdown(menuItems.find((item) => item.title === "محصولات")?.children || [])}
           </div>
 
-          <a href="#about" onClick={() => setMenuOpen(false)}>
+          <a
+            href="/#about"
+            onClick={e => {
+              e.preventDefault();
+              router.push('/#about');
+              setMenuOpen(false);
+            }}
+          >
             درباره ما
           </a>
           <Link href="/news" onClick={() => setMenuOpen(false)}>
             اخبار
           </Link>
-          <a href="#contact" onClick={() => setMenuOpen(false)}>
+          <a
+            href="/#contact"
+            onClick={e => {
+              e.preventDefault();
+              router.push('/#contact');
+              setMenuOpen(false);
+            }}
+          >
             تماس با ما
           </a>
         </div>
