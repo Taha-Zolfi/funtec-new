@@ -14,7 +14,7 @@ function FerrisWheel() {
   const mouse = useRef(new THREE.Vector2());
   const { camera, gl } = useThree();
 
-  const { scene } = useGLTF('/ferris_final.glb');
+  const { scene } = useGLTF('/scene2.glb');
 
   const inverseQuat = useMemo(() => new THREE.Quaternion(), []);
   const textureLoader = useMemo(() => new THREE.TextureLoader(), []);
@@ -159,6 +159,6 @@ const loadTexture = useCallback((path) => {
   return <primitive object={scene} ref={groupRef} position={[-1.2, 0.1, 0]} />;
 }
 
-useGLTF.preload('/ferris_final.glb');
+useGLTF.preload('/scene2.glb');
 
 export default FerrisWheel;
