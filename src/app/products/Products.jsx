@@ -1,10 +1,8 @@
-
 "use client";
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { db } from "../api";
-import "./Products.css";
-import Nav from "../Nav/Nav";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react"
+import { useRouter } from "next/navigation"
+import { db } from "../api"
+import "./Products.css"
 
 // Memoized Star Rating Component
 const StarRating = ({ rating, onRatingChange, readonly = false, size = "medium" }) => {
@@ -78,7 +76,6 @@ const ProductSection = ({ product, index, onProductClick }) => {
   return (
     <section 
       ref={sectionRef}
-      id={product.id ? String(product.id) : undefined}
       className="product-section scroll-animate snap-section"
       data-section-index={index + 1}
     >
@@ -340,35 +337,6 @@ const Products = () => {
     setSearchFocused(false)
   }, [])
 
-  // Scroll to product section if hash exists in URL and keep the slash before hash
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const scrollToHash = () => {
-      const hash = window.location.hash;
-      if (hash && hash.length > 1) {
-        const id = hash.replace("#", "");
-        const el = document.getElementById(id);
-        if (el) {
-          el.scrollIntoView({ behavior: "smooth" });
-        }
-        // Always keep the slash before hash in the URL
-        const { pathname, search } = window.location;
-        if (!pathname.endsWith("/")) {
-          window.history.replaceState(null, "", pathname + "/" + search + hash);
-        } else {
-          window.history.replaceState(null, "", pathname + search + hash);
-        }
-      }
-    };
-    // Scroll on mount
-    scrollToHash();
-    // Scroll on hash change
-    window.addEventListener("hashchange", scrollToHash);
-    return () => {
-      window.removeEventListener("hashchange", scrollToHash);
-    };
-  }, [filteredProducts]);
-
   // Memoized navigation dots
   const navigationDots = useMemo(() => (
     <div className="navigation-dots">
@@ -415,126 +383,123 @@ const Products = () => {
   }
 
   return (
-    <>
-      <Nav />
-      <div className="persian-products snap-container" ref={containerRef}>
-        {/* Scroll Progress Bar */}
-        <div className="scroll-progress-container">
-          <div 
-            className="scroll-progress-bar" 
-            style={{ height: `${scrollProgress}%` }}
-          ></div>
-        </div>
+    <div className="persian-products snap-container" ref={containerRef}>
+      {/* Scroll Progress Bar */}
+      <div className="scroll-progress-container">
+        <div 
+          className="scroll-progress-bar" 
+          style={{ height: `${scrollProgress}%` }}
+        ></div>
+      </div>
 
-        {/* Navigation Dots */}
-        {navigationDots}
+      {/* Navigation Dots */}
+      {navigationDots}
 
-        {/* Header Section */}
-        <header className="page-header snap-section">
-          <div className="header-background">
-            <div className="animated-bg">
-              <div className="floating-shapes">
-                <div className="shape shape-1"></div>
-                <div className="shape shape-2"></div>
-                <div className="shape shape-3"></div>
-                <div className="shape shape-4"></div>
-                <div className="shape shape-5"></div>
-                <div className="shape shape-6"></div>
-              </div>
-              <div className="grid-overlay"></div>
-              <div className="particle-field"></div>
+      {/* Header Section */}
+      <header className="page-header snap-section">
+        <div className="header-background">
+          <div className="animated-bg">
+            <div className="floating-shapes">
+              <div className="shape shape-1"></div>
+              <div className="shape shape-2"></div>
+              <div className="shape shape-3"></div>
+              <div className="shape shape-4"></div>
+              <div className="shape shape-5"></div>
+              <div className="shape shape-6"></div>
             </div>
+            <div className="grid-overlay"></div>
+            <div className="particle-field"></div>
           </div>
-          
-          <div className="header-content">
-            <div className="hero-section">
-              <div className="title-container">
-                <h1 className="main-title">
-                  <span className="title-word">محصولات</span>
-                </h1>
-              </div>
-              
-              <p className="main-subtitle">
-                <span className="subtitle-line">انواع محصولات شهربازی با کیفیت برتر</span>
-              </p>
+        </div>
+        
+        <div className="header-content">
+          <div className="hero-section">
+            <div className="title-container">
+              <h1 className="main-title">
+                <span className="title-word">محصولات</span>
+              </h1>
             </div>
             
-            {/* Modern Search Section */}
-            <div className="search-section">
-              <div className={`modern-search-container ${searchFocused ? 'focused' : ''}`}>
-                <div className="search-input-wrapper">
-                  <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                  </svg>
-                  <input
-                    type="text"
-                    placeholder="جستجو در محصولات..."
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                    onFocus={handleSearchFocus}
-                    onBlur={handleSearchBlur}
-                    className="modern-search-input"
-                  />
-                  {searchTerm && (
-                    <button 
-                      className="clear-search-btn"
-                      onClick={clearSearch}
-                      type="button"
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                      </svg>
-                    </button>
-                  )}
-                </div>
-                
+            <p className="main-subtitle">
+              <span className="subtitle-line">انواع محصولات شهربازی با کیفیت برتر</span>
+            </p>
+          </div>
+          
+          {/* Modern Search Section */}
+          <div className="search-section">
+            <div className={`modern-search-container ${searchFocused ? 'focused' : ''}`}>
+              <div className="search-input-wrapper">
+                <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input
+                  type="text"
+                  placeholder="جستجو در محصولات..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  onFocus={handleSearchFocus}
+                  onBlur={handleSearchBlur}
+                  className="modern-search-input"
+                />
                 {searchTerm && (
-                  <div className="search-results-info">
-                    <span className="results-count">
-                      {filteredProducts.length} محصول یافت شد
-                    </span>
-                    {filteredProducts.length > 0 && (
-                      <span className="results-hint">
-                        برای مشاهده جزئیات روی محصول کلیک کنید
-                      </span>
-                    )}
-                  </div>
+                  <button 
+                    className="clear-search-btn"
+                    onClick={clearSearch}
+                    type="button"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
                 )}
               </div>
+              
+              {searchTerm && (
+                <div className="search-results-info">
+                  <span className="results-count">
+                    {filteredProducts.length} محصول یافت شد
+                  </span>
+                  {filteredProducts.length > 0 && (
+                    <span className="results-hint">
+                      برای مشاهده جزئیات روی محصول کلیک کنید
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
           </div>
-        </header>
+        </div>
+      </header>
 
-        {/* Product Sections */}
-        {filteredProducts.map((product, index) => (
-          <ProductSection
-            key={product.id}
-            product={product}
-            index={index}
-            onProductClick={openProductDetail}
-          />
-        ))}
+      {/* Product Sections */}
+      {filteredProducts.map((product, index) => (
+        <ProductSection
+          key={product.id}
+          product={product}
+          index={index}
+          onProductClick={openProductDetail}
+        />
+      ))}
 
-        {/* Empty State */}
-        {filteredProducts.length === 0 && searchTerm && (
-          <section className="empty-state scroll-animate snap-section">
-            <div className="empty-content">
-              <div className="empty-icon">🔍</div>
-              <h3>محصولی با این جستجو یافت نشد</h3>
-              <p>کلمات کلیدی دیگری امتحان کنید یا جستجو را پاک کنید</p>
-              <button 
-                className="reset-btn"
-                onClick={clearSearch}
-              >
-                پاک کردن جستجو
-              </button>
-            </div>
-          </section>
-        )}
-      </div>
-    </>
+      {/* Empty State */}
+      {filteredProducts.length === 0 && searchTerm && (
+        <section className="empty-state scroll-animate snap-section">
+          <div className="empty-content">
+            <div className="empty-icon">🔍</div>
+            <h3>محصولی با این جستجو یافت نشد</h3>
+            <p>کلمات کلیدی دیگری امتحان کنید یا جستجو را پاک کنید</p>
+            <button 
+              className="reset-btn"
+              onClick={clearSearch}
+            >
+              پاک کردن جستجو
+            </button>
+          </div>
+        </section>
+      )}
+    </div>
   )
 }
 
