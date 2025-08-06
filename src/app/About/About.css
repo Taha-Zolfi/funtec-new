@@ -187,14 +187,14 @@
 .about-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 35px;
+  gap: 35px;  
   margin-bottom: 140px;
   perspective: 1200px;
 }
 
 .about-stat {
   text-align: center;
-  padding: 60px 40px;
+  padding: 50px 30px;
   background: linear-gradient(135deg, rgba(30, 30, 50, 0.7), rgba(20, 20, 35, 0.5));
   border: 2px solid rgba(255, 255, 255, 0.08);
   border-radius: 35px;
@@ -621,7 +621,7 @@
 
 .about-service-icon {
   width: 70px;
-  height: 70px;
+  height: 50px;
   border-radius: 25px;
   background: rgba(255, 181, 39, 0.25);
   color: #ffb527;
@@ -1428,7 +1428,7 @@ html {
 
 @media (max-width: 480px) {
   .about-stats {
-    grid-template-columns: 1fr;
+    /* grid-template-columns: 2fr; */
     gap: 20px;
   }
 
@@ -1443,11 +1443,13 @@ html {
   .about-cta-content {
     padding: 60px 25px;
   }
-
+.about-services-text h2 {
+  text-align: center;
+}
   .about-btn-primary,
   .about-btn-secondary {
-    padding: 22px 40px;
-    font-size: 16px;
+    padding: 22px 0;
+    font-size: 15px;
   }
 
   .about-hero-badge {
@@ -1456,10 +1458,11 @@ html {
   }
 
   .about-cta-features {
-    grid-template-columns: 1fr;
+    /* grid-template-columns: 1fr; */
     gap: 20px;
   }
 }
+
 
 /* Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {

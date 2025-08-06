@@ -8,7 +8,7 @@ import { Box, Torus } from '@react-three/fiber';
 import { motion } from 'framer-motion';
 import { FaMapMarkerAlt, FaTelegram, FaInstagram, FaPhone, FaHeadset, FaUsers, FaBuilding } from 'react-icons/fa';
 
-// مپ آیکون‌ها برای رندر داینامیک
+// Map of icons
 const iconMap = {
   FaMapMarkerAlt,
   FaTelegram,
@@ -23,8 +23,6 @@ import Image from 'next/image';
 
 import './Contact.css';
 import logo from './logo.png';
-
-// ... (Keep FloatingGeometry, ParticleField, CreativeScene3D components as they are) ...
 
 const DepartmentContact = ({ title, phones, icon: Icon, delay = 0 }) => {
   const itemVariants = {
@@ -121,8 +119,6 @@ export default function ContactClient({ departments, socialLinks, addresses, foo
 
   return (
     <div id="contact" className="contact-container">
-      {/* <CreativeScene3D /> */}
-
       <div className="sparkles-container">
         {sparkles.map((sparkle) => (
           <div
@@ -156,34 +152,34 @@ export default function ContactClient({ departments, socialLinks, addresses, foo
                 key={index}
                 title={dept.title}
                 phones={dept.phones}
-                icon={dept.icon}
+                icon={iconMap[dept.icon]} // FIXED: map string to component
                 delay={0.1 * (index + 1)}
               />
             ))}
           </div>
 
-           <motion.div className="social-grid" variants={itemVariants}>
-             {socialLinks.map((link, index) => {
-               const Icon = iconMap[link.icon];
-               return (
-                 <motion.a
-                   key={index}
-                   href={link.href}
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   className={`contact-item social-item ${link.className}`}
-                   whileHover={{ scale: 1.03, y: -3 }}
-                   whileTap={{ scale: 0.98 }}
-                   transition={{ duration: 0.2 }}
-                 >
-                   <div className={`icon-wrapper ${link.wrapperClass}`}>
-                     {Icon && <Icon className={`icon ${link.iconClass}`} />}
-                   </div>
-                   <span>{link.handle}</span>
-                   <div className={`item-glow ${link.glowClass}`} />
-                 </motion.a>
-               );
-             })}
+          <motion.div className="social-grid" variants={itemVariants}>
+            {socialLinks.map((link, index) => {
+              const Icon = iconMap[link.icon];
+              return (
+                <motion.a
+                  key={index}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`contact-item social-item ${link.className}`}
+                  whileHover={{ scale: 1.03, y: -3 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className={`icon-wrapper ${link.wrapperClass}`}>
+                    {Icon && <Icon className={`icon ${link.iconClass}`} />}
+                  </div>
+                  <span>{link.handle}</span>
+                  <div className={`item-glow ${link.glowClass}`} />
+                </motion.a>
+              );
+            })}
           </motion.div>
 
           {addresses.map((address, index) => (
