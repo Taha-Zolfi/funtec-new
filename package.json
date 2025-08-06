@@ -6,7 +6,6 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "prestart": "npm run build",
     "lint": "next lint"
   },
   "dependencies": {
