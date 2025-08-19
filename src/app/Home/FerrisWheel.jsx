@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo, useCallback } from 'react';
+﻿import React, { useRef, useEffect, useMemo, useCallback } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
@@ -26,7 +26,7 @@ const materialConfig = useMemo(() => Object.freeze({
   opacity: 1,
   depthTest: true,
   depthWrite: true,
-  side: THREE.DoubleSide,
+  side: THREE.FrontSide, // Changed from DoubleSide to FrontSide for better performance
 }), []);
 
 const loadTexture = useCallback((path) => {
@@ -38,6 +38,21 @@ const loadTexture = useCallback((path) => {
     undefined,
     (error) => console.warn(`Failed to load texture ${path}:`, error)
   );
+  // Pre-decode the texture for better performance
+  if (typeof createImageBitmap !== 'undefined' && texture.image) {
+    createImageBitmap(texture.image).then(imageBitmap => {
+      texture.image = imageBitmap;
+      texture.needsUpdate = true;
+    }).catch(() => {/* fallback to normal loading */});
+  }
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.repeat.x = -1;
+  texture.offset.x = 1;
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  texture.generateMipmaps = false;
+  textureCache.set(path, texture);
+  return texture;
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.repeat.x = -1;
   texture.offset.x = 1;

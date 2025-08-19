@@ -37,11 +37,7 @@ import {
 } from 'lucide-react';
 import './News.css';
 
-// Ensure the correct import path for 'db' from your api.js file
-// Depending on your project structure, it might be:
-// import { db } from '../../api'; // if api.js is in a sibling folder to database
-// import { db } from '../api';     // if api.js is in the parent folder
-import { db } from '../api';
+import { api } from '@/lib/api';
 
 const NewsItem = memo(({ article, index, viewMode, bookmarkedArticles, likedArticles, readingList, onBookmark, onLike, onShare }) => {
   const handleBookmarkClick = useCallback((e) => {
@@ -309,7 +305,7 @@ const News = () => {
       // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      const allArticles = await db.getNews();
+      const allArticles = await api.getNews();
       setArticles(allArticles);
       setFilteredArticles(allArticles);
 
@@ -326,7 +322,7 @@ const News = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const allArticles = await db.getNews();
+        const allArticles = await api.getNews();
         setArticles(allArticles);
         setFilteredArticles(allArticles);
 
@@ -625,24 +621,6 @@ const News = () => {
     <div className={`news-page ${isLoaded ? 'loaded' : ''} ${darkMode ? 'dark-mode' : ''} font-${fontSize} ${!animationsEnabled ? 'no-animations' : ''}`}>
 
 
-      {/* Social Share Floating - Hidden on mobile */}
-      {!isMobile && (
-        <div className="social-share-floating">
-          <a href="#" className="social-btn facebook" onClick={(e) => { e.preventDefault(); handleShare('facebook'); }}>
-            <Facebook size={20} />
-          </a>
-          <a href="#" className="social-btn twitter" onClick={(e) => { e.preventDefault(); handleShare('twitter'); }}>
-            <Twitter size={20} />
-          </a>
-          <a href="#" className="social-btn telegram" onClick={(e) => { e.preventDefault(); handleShare('telegram'); }}>
-            <Send size={20} />
-          </a>
-          <a href="#" className="social-btn whatsapp" onClick={(e) => { e.preventDefault(); handleShare('whatsapp'); }}>
-            <MessageCircle size={20} />
-          </a>
-        </div>
-      )}
-
       <div className="news-background" />
       <div className="news-floating-elements">
         <div className="news-orb news-orb-1" />
@@ -699,20 +677,7 @@ const News = () => {
           </div>
         </section>
 
-        {/* Trending Topics */}
-        <section className="trending-topics">
-          <div className="trending-header">
-            <Flame size={isMobile ? 20 : 24} />
-            <h2 className="trending-title">موضوعات داغ</h2>
-          </div>
-          <div className="trending-tags">
-            {trendingTopics.map((topic, index) => (
-              <div key={index} className="trending-tag">
-                {topic}
-              </div>
-            ))}
-          </div>
-        </section>
+
 
         {/* Featured News */}
         {featuredArticle && (

@@ -1,8 +1,26 @@
 "use client"
 
 import { useState, useEffect, useCallback, memo, useRef } from "react"
-import Link from "next/link"
-import { ArrowRight, CheckCircle, Phone, Mail, Award, Shield, Palette, Heart, Users, Play, Smile, Trophy, Target, Sparkles, Wrench, Settings, Clock, Globe } from "lucide-react"
+import Image from "next/image"
+import {
+  CheckCircle,
+  Phone,
+  Mail,
+  Award,
+  Shield,
+  Palette,
+  Heart,
+  Users,
+  Play,
+  Smile,
+  Trophy,
+  Target,
+  Sparkles,
+  Wrench,
+  Settings,
+  Clock,
+  Globe,
+} from "lucide-react"
 
 // مپ آیکون‌ها برای رندر داینامیک
 const iconMap = {
@@ -19,7 +37,7 @@ const iconMap = {
   Settings,
   Clock,
   Globe,
-};
+}
 
 // کامپوننت‌های کوچک‌تر همگی باید اینجا باشند چون به هوک‌ها و تعاملات کلاینت نیاز دارند
 
@@ -170,7 +188,10 @@ const FeatureCard = memo(({ feature, index, isActive, onHover, onLeave }) => {
     >
       <div className="about-feature-glow"></div>
       <div className="about-feature-spotlight"></div>
-      {(() => { const Icon = iconMap[feature.icon]; return <div className="about-feature-icon">{Icon && <Icon size={45} />}</div>; })()}
+      {(() => {
+        const Icon = iconMap[feature.icon]
+        return <div className="about-feature-icon">{Icon && <Icon size={45} />}</div>
+      })()}
       <h3 className="about-feature-title">{feature.title}</h3>
       <p className="about-feature-description">{feature.description}</p>
     </div>
@@ -179,19 +200,21 @@ const FeatureCard = memo(({ feature, index, isActive, onHover, onLeave }) => {
 FeatureCard.displayName = "FeatureCard"
 
 const ServiceItem = memo(({ service, index }) => {
-  const Icon = iconMap[service.icon];
+  const Icon = iconMap[service.icon]
   return (
     <div className="about-service-item" style={{ "--animation-delay": `${index * 0.08}s` }}>
       <div className="about-service-icon">{Icon && <Icon size={26} />}</div>
       <span className="about-service-text">{service.text}</span>
     </div>
-  );
+  )
 })
 ServiceItem.displayName = "ServiceItem"
 
 const TimelineItem = memo(({ milestone, index }) => {
   const [isVisible, setIsVisible] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
   const itemRef = useRef(null)
+  const cardRef = useRef(null)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -201,31 +224,93 @@ const TimelineItem = memo(({ milestone, index }) => {
           observer.unobserve(entry.target)
         }
       },
-      { threshold: 0.2 }
+      { threshold: 0.2 },
     )
-    const current = itemRef.current;
+    const current = itemRef.current
     if (current) {
-      observer.observe(current);
+      observer.observe(current)
     }
     return () => {
       if (current) {
-        observer.unobserve(current);
+        observer.unobserve(current)
       }
-    };
-  }, []);
+    }
+  }, [])
+
+  useEffect(() => {
+    const card = cardRef.current
+    if (!card) return
+
+    const handleMouseMove = (e) => {
+      const rect = card.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const y = e.clientY - rect.top
+      const centerX = rect.width / 2
+      const centerY = rect.height / 2
+      const rotateX = (y - centerY) / 15
+      const rotateY = (centerX - x) / 15
+
+      card.style.setProperty("--mouse-x", `${(x / rect.width) * 100}%`)
+      card.style.setProperty("--mouse-y", `${(y / rect.height) * 100}%`)
+      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(${isHovered ? 20 : 0}px)`
+    }
+
+    const handleMouseEnter = () => {
+      setIsHovered(true)
+    }
+
+    const handleMouseLeave = () => {
+      setIsHovered(false)
+      card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)"
+    }
+
+    card.addEventListener("mousemove", handleMouseMove)
+    card.addEventListener("mouseenter", handleMouseEnter)
+    card.addEventListener("mouseleave", handleMouseLeave)
+
+    return () => {
+      card.removeEventListener("mousemove", handleMouseMove)
+      card.removeEventListener("mouseenter", handleMouseEnter)
+      card.removeEventListener("mouseleave", handleMouseLeave)
+    }
+  }, [isHovered])
 
   return (
     <div
       ref={itemRef}
-      className={`about-timeline-item ${index % 2 === 0 ? "left" : "right"} ${isVisible ? "visible" : ""}`}
-      style={{ "--animation-delay": `${index * 0.3}s` }}
+      className={`timeline-item timeline-item-${index} ${isVisible ? "visible" : ""}`}
+      style={{ "--animation-delay": `${index * 0.2}s` }}
     >
-      <div className="about-timeline-content">
-        <div className="about-timeline-year">{milestone.year}</div>
-        <h3 className="about-timeline-title">{milestone.title}</h3>
-        <p className="about-timeline-desc">{milestone.desc}</p>
+      <div ref={cardRef} className={`timeline-card ${isHovered ? "hovered" : ""}`}>
+        <div className="timeline-image-container">
+          <div className="timeline-image-wrapper">
+            <Image 
+              src={milestone.image || "/placeholder.svg"} 
+              alt={milestone.title} 
+              className="timeline-image"
+              width={400}
+              height={300}
+              priority={index < 2}
+            />
+            <div className="timeline-image-glow"></div>
+            <div className="timeline-image-border"></div>
+          </div>
+        </div>
+        <div className="timeline-content">
+          <div className="timeline-content-inner">
+            <h3 className="timeline-title">{milestone.title}</h3>
+            <p className="timeline-description">{milestone.desc}</p>
+            <div className="timeline-accent"></div>
+          </div>
+        </div>
+        <div className="timeline-hover-effect"></div>
       </div>
-      <div className="about-timeline-dot" />
+      <div className="timeline-connector">
+        <div className="timeline-dot">
+          <div className="timeline-dot-inner"></div>
+          <div className="timeline-dot-pulse"></div>
+        </div>
+      </div>
     </div>
   )
 })
@@ -263,16 +348,10 @@ const VisualCard = memo(({ card, index }) => {
     }
   }, [])
 
-  const Icon = iconMap[card.icon];
+  const Icon = iconMap[card.icon]
   return (
-    <div
-      ref={cardRef}
-      className={`about-visual-card ${card.type}`}
-      style={{ "--animation-delay": `${index * 0.12}s` }}
-    >
-      <div className="about-card-icon">
-        {Icon && <Icon size={45} />}
-      </div>
+    <div ref={cardRef} className={`about-visual-card ${card.type}`} style={{ "--animation-delay": `${index * 0.12}s` }}>
+      <div className="about-card-icon">{Icon && <Icon size={45} />}</div>
       <h3>{card.title}</h3>
       <p>{card.desc}</p>
       <div className="about-card-shine"></div>
@@ -282,13 +361,14 @@ const VisualCard = memo(({ card, index }) => {
 VisualCard.displayName = "VisualCard"
 
 // کامپوننت اصلی کلاینت که تمام منطق تعاملی را مدیریت می‌کند
-export default function AboutClient({ features, services, milestones, statData, visualCards, ctaFeatures }) {
+export default function AboutClient({ features, services, products, statData, visualCards, ctaFeatures }) {
   const [activeFeature, setActiveFeature] = useState(0)
   const [isVisible, setIsVisible] = useState({})
   const [isLoaded, setIsLoaded] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
   const containerRef = useRef(null)
   const rafRef = useRef(null)
+  const pointerRafRef = useRef(null)
   const observerRef = useRef(null)
   const featureTimerRef = useRef(null)
 
@@ -300,11 +380,14 @@ export default function AboutClient({ features, services, milestones, statData, 
   }, [])
 
   const handleFeatureLeave = useCallback(() => {
+    // when mouse leaves a feature card, immediately clear active state so the glow stops
+    setActiveFeature(-1)
     if (featureTimerRef.current) {
       clearInterval(featureTimerRef.current)
     }
+    // start automated rotation after a short delay so user doesn't see immediate jump
     featureTimerRef.current = setInterval(() => {
-      setActiveFeature((prev) => (prev + 1) % features.length)
+      setActiveFeature((prev) => (typeof prev === 'number' && prev >= 0 ? (prev + 1) % features.length : 0))
     }, 6000)
   }, [features.length])
 
@@ -340,7 +423,7 @@ export default function AboutClient({ features, services, milestones, statData, 
       {
         threshold: 0.2,
         rootMargin: "0px 0px -100px 0px",
-      }
+      },
     )
     const elements = document.querySelectorAll("[data-section]")
     elements.forEach((el) => observerRef.current.observe(el))
@@ -365,6 +448,35 @@ export default function AboutClient({ features, services, milestones, statData, 
     }
   }, [handleFeatureLeave])
 
+  // global pointer move handler: if pointer is not over any feature card, clear activeFeature
+  useEffect(() => {
+    const onPointerMove = (e) => {
+      if (pointerRafRef.current) return
+      pointerRafRef.current = requestAnimationFrame(() => {
+        pointerRafRef.current = null
+        try {
+          const el = document.elementFromPoint(e.clientX, e.clientY)
+          if (!el || !el.closest) {
+            setActiveFeature(-1)
+            return
+          }
+          const inside = el.closest('.about-feature-card')
+          if (!inside) setActiveFeature(-1)
+        } catch (err) {
+          // ignore
+        }
+      })
+    }
+
+    document.addEventListener('mousemove', onPointerMove)
+    document.addEventListener('touchstart', onPointerMove)
+    return () => {
+      document.removeEventListener('mousemove', onPointerMove)
+      document.removeEventListener('touchstart', onPointerMove)
+      if (pointerRafRef.current) cancelAnimationFrame(pointerRafRef.current)
+    }
+  }, [])
+
   return (
     <div
       className={`about-page ${isLoaded ? "loaded" : ""}`}
@@ -374,13 +486,19 @@ export default function AboutClient({ features, services, milestones, statData, 
         "--scroll-progress": scrollProgress,
       }}
     >
+      <div className="about-background">
+        <div className="light-effect light-effect-1"></div>
+        <div className="light-effect light-effect-2"></div>
+        <div className="ferris-bg"></div>
+        <div className="balloon-bg"></div>
+      </div>
       <div className="scroll-progress"></div>
       <div className="about-container">
         <section id="hero" data-section className="about-hero">
           <div className={`about-fade-in ${isVisible.hero ? "about-animate" : ""}`}>
             <div className="about-hero-badge">
               <Award size={26} />
-              <span>پیشرو در صنعت تجهیزات شهربازی</span>
+              <span>بی نقص شدن یک سفر بی پایان است</span>
             </div>
             <h1 className="about-hero-title">درباره فان تک</h1>
             <p className="about-hero-subtitle">
@@ -418,49 +536,19 @@ export default function AboutClient({ features, services, milestones, statData, 
           </div>
         </section>
 
-        <section id="services" data-section className="about-services">
-          <div className={`about-fade-in ${isVisible.services ? "about-animate" : ""}`}>
-            <div className="about-services-content">
-              <div className="about-services-text">
-                <h2>محصولات و خدمات ما</h2>
-                <p>
-                    مجموعه کاملی از تجهیزات شهربازی استاندارد برای تمام سنین، نیازها و بودجه‌ها. از طراحی تا نصب، همه چیز
-                  با کیفیت بالا، ایمنی مطلق و زیبایی بی‌نظیر.
-                </p>
-                <div className="about-services-list">
-                  {services.map((service, index) => (
-                    <ServiceItem key={index} service={service} index={index} />
-                  ))}
-                </div>
-                <Link href="/products" className="about-btn-outline">
-                  <span>مشاهده همه محصولات</span>
-                  <ArrowRight size={24} />
-                </Link>
-                  {/* import Link from "next/link"; */}
-              </div>
-              <div className="about-services-visual">
-                <div className="about-visual-cards">
-                  {visualCards.map((card, index) => (
-                    <VisualCard key={index} card={card} index={index} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
         <section id="timeline" data-section className="about-timeline">
           <div className={`about-fade-in ${isVisible.timeline ? "about-animate" : ""}`}>
             <div className="about-section-header">
-              <h2 className="about-section-title">مسیر رشد ما</h2>
+              <h2 className="about-section-title">محصولات ویژه </h2>
               <p className="about-section-subtitle">
-                نگاهی به مهم‌ترین دستاوردها و نقاط عطف در مسیر پیشرفت و توسعه فان تک از ابتدا تا امروز
+                با برخی از جذاب‌ترین و خاص‌ترین محصولات فان تک آشنا شوید که تجربه‌ای متفاوت و هیجان‌انگیز را برای شما رقم
+                می‌زنند.
               </p>
             </div>
             <div className="about-timeline-container">
               <div className="about-timeline-line" />
-              {milestones.map((milestone, index) => (
-                <TimelineItem key={index} milestone={milestone} index={index} />
+              {products.map((product, index) => (
+                <TimelineItem key={index} milestone={product} index={index} />
               ))}
             </div>
           </div>

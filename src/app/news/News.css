@@ -3,7 +3,7 @@
   position: relative;
   background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0f172e 100%);
   min-height: 100vh;
-  font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
   direction: rtl;
   overflow-x: hidden;
   opacity: 0;

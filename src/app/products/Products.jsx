@@ -1,58 +1,9 @@
 "use client";
-import { useState, useEffect, useCallback, useMemo, useRef } from "react"
-import { useRouter } from "next/navigation"
-import { db } from "../api"
-import "./Products.css"
-
-// Memoized Star Rating Component
-const StarRating = ({ rating, onRatingChange, readonly = false, size = "medium" }) => {
-  const [hoverRating, setHoverRating] = useState(0)
-  
-  const handleStarClick = useCallback((starValue) => {
-    if (!readonly && onRatingChange) {
-      onRatingChange(starValue)
-    }
-  }, [readonly, onRatingChange])
-  
-  const handleStarHover = useCallback((starValue) => {
-    if (!readonly) {
-      setHoverRating(starValue)
-    }
-  }, [readonly])
-  
-  const handleStarLeave = useCallback(() => {
-    if (!readonly) {
-      setHoverRating(0)
-    }
-  }, [readonly])
-  
-  const stars = useMemo(() => {
-    return [1, 2, 3, 4, 5].map((starValue) => (
-      <button
-        key={starValue}
-        type="button"
-        className={`star-button ${
-          starValue <= (hoverRating || rating) ? 'filled' : 'empty'
-        }`}
-        onClick={() => handleStarClick(starValue)}
-        onMouseEnter={() => handleStarHover(starValue)}
-        onMouseLeave={handleStarLeave}
-        disabled={readonly}
-        aria-label={`${starValue} ستاره`}
-      >
-        <svg viewBox="0 0 24 24" className="star-icon">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-        </svg>
-      </button>
-    ))
-  }, [hoverRating, rating, handleStarClick, handleStarHover, handleStarLeave, readonly])
-  
-  return (
-    <div className={`star-rating ${size} ${readonly ? 'readonly' : 'interactive'}`}>
-      {stars}
-    </div>
-  )
-}
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { api } from "@/lib/api";
+import "./Products.css";
+import StarRating from "@/app/components/StarRating";
 
 // Memoized Product Section Component
 const ProductSection = ({ product, index, onProductClick }) => {
@@ -75,12 +26,11 @@ const ProductSection = ({ product, index, onProductClick }) => {
 
   return (
     <section 
-      ref={sectionRef}
       className="product-section scroll-animate snap-section"
       data-section-index={index + 1}
     >
       <div className="section-background">
-        {product.background_video ? (
+        {product.background_video && product.background_video !== 'null' ? (
           <video 
             autoPlay 
             muted 
@@ -88,45 +38,27 @@ const ProductSection = ({ product, index, onProductClick }) => {
             playsInline 
             className="bg-video"
             preload="metadata"
-            poster={product.mainImage}
+            key={product.background_video}
           >
             <source src={product.background_video} type="video/mp4" />
           </video>
-        ) : (
+        ) : product.images?.[0] ? (
           <img 
-            src={product.mainImage}
-            alt={product.title || 'محصول'}
+            src={product.images[0]}
+            alt={product.name || 'محصول'}
             className="bg-image"
             loading="lazy"
             decoding="async"
           />
-        )}
+        ) : null}
         <div className="dark-overlay"></div>
       </div>
 
       <div className="section-content">
         <div className="product-info">
-          {product.is_featured && (
-            <div className="featured-tag">
-              <span className="star-icon">⭐</span>
-              <span>محصول ویژه</span>
-            </div>
-          )}
-
-          <h2 className="product-title">{product.title || 'محصول بدون نام'}</h2>
+          <h2 className="product-title">{product.name || 'محصول بدون نام'}</h2>
           
-          <div className="rating-section">
-            <StarRating 
-              rating={Math.floor(averageRating)} 
-              readonly={true}
-              size="small"
-            />
-            <span className="rating-info">
-              {averageRating} ({(product.reviews || []).length} نظر)
-            </span>
-          </div>
-
-          <p className="product-desc">{product.description || 'توضیحی برای این محصول موجود نیست.'}</p>
+          <p className="product-desc">{product.short_description || 'توضیحی برای این محصول موجود نیست.'}</p>
 
           <button 
             type="button"
@@ -244,13 +176,13 @@ const Products = () => {
 
   // Load products with error handling and loading state
   const loadProducts = useCallback(async () => {
-    const BASE_URL = "https://funtec.ir"
+    const BASE_URL = "https://funnytec.ir"
     const PLACEHOLDER_IMAGE = "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg"
 
     try {
       setIsLoading(true)
-      const allProducts = await db.getProducts()
-      
+      const allProducts = await api.getProducts()
+      console.log("Received products:", allProducts)
       const mappedProducts = allProducts.map((product) => {
         // Image Processing
         let processedImages = []
@@ -265,31 +197,24 @@ const Products = () => {
           .filter(img => img && typeof img === 'string' && img.trim() !== '')
           .map(img => {
             const path = img.trim().startsWith('/') ? img.trim() : `/${img.trim()}`
-            return `${BASE_URL}${path}`
+            return path
           })
           
         // Fallback Image
         let mainImage = finalImages.length > 0 ? finalImages[0] : PLACEHOLDER_IMAGE
         if (finalImages.length === 0 && product.image && typeof product.image === 'string') {
           const path = product.image.trim().startsWith('/') ? product.image.trim() : `/${product.image.trim()}`
-          mainImage = `${BASE_URL}${path}`
-        }
-
-        // Video Processing
-        let finalVideoUrl = null
-        const rawVideoFromAPI = product.background_video
-        if (rawVideoFromAPI && typeof rawVideoFromAPI === 'string' && rawVideoFromAPI.trim() !== '') {
-          const videoPath = rawVideoFromAPI.startsWith('/') ? rawVideoFromAPI : `/${rawVideoFromAPI}`
-          finalVideoUrl = `${BASE_URL}${videoPath.trim()}`
+          mainImage = path
         }
 
         return {
           ...product,
-          specifications: (typeof product.specifications === 'string' && product.specifications) ? product.specifications.split(',') : [],
-          reviews: (typeof product.reviews === 'string' && product.reviews) ? product.reviews.split(',') : [],
+          specifications: Array.isArray(product.specifications) ? product.specifications : 
+                         (product.specifications ? product.specifications.split(',') : []),
+          reviews: Array.isArray(product.reviews) ? product.reviews :
+                  (product.reviews ? product.reviews.split(',') : []),
           images: finalImages,
-          mainImage: mainImage,
-          background_video: finalVideoUrl,
+          mainImage: mainImage
         }
       })
       
@@ -307,7 +232,7 @@ const Products = () => {
   }, [loadProducts])
 
   const openProductDetail = useCallback((product) => {
-    router.push(`/product/${product.id}`)
+    router.push(`/products/${product.id}`)
   }, [router])
 
   const scrollToSection = useCallback((sectionIndex) => {

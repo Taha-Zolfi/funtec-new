@@ -1,243 +1,212 @@
-// src/components/HomeClient.js
-"use client";
+ 'use client';
 
-import { Suspense, useEffect, useState, useRef, useMemo, lazy } from "react";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import Head from "next/head";
+import { useEffect, useState, Suspense } from "react";
+import dynamic from 'next/dynamic';
+import { Canvas } from '@react-three/fiber';
+import { Environment } from '@react-three/drei';
 import "./Home.css";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment, Points, PointMaterial } from "@react-three/drei";
-import * as random from "maath/random/dist/maath-random.esm";
 
-const FerrisWheel = lazy(() => import("./FerrisWheel"));
+const FerrisWheel = dynamic(() => import('./FerrisWheel'), { ssr: false, loading: () => null });
 
-function ParticleField({ count = 3000, color = "#aaccff", size = 0.008 }) {
-  const ref = useRef();
-  const [sphere] = useState(() =>
-    random.inSphere(new Float32Array(count * 3), { radius: 10 })
-  );
-  const sizes = useRef(new Float32Array(count));
+// Use a direct script import for Spline
+const SPLINE_URL = "https://prod.spline.design/3B8l0HaJEdBMdTqQ/scene.splinecode";
 
-  useEffect(() => {
-    for (let i = 0; i < count; i++) {
-      sizes.current.set([size * (0.5 + Math.random() * 0.5)], i);
+function createSplineViewer(container) {
+  const script = document.createElement('script');
+  script.type = 'module';
+  script.src = 'https://unpkg.com/@splinetool/viewer@0.9.506/build/spline-viewer.js';
+  document.head.appendChild(script);
+
+  const viewer = document.createElement('spline-viewer');
+  viewer.url = SPLINE_URL;
+  viewer.style.width = '100%';
+  viewer.style.height = '100%';
+  // ensure the viewer is positioned as a background and doesn't capture pointer events
+  viewer.style.position = 'absolute';
+  viewer.style.inset = '0';
+  viewer.style.zIndex = '0';
+  viewer.style.pointerEvents = 'none';
+  container.appendChild(viewer);
+  const onLoad = () => {
+    const root = document.querySelector('.home');
+    if (root) root.classList.add('spline-ready');
+  };
+
+  // attempt to remove/hide any attribution/credit elements the viewer injects
+  function removeCredits() {
+    try {
+      const creditSelectors = [
+        'a[href*="spline"]',
+        'a[href*="splinetool"]',
+        '[class*="credit"]',
+        '[class*="credits"]',
+        '[id*="credit"]',
+        '[id*="credits"]',
+        '[aria-label*="spline"]',
+        '[data-credit]'
+      ];
+
+      creditSelectors.forEach(sel => {
+        container.querySelectorAll(sel).forEach(el => {
+          try { el.remove ? el.remove() : (el.style.display = 'none'); } catch (e) {}
+        });
+      });
+
+      // also check the created viewer's shadow root if present
+      if (viewer && viewer.shadowRoot) {
+        creditSelectors.forEach(sel => {
+          viewer.shadowRoot.querySelectorAll(sel).forEach(el => {
+            try { el.remove ? el.remove() : (el.style.display = 'none'); } catch (e) {}
+          });
+        });
+        // hide footer/credits parts inside shadow DOM
+        ['footer', '[part="footer"]', '.footer', '.credits', '.credit'].forEach(sel => {
+          viewer.shadowRoot.querySelectorAll(sel).forEach(el => {
+            try { el.remove ? el.remove() : (el.style.display = 'none'); } catch (e) {}
+          });
+        });
+      }
+    } catch (e) {
+      // swallow — this is defensive cleanup only
     }
-  }, [count, size]);
+  }
 
-  useFrame((state, delta) => {
-    if (ref.current) {
-      ref.current.rotation.x -= delta / 40;
-      ref.current.rotation.y -= delta / 50;
-    }
-  });
+  // run immediately and then poll for a short period to catch late inserts
+  removeCredits();
+  const creditPoll = setInterval(removeCredits, 500);
+  const creditPollStop = setTimeout(() => clearInterval(creditPoll), 8000);
 
-  return (
-    <Points
-      ref={ref}
-      positions={sphere}
-      stride={3}
-      frustumCulled={false}
-      scale={1}
-    >
-      <PointMaterial
-        transparent
-        color={color}
-        size={size}
-        sizeAttenuation={true}
-        depthWrite={false}
-        blending={1}
-      />
-    </Points>
-  );
+  const onError = (err) => {
+    // expose more info in the console for debugging
+    try {
+      console.error('Spline viewer error:', err && (err.detail || err.message || err));
+    } catch (e) { console.error('Spline viewer error (fallback):', e); }
+  };
+
+  viewer.addEventListener && viewer.addEventListener('load', onLoad);
+  viewer.addEventListener && viewer.addEventListener('error', onError);
+
+  // script load error
+  script.onerror = (e) => onError(e || 'spline script failed to load');
+
+  const poll = setInterval(() => {
+    if (viewer._loaded) { onLoad(); clearInterval(poll); }
+  }, 300);
+
+  return () => {
+    clearInterval(poll);
+    clearInterval(creditPoll);
+    clearTimeout(creditPollStop);
+    try { viewer.removeEventListener && viewer.removeEventListener('load', onLoad); } catch (e) {}
+    try { viewer.removeEventListener && viewer.removeEventListener('error', onError); } catch (e) {}
+    try { container.removeChild(viewer); } catch (e) {}
+    try { document.head.removeChild(script); } catch (e) {}
+  };
 }
 
-function CreativeScene3D() {
-  return (
-    <Canvas
-      camera={{ position: [0, 0, 10], fov: 50 }}
-      style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        zIndex: 1,
-        background: "linear-gradient(45deg, #040418, black, #181403ff)",
-      }}
-    >
-      <ambientLight intensity={0.1} />
-      <pointLight position={[10, 5, 10]} intensity={0.6} color="#66aaff" />
-      <pointLight position={[-10, -5, -10]} intensity={0.5} color="#ff88cc" />
-      <directionalLight position={[5, 10, 5]} intensity={0.3} color="#ffffff" />
-      <ParticleField count={2500} color="#aaccff" size={0.009} />
-      <ParticleField count={1500} color="#ccddff" size={0.006} />
-      <ParticleField count={1000} color="#ffdde0" size={0.004} />
-    </Canvas>
-  );
-}
-
-export default function HomeClient({
-  title,
-  subtitle,
-  productButtonText,
-  contactButtonText,
-  schemaData,
-}) {
-  const [isLoaded, setIsLoaded] = useState(false);
+export default function HomeClient({ children }) {
+  const [isLoading, setIsLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const canvasRef = useRef();
+  // control FerrisWheel rendering separately so we don't affect Spline loading
+  const [showFerris, setShowFerris] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoaded(true), 500);
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    checkMobile();
-    window.addEventListener("resize", checkMobile, { passive: true });
+    // lightweight mobile detection: prefer matchMedia but fall back to UA
+    const mq = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 768px)');
+    const mobile = mq ? mq.matches : /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+    setIsMobile(!!mobile);
+
+    if (!mobile) {
+      // desktop: load spline viewer
+      const container = document.querySelector('.spline-container');
+      if (container) {
+        const cleanup = createSplineViewer(container);
+        setIsLoading(false);
+        const t = setTimeout(() => { const root = document.querySelector('.home'); if (root) root.classList.add('spline-ready'); }, 4000);
+        return () => { clearTimeout(t); cleanup && cleanup(); };
+      }
+    } else {
+      // mobile: don't load spline; immediately mark not loading
+      setIsLoading(false);
+      const root = document.querySelector('.home'); if (root) root.classList.add('spline-ready');
+    }
+  }, []);
+
+  // Mount FerrisWheel only on wider (desktop) screens — treat tablets as non-desktop
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) {
+      // default to showing ferris on uncertain environments
+      setShowFerris(true);
+      return;
+    }
+
+    const mq = window.matchMedia('(min-width: 1025px)');
+    const update = () => setShowFerris(!!mq.matches);
+    // set initial
+    update();
+    // listen for changes
+    if (mq.addEventListener) mq.addEventListener('change', update);
+    else if (mq.addListener) mq.addListener(update);
+
     return () => {
-      clearTimeout(timer);
-      window.removeEventListener("resize", checkMobile);
+      if (mq.removeEventListener) mq.removeEventListener('change', update);
+      else if (mq.removeListener) mq.removeListener(update);
     };
   }, []);
 
-  const containerVariants = useMemo(
-    () => ({
-      hidden: { opacity: 0 },
-      visible: {
-        opacity: 1,
-        transition: {
-          duration: 1,
-          staggerChildren: 0.3,
-        },
-      },
-    }),
-    []
-  );
-
-  const itemVariants = useMemo(
-    () => ({
-      hidden: { y: 80, opacity: 0 },
-      visible: {
-        y: 0,
-        opacity: 1,
-        transition: {
-          duration: 0.8,
-          ease: "easeOut",
-        },
-      },
-    }),
-    []
-  );
-
-  const mobileItemVariants = useMemo(
-    () => ({
-      hidden: { y: 50, opacity: 0, scale: 0.9 },
-      visible: {
-        y: 0,
-        opacity: 1,
-        scale: 1,
-        transition: {
-          duration: 0.6,
-          ease: "easeOut",
-        },
-      },
-    }),
-    []
-  );
-
   return (
-    <>
-      <Head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
-        />
-      </Head>
-
-      <div className="home">
-        <CreativeScene3D className="bgg" />
-
-        <motion.div
-          className="content-container"
-          variants={containerVariants}
-          initial="hidden"
-          animate={isLoaded ? "visible" : "hidden"}
-        >
-          <motion.div
-            className="main"
-            variants={isMobile ? mobileItemVariants : itemVariants}
-          >
-            <motion.h1
-              className="h-title"
-              variants={isMobile ? mobileItemVariants : itemVariants}
-            >
-              {title}
-            </motion.h1>
-
-            <motion.p
-              className="subtitle"
-              variants={isMobile ? mobileItemVariants : itemVariants}
-            >
-              {subtitle}
-            </motion.p>
-
-            <motion.div
-              className="home-buttons"
-              variants={isMobile ? mobileItemVariants : itemVariants}
-            >
-            <Link href="/products" passHref legacyBehavior>
-              <motion.button
-                className="home-btn gallery"
-                whileHover={{ scale: isMobile ? 1 : 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                as="a"
-              >
-                {productButtonText}
-              </motion.button>
-            </Link>
-            <a href="#contact">
-              <motion.button
-                className="home-btn contact"
-                whileHover={{ scale: isMobile ? 1 : 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {contactButtonText}
-              </motion.button>
-            </a>
-            </motion.div>
-          </motion.div>
-
-          {isLoaded && !isMobile && (
-            <motion.div className="ferris-wheel-container" variants={itemVariants}>
-              <Canvas
-                ref={canvasRef}
-                camera={{ position: [0, 0, 2.5], fov: 75 }}
-                gl={{
-                  antialias: true,
-                  alpha: true,
-                  powerPreference: "high-performance",
-                }}
-                dpr={[1, 2]}
-                performance={{ min: 0.5 }}
-              >
-                <Suspense fallback={null}>
-                  <ambientLight intensity={0.4} />
-                  <directionalLight
-                    position={[10, 10, 5]}
-                    intensity={0.8}
-                    color="#ffffff"
-                  />
-                  <pointLight position={[-10, -10, -10]} intensity={0.3} color="#ffb527" />
-                  <pointLight position={[10, 10, 10]} intensity={0.3} color="#13c8ff" />
-                  <Environment preset="night" />
-                  <group scale={[1.4, 1.4, 1.4]} position={[0.5, 1, 0]}>
-                    <FerrisWheel />
-                  </group>
-                </Suspense>
-              </Canvas>
-            </motion.div>
-          )}
-        </motion.div>
+    <div className="home">
+      <div className="spline-background">
+        {/* On desktop we mount the spline container; on mobile we show a local video background */}
+        {!isMobile && (
+          <div className="spline-container" style={{ width: '100%', height: '100%' }}>
+            {isLoading && <div className="loading">Loading Spline scene...</div>}
+          </div>
+        )}
+        {isMobile && (
+          <video
+            className="mobile-video-bg"
+            src="/lost-orb-in-the-mountains.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            aria-hidden="true"
+          />
+        )}
       </div>
-    </>
+      {children}
+
+      {/* Inline 3D Canvas (dynamic FerrisWheel) — pointerEvents none so UI is interactive */}
+  {showFerris && (
+  <div className="ferris-wheel-container" aria-hidden="true">
+        <Canvas
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            pointerEvents: 'none',
+            background: 'transparent'
+          }}
+          camera={{ position: [0, 0, 2.5], fov: 75, near: 0.1, far: 1000 }}
+          gl={{ antialias: false, alpha: true, powerPreference: 'high-performance', stencil: false, depth: true }}
+          dpr={Math.min(1.5, typeof window !== 'undefined' ? window.devicePixelRatio : 1)}
+        >
+          <Suspense fallback={null}>
+            <ambientLight intensity={0.4} />
+            <directionalLight position={[10, 10, 5]} intensity={0.8} color="#ffffff" />
+            <pointLight position={[-10, -10, -10]} intensity={0.3} color="#ffb527" />
+            <pointLight position={[10, 10, 10]} intensity={0.3} color="#13c8ff" />
+            <Environment preset="night" />
+            <group scale={[1.4, 1.4, 1.4]} position={[0.5, 1, 0]}> 
+              <FerrisWheel />
+            </group>
+          </Suspense>
+        </Canvas>
+  </div>
+  )}
+    </div>
   );
 }

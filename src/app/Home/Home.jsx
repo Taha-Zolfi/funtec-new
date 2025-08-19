@@ -1,121 +1,52 @@
-import { useMemo } from "react";
-import HomeClient from "./HomeClient";
+import HomeClient from './HomeClient';
 
 export const metadata = {
   title: "خرید و فروش وسایل شهربازی | ساخت دستگاه شهربازی | لیزرتگ و لیزرماز | فان تک",
-  description:
-    "خرید، فروش و ساخت انواع وسایل شهربازی، دستگاه شهربازی، تجهیزات شهربازی سرپوشیده و روباز، دستگاه لیزرتگ و لیزرماز با بهترین قیمت و کیفیت. مشاوره رایگان راه اندازی شهربازی و خانه بازی کودک. تولید و فروش مستقیم تجهیزات شهربازی و دستگاه‌های تفریحی با گارانتی و خدمات پس از فروش.",
-  keywords: [
-    "خرید وسایل شهربازی", "فروش وسایل شهربازی", "قیمت وسایل شهربازی", "ساخت دستگاه شهربازی", "تجهیزات شهربازی", "دستگاه شهربازی", "شهربازی سرپوشیده", "شهربازی روباز", "خانه بازی کودک", "دستگاه لیزرتگ", "دستگاه لیزرماز", "تجهیزات زمین بازی", "وسایل بازی کودکان", "مشاوره احداث شهربازی", "راه اندازی شهربازی", "فروش دستگاه شهربازی", "تولید دستگاه شهربازی", "قیمت دستگاه شهربازی", "تجهیزات پارک" 
-  ],
+  description: "خرید، فروش و ساخت انواع وسایل شهربازی، دستگاه شهربازی، تجهیزات شهربازی سرپوشیده و روباز، دستگاه لیزرتگ و لیزرماز با بهترین قیمت و کیفیت.",
   openGraph: {
-    title: "خرید وسایل شهربازی | فروش دستگاه شهربازی | لیزرتگ و لیزرماز | فان تک",
-    description: "تولید و فروش مستقیم تجهیزات شهربازی، دستگاه لیزرتگ، لیزرماز و خانه بازی کودک با بهترین قیمت و کیفیت.",
+    title: "فان تک | خرید و فروش وسایل شهربازی",
+    description: "تولید و فروش مستقیم تجهیزات شهربازی با بهترین قیمت و کیفیت",
     url: "https://funtec.ir",
-    images: [
-      { url: "https://funtec.ir/logo.png" },
-    ],
-    type: "website",
-  },
+    images: [{ url: "https://funtec.ir/logo.png" }],
+    type: "website"
+  }
 };
 
 export default function Home() {
-  const schemaData = useMemo(() => ({
-    "@context": "https://schema.org",
-    "@type": "Store",
-    name: "فان تک | خرید و فروش وسایل شهربازی، دستگاه لیزرتگ و لیزرماز",
-    description: "خرید، فروش و ساخت تجهیزات شهربازی، دستگاه شهربازی، دستگاه لیزرتگ و لیزرماز، خانه بازی کودک، تجهیزات زمین بازی و پارک با بهترین قیمت و کیفیت.",
-    url: "https://funtec.ir",
-    telephone: "+989191771727",
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "میدان ولی عصر نبش خیابان فتحی شقاقی برج بلورین",
-      addressLocality: "تهران",
-      addressRegion: "تهران",
-      addressCountry: "IR",
-    },
-    makesOffer: [
-      { "@type": "Product", name: "وسایل شهربازی روباز" },
-      { "@type": "Product", name: "وسایل شهربازی سرپوشیده" },
-      { "@type": "Product", name: "دستگاه لیزرتگ" },
-      { "@type": "Product", name: "دستگاه لیزرماز" },
-      { "@type": "Product", name: "خانه بازی کودک" },
-      { "@type": "Product", name: "تجهیزات زمین بازی" },
-      { "@type": "Product", name: "تجهیزات پارک" },
-      { "@type": "Service", name: "مشاوره راه اندازی شهربازی" },
-      { "@type": "Service", name: "ساخت دستگاه شهربازی" },
-      { "@type": "Service", name: "فروش دستگاه شهربازی" },
-      { "@type": "Service", name: "تعمیر و نگهداری تجهیزات شهربازی" },
-    ],
-    image: "https://funtec.ir/logo.png",
-    sameAs: [
-      "https://instagram.com/funtec.ir",
-      "https://t.me/funtec_ir"
-    ]
-  }), []);
-
   return (
-    <>
-      {/* SEO-heavy content for bots only, visually hidden from users */}
-      <div style={{position:'absolute',left:'-9999px',width:'1px',height:'1px',overflow:'hidden'}} aria-hidden="true">
-        <h1>خرید وسایل شهربازی | فروش دستگاه شهربازی | ساخت تجهیزات شهربازی | دستگاه لیزرتگ و لیزرماز | فان تک</h1>
-        <section>
-          <h2>فروش و ساخت وسایل شهربازی، دستگاه لیزرتگ و لیزرماز با بهترین قیمت</h2>
-          <p>
-            فان تک مرکز تخصصی خرید، فروش و ساخت انواع وسایل شهربازی روباز و سرپوشیده، دستگاه لیزرتگ، دستگاه لیزرماز، تجهیزات خانه بازی کودک و تجهیزات زمین بازی است. ما با ارائه مشاوره رایگان، گارانتی معتبر و خدمات پس از فروش، بهترین قیمت و کیفیت را تضمین می‌کنیم. برای دریافت لیست قیمت وسایل شهربازی و مشاوره راه اندازی شهربازی با ما تماس بگیرید.
-          </p>
-          <ul>
-            <li>خرید وسایل شهربازی روباز و سرپوشیده</li>
-            <li>فروش دستگاه شهربازی با گارانتی</li>
-            <li>ساخت تجهیزات شهربازی و خانه بازی کودک</li>
-            <li>قیمت دستگاه لیزرتگ و لیزرماز</li>
-            <li>مشاوره راه اندازی شهربازی و خانه بازی</li>
-            <li>تعمیر و نگهداری تجهیزات شهربازی</li>
-            <li>فروش تجهیزات زمین بازی و پارک</li>
-          </ul>
-        </section>
-        <section>
-          <h2>سوالات متداول درباره خرید و فروش وسایل شهربازی</h2>
-          <dl>
-            <dt>قیمت وسایل شهربازی چقدر است؟</dt>
-            <dd>قیمت وسایل شهربازی بسته به نوع دستگاه، برند، ظرفیت و امکانات متغیر است. برای دریافت لیست قیمت به روز با ما تماس بگیرید.</dd>
-            <dt>آیا دستگاه‌های شهربازی گارانتی دارند؟</dt>
-            <dd>بله، تمامی دستگاه‌های شهربازی فان تک دارای گارانتی معتبر و خدمات پس از فروش هستند.</dd>
-            <dt>آیا امکان مشاوره و طراحی شهربازی وجود دارد؟</dt>
-            <dd>بله، تیم ما مشاوره رایگان و طراحی سه‌بعدی شهربازی و خانه بازی را ارائه می‌دهد.</dd>
-            <dt>آیا دستگاه لیزرتگ و لیزرماز برای فروش موجود است؟</dt>
-            <dd>بله، ما تولیدکننده و فروشنده مستقیم دستگاه لیزرتگ و لیزرماز با بهترین قیمت و کیفیت هستیم.</dd>
-          </dl>
-        </section>
-        <section>
-          <h2>خدمات و محصولات فان تک</h2>
-          <ul>
-            <li>تولید و فروش وسایل شهربازی روباز و سرپوشیده</li>
-            <li>ساخت دستگاه لیزرتگ و لیزرماز</li>
-            <li>تجهیز خانه بازی کودک</li>
-            <li>فروش تجهیزات زمین بازی و پارک</li>
-            <li>مشاوره راه اندازی شهربازی</li>
-            <li>تعمیر و نگهداری تجهیزات شهربازی</li>
-          </ul>
-        </section>
-        <section>
-          <h2>چرا فان تک؟</h2>
-          <ul>
-            <li>بیش از ۷ سال تجربه در تولید و فروش وسایل شهربازی</li>
-            <li>گارانتی و خدمات پس از فروش واقعی</li>
-            <li>مشاوره تخصصی و طراحی رایگان</li>
-            <li>قیمت رقابتی و کیفیت تضمینی</li>
-            <li>پشتیبانی سریع و حرفه‌ای</li>
-          </ul>
-        </section>
+    <HomeClient>
+      <div className="content-container">
+        <div className="main">
+          <h1 className="h-title">فان تک</h1>
+          <p className="subtitle">تولید کننده تجهیزات شهربازی</p>
+
+          <div className="home-buttons">
+            <a href="/products"><button className="home-btn gallery" type="button">گالری محصولات</button></a>
+            <a href="#contact"><button className="home-btn contact" type="button">تماس با ما</button></a>
+          </div>
+        </div>
+
+        {/* ferris-wheel is rendered by HomeClient inside .ferris-wheel-container */}
+
+        {/* Hidden SEO content */}
+        <div className="visually-hidden" aria-hidden="true">
+          <section itemScope itemType="https://schema.org/Organization">
+            <h2 itemProp="name">فان تک - تولید کننده تجهیزات شهربازی</h2>
+            <p itemProp="description">
+              تولید و فروش مستقیم انواع وسایل شهربازی، دستگاه لیزرتگ، لیزرماز و تجهیزات خانه بازی کودک با بهترین قیمت و کیفیت.
+            </p>
+            <div itemProp="address" itemScope itemType="https://schema.org/PostalAddress">
+              <span itemProp="addressLocality">تهران</span>
+              <span itemProp="streetAddress">میدان ولی عصر نبش خیابان فتحی شقاقی برج بلورین</span>
+            </div>
+            <div itemProp="contactPoint" itemScope itemType="https://schema.org/ContactPoint">
+              <span itemProp="telephone">+989191771727</span>
+            </div>
+          </section>
+        </div>
+
+
       </div>
-      <HomeClient
-        title="فان تک"
-        subtitle="ساخت و فروش دستگاه های شهربازی"
-        productButtonText="مشاهده محصولات"
-        contactButtonText="تماس با ما"
-        schemaData={schemaData}
-      />
-    </>
+    </HomeClient>
   );
 }

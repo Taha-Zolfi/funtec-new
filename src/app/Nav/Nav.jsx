@@ -1,11 +1,44 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback, memo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import "./Nav.css";
-import logo from "./logo.png";
+import dynamic from 'next/dynamic';
+import Image from 'next/image';
+import logoSrc from './logo.png';
+import { Suspense } from 'react';
+
 import { FaHome, FaBoxOpen, FaInfoCircle, FaNewspaper, FaPhone } from "react-icons/fa";
+
+// Memoize menu items for better performance
+const MenuItem = memo(({ item, isOpen, toggleSubmenu }) => {
+  return (
+    <div className={`menu-item ${isOpen ? 'open' : ''}`}>
+      <div onClick={toggleSubmenu}>
+        {item.icon}
+        <span>{item.title}</span>
+      </div>
+      {item.children && isOpen && <SubMenu items={item.children} />}
+    </div>
+  );
+});
+
+MenuItem.displayName = 'MenuItem';
+
+const SubMenu = memo(({ items }) => {
+  return (
+    <div className="submenu">
+      {items.map((item, index) => (
+        <Link href={item.href || '#'} key={index}>
+          <span>{item.title}</span>
+        </Link>
+      ))}
+    </div>
+  );
+});
+
+SubMenu.displayName = 'SubMenu';
 
 const menuItems = [
   {
@@ -18,24 +51,90 @@ const menuItems = [
     icon: <FaBoxOpen />,
     children: [
       {
-        title: "لیزرتگ",
-        id: 8,
-        href: "/products/#8",
+        title: "محصولات گروهی",
+        children: [
+          {
+            title: "لیزرتگ",
+            id: 8,
+            href: "/products/1",
+          },
+          {
+            title: "لیزرماز",
+            id: 7,
+            href: "/products/#7",
+          },
+          
+          {
+            title: "اتاق فرار",
+            id: 10,
+            href: "/products/#10",
+          },
+          {
+            title: "حریم وحشت",
+            id: 11,
+            href: "/products/#11",
+          },
+          {
+            title: "سینما وحشت",
+            id: 12,
+            href: "/products/#12",
+          },
+        ],
       },
       {
-        title: "لیزرماز",
-        id: 7,
-        href: "/products/#7",
-      },
-      {
-        title: "اتاق وحشت",
-        id: 9,
-        href: "/products/#9",
-      },
-      {
-        title: "سینما فرار",
-        id: 10,
-        href: "/products/#10",
+        title: "محصولات گیمی",
+        children: [
+          {
+            title: "فال بال",
+            id: 13,
+            href: "/products/#13",
+          },
+          {
+            title: "فایربال",
+            id: 14,
+            href: "/products/#14",
+          },
+          {
+            title: "دربی",
+            id: 15,
+            href: "/products/#15",
+          },
+          {
+            title: "تیراندازی",
+            id: 16,
+            href: "/products/#16",
+          },
+          {
+            title: "چک زن",
+            id: 17,
+            href: "/products/#17",
+          },
+          {
+            title: "گیم گلابی",
+            id: 18,
+            href: "/products/#18",
+          },
+          {
+            title: "چنگک",
+            id: 19,
+            href: "/products/#19",
+          },
+          {
+            title: "ایرهاکی",
+            id: 20,
+            href: "/products/#20",
+          },
+          {
+            title: "هند اسپید",
+            id: 21,
+            href: "/products/#21",
+          },
+                    {
+            title: "هامر",
+            id: 22,
+            href: "/products/#22",
+          },
+        ],
       },
     ],
   },
@@ -103,7 +202,8 @@ const Nav = () => {
 
     if (hasChildren) {
       toggleMobileDropdown(key);
-    } else {
+    } 
+    else {
       if (item.href) {
         if (item.href === "#about" || item.href === "#contact") {
           // Always go to root with hash for about/contact
@@ -125,9 +225,14 @@ const Nav = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuOpen && !event.target.closest(".Nav")) {
-        setMenuOpen(false);
+      if (!menuOpen) return;
+
+      // If click is inside the top Nav or inside the mobile menu overlay, ignore
+      if (event.target.closest('.Nav') || event.target.closest('.mobile-menu') || event.target.closest('.mobile-overlay')) {
+        return;
       }
+
+      setMenuOpen(false);
     };
 
     document.addEventListener("click", handleClickOutside);
@@ -207,9 +312,17 @@ const Nav = () => {
     );
   };
 
+  // Dynamically set nav height for yellow bar
+  const navRef = useRef(null);
+
+
   return (
     <>
-      <div className={`Nav ${showNav ? "Nav--visible" : "Nav--hidden"}`}>
+      <div ref={navRef} className={`Nav ${showNav ? "Nav--visible" : "Nav--hidden"}`}>
+        {/* mobile-only simple header: logo left, hamburger stays on the right */}
+        <Link href="/" onClick={() => setMenuOpen(false)} className="nav-logo">
+          <Image src={logoSrc} alt="logo" width={40} height={40} priority={false} />
+        </Link>
         <div className={`right ${menuOpen ? "open" : ""}`}>
           <Link href="/" onClick={() => setMenuOpen(false)}>
             خانه

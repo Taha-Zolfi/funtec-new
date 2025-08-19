@@ -54,7 +54,7 @@ const addresses = [
   },
 ];
 
-const footerText = 'فان تک - پیشگام در صنعت شهربازی';
+const footerText = 'فان تک - بی نقص شدن یک سفر بی پایان است';
 
 export default function ContactPage() {
   return (

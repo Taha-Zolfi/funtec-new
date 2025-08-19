@@ -1,0 +1,134 @@
+.product-tabs {
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.tabs-header {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1rem;
+}
+
+.tab-button {
+  padding: 0.5rem 1.5rem;
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1.1rem;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.tab-button::after {
+  content: '';
+  position: absolute;
+  bottom: -1rem;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #ffb527;
+  transition: width 0.3s ease;
+}
+
+.tab-button.active {
+  color: #ffb527;
+}
+
+.tab-button.active::after {
+  width: 100%;
+}
+
+.tab-content {
+  min-height: 300px;
+  padding: 2rem 0;
+}
+
+.tab-content > div {
+  animation: fadeIn 0.5s ease;
+}
+
+/* Rich Content Styles */
+.rich-content {
+  line-height: 1.8;
+  font-size: 1.1rem;
+}
+
+.rich-content h1,
+.rich-content h2,
+.rich-content h3,
+.rich-content h4,
+.rich-content h5,
+.rich-content h6 {
+  margin: 1.5rem 0 1rem;
+  color: #ffb527;
+}
+
+.rich-content p {
+  margin-bottom: 1rem;
+}
+
+.rich-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.rich-content ul,
+.rich-content ol {
+  margin: 1rem 2rem;
+}
+
+.rich-content a {
+  color: #13c8ff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.rich-content a:hover {
+  color: #ffb527;
+}
+
+.rich-content blockquote {
+  border-right: 3px solid #ffb527;
+  margin: 1.5rem 0;
+  padding: 0.5rem 1.5rem;
+  background: rgba(255, 181, 39, 0.1);
+  border-radius: 4px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .tabs-header {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .tab-button {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    white-space: nowrap;
+  }
+
+  .tab-content {
+    padding: 1rem 0;
+  }
+
+  .rich-content {
+    font-size: 1rem;
+  }
+}

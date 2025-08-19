@@ -1,12 +1,14 @@
 
-import News from './News';
+import News from './News.jsx';
 import Nav from '../Nav/Nav';
-export default function ProductsPage() {
+
+export default function NewsPage() {
   return (
     <>
       <Nav />
-      <News />
-
+      <div className="news-page-container">
+        <News />
+      </div>
     </>
   );
 }

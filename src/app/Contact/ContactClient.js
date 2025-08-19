@@ -2,9 +2,6 @@
 'use client';
 
 import { useRef, useMemo, useState, useEffect } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Points, PointMaterial } from '@react-three/drei';
-import { Box, Torus } from '@react-three/fiber';
 import { motion } from 'framer-motion';
 import { FaMapMarkerAlt, FaTelegram, FaInstagram, FaPhone, FaHeadset, FaUsers, FaBuilding } from 'react-icons/fa';
 
@@ -18,7 +15,6 @@ const iconMap = {
   FaUsers,
   FaBuilding,
 };
-import * as random from 'maath/random/dist/maath-random.esm';
 import Image from 'next/image';
 
 import './Contact.css';
@@ -116,6 +112,8 @@ export default function ContactClient({ departments, socialLinks, addresses, foo
     }));
     setSparkles(arr);
   }, []);
+
+  // ...existing code... (touch detection moved to TouchDetector.client.js)
 
   return (
     <div id="contact" className="contact-container">

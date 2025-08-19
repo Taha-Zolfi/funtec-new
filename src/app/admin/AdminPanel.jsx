@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { db } from "../api" // Adjusted import path for flat structure
+import { api } from "@/lib/api"
+import RichTextEditor from "./components/RichTextEditor"
 import "./AdminPanel.css" // Import the CSS file
 
 // WARNING: Hardcoding passwords is a security risk. Use environment variables in production.
@@ -22,14 +23,15 @@ const AdminPanel = () => {
   const [selectedService, setSelectedService] = useState(null)
 
   const [productFormData, setProductFormData] = useState({
-    title: "",
+    name: "",
     description: "",
-    is_featured: false,
+    short_description: "",
+    full_description: "",
     background_video: "",
     features: [],
     images: [],
     specifications: [],
-    reviews: [],
+    video_preview: null
   })
 
   const [newsFormData, setNewsFormData] = useState({
@@ -97,15 +99,21 @@ const AdminPanel = () => {
     setLoading(true)
     setError(null)
     try {
-      const fetchedProducts = await db.getProducts()
-      const fetchedNews = await db.getNews()
-      const fetchedServices = await db.getServices()
-      const fetchedStats = await db.getStats()
+      const [fetchedProducts, fetchedNews, fetchedServices] = await Promise.all([
+        api.getProducts(),
+        api.getNews(),
+        api.getServices()
+      ]);
 
       setProducts(fetchedProducts)
       setNews(fetchedNews)
       setServices(fetchedServices)
-      setStats(fetchedStats)
+      // Initialize stats with current data counts
+      setStats({
+        totalProducts: fetchedProducts.length,
+        totalNews: fetchedNews.length,
+        totalServices: fetchedServices.length
+      })
     } catch (err) {
       let errorMessage = `خطا در بارگذاری اطلاعات: ${err.message}`
       if (err.message.includes("Unexpected token")) {
@@ -133,15 +141,20 @@ const AdminPanel = () => {
 
     return {
       handleChange: (index, value) => {
-        const newItems = [...formData[fieldName]]
+        const currentItems = formData[fieldName] || []
+        const newItems = [...currentItems]
         newItems[index] = value
         setFormData((prev) => ({ ...prev, [fieldName]: newItems }))
       },
       handleAdd: () => {
-        setFormData((prev) => ({ ...prev, [fieldName]: [...prev[fieldName], ""] }))
+        setFormData((prev) => ({ 
+          ...prev, 
+          [fieldName]: [...(prev[fieldName] || []), ""] 
+        }))
       },
       handleRemove: (index) => {
-        const newItems = formData[fieldName].filter((_, i) => i !== index)
+        const currentItems = formData[fieldName] || []
+        const newItems = currentItems.filter((_, i) => i !== index)
         setFormData((prev) => ({ ...prev, [fieldName]: newItems }))
       },
     }
@@ -150,24 +163,31 @@ const AdminPanel = () => {
   const productFeaturesHandlers = createDynamicHandlers("features", "product")
   const productImagesHandlers = createDynamicHandlers("images", "product")
   const productSpecificationsHandlers = createDynamicHandlers("specifications", "product")
-  const productReviewsHandlers = createDynamicHandlers("reviews", "product")
 
   const handleProductFileChange = async (e, fieldName) => {
-    const file = e.target.files[0]
-    if (!file) return
+    const files = e.target.files
+    if (!files || files.length === 0) return
     setLoading(true)
     try {
-      const result = await db.uploadFile(file)
       if (fieldName === "image_file") {
+        // Handle multiple image uploads
+        const uploadPromises = Array.from(files).map(file => api.uploadFile(file))
+        const results = await Promise.all(uploadPromises)
         setProductFormData((prev) => ({
           ...prev,
-          images: [...prev.images, result.url],
+          images: [...(prev.images || []), ...results.map(r => r.url)],
         }))
       } else if (fieldName === "video_file") {
+        // Handle single video upload
+        console.log('Uploading video file:', files[0].name);
+        const result = await api.uploadFile(files[0]);
+        console.log('Upload result:', result);
+        const fullUrl = result.url.startsWith('/') ? result.url : `/${result.url}`;
         setProductFormData((prev) => ({
           ...prev,
-          background_video: result.url,
-        }))
+          background_video: fullUrl,
+        }));
+        console.log('Updated form data with video:', fullUrl);
       }
       setError(null)
     } catch (err) {
@@ -182,18 +202,43 @@ const AdminPanel = () => {
     e.preventDefault()
     setLoading(true)
     setError(null)
+
+    // Validate required fields
+    if (!productFormData.name || !productFormData.short_description || !productFormData.full_description) {
+      setError("لطفاً نام، توضیحات مختصر و توضیحات کامل محصول را وارد کنید");
+      setLoading(false);
+      return;
+    }
+
+    // Clean up the data before sending
+    const cleanedData = {
+      ...productFormData,
+      features: productFormData.features?.filter(Boolean) || [],
+      images: productFormData.images?.filter(Boolean) || [],
+      specifications: productFormData.specifications?.filter(Boolean) || [],
+      background_video: productFormData.background_video || null
+    };
+
     try {
+      console.log("Sending product data:", JSON.stringify(cleanedData, null, 2));
+      console.log("Selected product:", selectedProduct);
+      
       if (selectedProduct && selectedProduct.id) {
-        await db.updateProduct(selectedProduct.id, productFormData)
+        console.log("Updating product with ID:", selectedProduct.id);
+        const result = await api.updateProduct(selectedProduct.id, cleanedData);
+        console.log("Update result:", result);
       } else {
-        await db.createProduct(productFormData)
+        console.log("Creating new product");
+        const result = await api.createProduct(cleanedData);
+        console.log("Create result:", result);
       }
+      
       setSelectedProduct(null)
       resetProductForm()
       loadData()
     } catch (err) {
+      console.error("Full error details:", err);
       setError(`خطا در ذخیره محصول: ${err.message}`)
-      console.error("Error saving product:", err)
     } finally {
       setLoading(false)
     }
@@ -209,17 +254,30 @@ const AdminPanel = () => {
     resetProductForm()
   }
 
-  const handleEditProduct = (product) => {
-    setSelectedProduct(product)
-    setProductFormData({
-      ...product,
-      is_featured: Boolean(product.is_featured),
-      features: Array.isArray(product.features) ? product.features : [],
-      images: Array.isArray(product.images) ? product.images : [],
-      specifications:
-        typeof product.specifications === "string" && product.specifications ? product.specifications.split(",") : [],
-      reviews: typeof product.reviews === "string" && product.reviews ? product.reviews.split(",") : [],
-    })
+  const handleEditProduct = async (product) => {
+    console.log('Editing product:', product);
+    setLoading(true);
+    try {
+      // Fetch fresh product data to ensure we have all fields
+      const freshProduct = await api.getProduct(product.id);
+      console.log('Fresh product data:', freshProduct);
+      
+      setSelectedProduct(freshProduct);
+      setProductFormData({
+        name: freshProduct.name || "",
+        short_description: freshProduct.short_description || "",
+        full_description: freshProduct.full_description || "",
+        background_video: freshProduct.background_video || "",
+        features: Array.isArray(freshProduct.features) ? freshProduct.features : [],
+        images: Array.isArray(freshProduct.images) ? freshProduct.images : [],
+        specifications: Array.isArray(freshProduct.specifications) ? freshProduct.specifications : []
+      });
+    } catch (err) {
+      console.error('Error loading product details:', err);
+      setError('خطا در بارگذاری اطلاعات محصول');
+    } finally {
+      setLoading(false);
+    }
   }
 
   const handleDeleteProduct = async (id) => {
@@ -227,7 +285,7 @@ const AdminPanel = () => {
     setError(null)
     if (window.confirm("آیا مطمئنید که می‌خواهید این محصول را حذف کنید؟")) {
       try {
-        await db.deleteProduct(id)
+        await api.deleteProduct(id)
         loadData()
       } catch (err) {
         setError(`خطا در حذف محصول: ${err.message}`)
@@ -240,14 +298,13 @@ const AdminPanel = () => {
 
   const resetProductForm = () => {
     setProductFormData({
-      title: "",
-      description: "",
-      is_featured: false,
+      name: "",
+      short_description: "",
+      full_description: "",
       background_video: "",
       features: [],
       images: [],
-      specifications: [],
-      reviews: [],
+      specifications: []
     })
   }
 
@@ -265,7 +322,7 @@ const AdminPanel = () => {
     if (!file) return
     setLoading(true)
     try {
-      const result = await db.uploadFile(file)
+      const result = await api.uploadFile(file)
       setNewsFormData((prev) => ({
         ...prev,
         image: result.url,
@@ -283,17 +340,34 @@ const AdminPanel = () => {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    
+    // Validate required fields
+    if (!newsFormData.title || !newsFormData.content) {
+      setError("لطفاً عنوان و محتوای خبر را وارد کنید");
+      setLoading(false);
+      return;
+    }
+    
+    console.log('Submitting news data:', newsFormData);
+    
     try {
+      let result;
       if (selectedNews && selectedNews.id) {
-        await db.updateNews(selectedNews.id, newsFormData)
+        console.log('Updating existing news:', selectedNews.id);
+        result = await api.updateNews(selectedNews.id, newsFormData);
       } else {
-        await db.createNews(newsFormData)
+        console.log('Creating new news');
+        result = await api.createNews(newsFormData);
       }
+      console.log('API response:', result);
+      
       setSelectedNews(null)
       resetNewsForm()
-      loadData()
+      await loadData() // منتظر بمانیم تا دیتا لود شود
+      
     } catch (err) {
-      setError(`خطا در ذخیره خبر: ${err.message}`)
+      const errorMessage = `خطا در ذخیره خبر: ${err.message || 'خطای ناشناخته'}`;
+      setError(errorMessage)
       console.error("Error saving news:", err)
     } finally {
       setLoading(false)
@@ -323,12 +397,13 @@ const AdminPanel = () => {
     setError(null)
     if (window.confirm("آیا مطمئنید که می‌خواهید این خبر را حذف کنید؟")) {
       try {
-        await db.deleteNews(id)
+        await api.deleteNews(id)
         loadData()
       } catch (err) {
         setError(`خطا در حذف خبر: ${err.message}`)
         console.error("Error deleting news:", err)
       } finally {
+        setLoading(false)
       }
     }
   }
@@ -439,23 +514,23 @@ const AdminPanel = () => {
     })
   }
 
-  const DynamicInputList = ({ label, items, handlers, placeholder }) => (
+  const DynamicInputList = ({ label, items = [], handlers, placeholder }) => (
     <div className="form-group">
       <label>{label}:</label>
-      {items.map((item, index) => (
+      {Array.isArray(items) && items.map((item, index) => (
         <div key={index} className="dynamic-input-group">
           <input
             type="text"
-            value={item}
-            onChange={(e) => handlers.handleChange(index, e.target.value)}
+            value={item || ''}
+            onChange={(e) => handlers?.handleChange(index, e.target.value)}
             placeholder={placeholder}
           />
-          <button type="button" onClick={() => handlers.handleRemove(index)} className="remove-button">
+          <button type="button" onClick={() => handlers?.handleRemove(index)} className="remove-button">
             &times;
           </button>
         </div>
       ))}
-      <button type="button" onClick={handlers.handleAdd} className="add-item-button">
+      <button type="button" onClick={handlers?.handleAdd} className="add-item-button">
         + افزودن {label}
       </button>
     </div>
@@ -564,11 +639,11 @@ const AdminPanel = () => {
             </button>
             <ul className="item-list">
               {products.length === 0 ? (
-                <p>هیچ محصولی ��افت نشد. می‌توانید یک محصول جدید اضافه کنید.</p>
+                <p>هیچ محصولی یافت نشد. می‌توانید یک محصول جدید اضافه کنید.</p>
               ) : (
                 products.map((product) => (
                   <li key={product.id}>
-                    <span>{product.title}</span>
+                    <span>{product.name}</span>
                     <div className="item-actions">
                       <button onClick={() => handleEditProduct(product)}>ویرایش</button>
                       <button onClick={() => handleDeleteProduct(product.id)}>حذف</button>
@@ -636,63 +711,80 @@ const AdminPanel = () => {
               </div>
               <form onSubmit={handleSubmitProduct} className="modal-form">
                 <div className="form-group">
-                  <label>عنوان:</label>
+                  <label>نام محصول:</label>
                   <input
                     type="text"
-                    name="title"
-                    value={productFormData.title}
+                    name="name"
+                    value={productFormData.name}
                     onChange={handleProductInputChange}
                     required
                   />
                 </div>
                 <div className="form-group">
-                  <label>توضیحات:</label>
+                  <label>توضیحات مختصر (حداکثر 150 کاراکتر):</label>
                   <textarea
-                    name="description"
-                    value={productFormData.description}
+                    name="short_description"
+                    value={productFormData.short_description}
                     onChange={handleProductInputChange}
+                    maxLength={150}
                     required
                   ></textarea>
-                </div>
-                <div className="form-group checkbox-group">
-                  <label>
-                    <input
-                      type="checkbox"
-                      name="is_featured"
-                      checked={productFormData.is_featured}
-                      onChange={handleProductInputChange}
-                    />
-                    محصول ویژه
-                  </label>
+                  <small className="character-count">{(productFormData.short_description || '').length}/150</small>
                 </div>
                 <div className="form-group">
-                  <label>ویدئو پس زمینه (URL یا آپلود):</label>
-                  <input
-                    type="text"
-                    name="background_video"
-                    value={productFormData.background_video}
-                    onChange={handleProductInputChange}
-                    placeholder="http://example.com/video.mp4"
+                  <label>توضیحات کامل:</label>
+                  <RichTextEditor
+                    value={productFormData.full_description || ''}
+                    onChange={(content) => setProductFormData(prev => ({...prev, full_description: content}))}
                   />
-                  <div className="file-input-group">
-                    <input
-                      type="file"
-                      id="productVideoUpload"
-                      accept="video/mp4,video/webm"
-                      onChange={(e) => handleProductFileChange(e, "video_file")}
-                    />
-                    <label htmlFor="productVideoUpload">یا آپلود ویدئو</label>
+                </div>
+                <div className="form-group video-upload-group">
+                  <label>ویدئو پس زمینه:</label>
+                  <div className="video-upload-container">
+                    <div className="video-upload-input">
+                      <input
+                        type="file"
+                        id="productVideoUpload"
+                        accept="video/mp4,video/webm"
+                        onChange={(e) => handleProductFileChange(e, "video_file")}
+                        className="video-file-input"
+                      />
+                      <label htmlFor="productVideoUpload" className="video-upload-label">
+                        <span>انتخاب ویدئو</span>
+                        <small>فرمت‌های مجاز: MP4, WebM</small>
+                      </label>
+                    </div>
+                    
                     {productFormData.background_video && (
-                      <span className="file-name">{productFormData.background_video.split("/").pop()}</span>
+                      <div className="video-preview-container">
+                        <div className="video-preview-header">
+                          <span className="video-file-name">
+                            {productFormData.background_video.split("/").pop()}
+                          </span>
+                          <button
+                            type="button"
+                            className="remove-video-btn"
+                            onClick={() => setProductFormData(prev => ({...prev, background_video: ""}))}
+                          >
+                            حذف ویدئو
+                          </button>
+                        </div>
+                        <video
+                          src={productFormData.background_video}
+                          controls
+                          className="video-preview"
+                          onError={(e) => {
+                            console.error("Video load error:", e);
+                            e.target.parentElement.classList.add("video-error");
+                          }}
+                        />
+                      </div>
                     )}
                   </div>
-                  {productFormData.background_video && (
-                    <video src={productFormData.background_video} controls className="file-preview" />
-                  )}
                 </div>
                 <DynamicInputList
                   label="تصاویر محصول"
-                  items={productFormData.images}
+                  items={productFormData.images || []}
                   handlers={productImagesHandlers}
                   placeholder="URL تصویر"
                 />
@@ -708,21 +800,15 @@ const AdminPanel = () => {
                 </div>
                 <DynamicInputList
                   label="ویژگی‌ها"
-                  items={productFormData.features}
+                  items={productFormData.features || []}
                   handlers={productFeaturesHandlers}
                   placeholder="ویژگی جدید"
                 />
                 <DynamicInputList
-                  label="مشخصات"
-                  items={productFormData.specifications}
+                  label="مشخصات فنی"
+                  items={productFormData.specifications || []}
                   handlers={productSpecificationsHandlers}
-                  placeholder="مشخصات محصول"
-                />
-                <DynamicInputList
-                  label="نظرات"
-                  items={productFormData.reviews}
-                  handlers={productReviewsHandlers}
-                  placeholder="نظر مشتری"
+                  placeholder="مشخصات جدید"
                 />
                 <div className="form-actions">
                   <button type="button" className="cancel" onClick={handleCancelProductEdit}>
@@ -786,14 +872,7 @@ const AdminPanel = () => {
                   <input type="text" name="category" value={newsFormData.category} onChange={handleNewsInputChange} />
                 </div>
                 <div className="form-group">
-                  <label>تصویر خبر (URL یا آپلود):</label>
-                  <input
-                    type="url"
-                    name="image"
-                    value={newsFormData.image}
-                    onChange={handleNewsInputChange}
-                    placeholder="http://example.com/news_image.jpg"
-                  />
+                  <label>تصویر خبر:</label>
                   <div className="file-input-group">
                     <input
                       type="file"
@@ -801,12 +880,21 @@ const AdminPanel = () => {
                       accept="image/png,image/jpeg,image/jpg"
                       onChange={handleNewsFileChange}
                     />
-                    <label htmlFor="newsImageUpload">یا آپلود عکس</label>
-                    {newsFormData.image && <span className="file-name">{newsFormData.image.split("/").pop()}</span>}
+                    <label htmlFor="newsImageUpload">انتخاب عکس</label>
+                    {newsFormData.image && (
+                      <div className="image-preview-container">
+                        <span className="file-name">{newsFormData.image.split("/").pop()}</span>
+                        <button
+                          type="button"
+                          className="remove-image-btn"
+                          onClick={() => setNewsFormData(prev => ({...prev, image: ""}))}
+                        >
+                          حذف عکس
+                        </button>
+                        <img src={newsFormData.image} alt="News Preview" className="file-preview" />
+                      </div>
+                    )}
                   </div>
-                  {newsFormData.image && (
-                    <img src={newsFormData.image || "/placeholder.svg"} alt="News Preview" className="file-preview" />
-                  )}
                 </div>
                 <div className="form-group">
                   <label>بازدیدها:</label>

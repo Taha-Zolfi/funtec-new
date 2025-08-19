@@ -125,7 +125,7 @@
   background-clip: text;
   text-align: center;
   font-weight: 900;
-  line-height: 1.2;
+
   margin: 0 0 1rem 0;
   animation: float-gentle 6s ease-in-out infinite, title-glow 3s ease-in-out infinite;
 }
@@ -397,6 +397,90 @@
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
+}
+
+/* Mobile / touch device performance optimizations */
+@media (hover: none) and (pointer: coarse), (max-width: 860px) {
+  /* remove decorative sparkles entirely on touch devices */
+  .sparkles-container { display: none !important; }
+
+  /* stop background animation and reduce paint */
+  .contact-container {
+    animation: none !important;
+    background-size: auto !important;
+    backdrop-filter: none !important;
+  }
+
+  /* disable heavy title animations and glows */
+  .contact-title {
+    animation: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+    -webkit-text-fill-color: #fff !important; /* ensure visibility without clip */
+  }
+
+  /* simplify wrapper spacing to avoid layout thrash */
+  .contact-wrapper { margin-top: 4vh !important; gap: 1rem !important; }
+  .contact-content { gap: 1rem !important; }
+
+  /* Remove backdrop-filter and heavy borders from cards */
+  .department-section,
+  .phone-link,
+  .contact-item,
+  .icon-wrapper,
+  .address-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    border: 1px solid rgba(255,255,255,0.04) !important;
+    transition: none !important;
+    transform: none !important;
+  }
+
+  /* remove hover pseudo animations that trigger reflow/paint */
+  .department-section::before,
+  .phone-link::before,
+  .contact-item::before {
+    display: none !important;
+  }
+
+  .department-section:hover,
+  .phone-link:hover,
+  .contact-item:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    background: rgba(255,255,255,0.03) !important;
+  }
+
+  /* icons: reduce filters and heavy drop-shadows */
+  .department-icon,
+  .phone-icon-small,
+  .icon {
+    filter: none !important;
+    text-shadow: none !important;
+  }
+
+  /* remove continuous animations and reduce motion for framer variants */
+  .contact-wrapper *,
+  .contact-content *,
+  .department-section,
+  .contact-item,
+  .phone-link,
+  .address-section {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* reduce paint area for mobile: avoid fixed overlays */
+  .sparkles-container,
+  .item-glow,
+  .location-glow {
+    display: none !important;
+  }
+
+  /* make touch targets a bit larger for ergonomics */
+  .phone-link,
+  .contact-item { padding: 12px 14px !important; border-radius: 10px !important; }
 }
 
 .contact-item:hover .item-glow {
@@ -762,13 +846,13 @@
   }
 
   .contact-logo {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    width: 50px;
+    height: 50px;
+
   }
 
   .contact-footer span {
-    font-size: 1rem;
+    font-size: 1.3rem;
     line-height: 1.3;
   }
 
@@ -893,4 +977,20 @@
   .contact-footer {
     padding: 0.8rem 1.5rem;
   }
+}
+
+/* If a touch interaction is detected, explicitly disable hover states even on devices that claim hover support */
+.is-touch .department-section:hover,
+.is-touch .phone-link:hover,
+.is-touch .contact-item:hover,
+.is-touch .contact-item:hover span,
+.is-touch .department-section:hover .department-title {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.is-touch .department-section::before,
+.is-touch .phone-link::before,
+.is-touch .contact-item::before {
+  display: none !important;
 }

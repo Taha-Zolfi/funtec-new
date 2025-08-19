@@ -1,20 +1,6 @@
-import {
-  Shield,
-  Heart,
-  Users,
-  Trophy,
-  Sparkles,
-  Target,
-  Clock,
-  Play,
-  Smile,
-  Wrench,
-  Palette,
-  Settings,
-  Globe,
-  Award,
-} from "lucide-react"
-import AboutClient from "./AboutClient"
+"use client"
+
+import dynamic from "next/dynamic"
 import "./About.css"
 
 // داده‌ها به عنوان ثابت‌های جاوااسکریپت در سرور تعریف می‌شوند
@@ -23,7 +9,7 @@ const features = [
     icon: "Shield",
     title: "ایمنی استاندارد جهانی",
     description:
-      "تمام محصولات ما با استانداردهای بین‌المللی CE، EN1176 و ASTM تولید و تست می‌شوند تا بالاترین سطح ایمنی را برای کودکان فراهم کنند و خیال والدین را راحت نگه دارند",
+      "تمام محصولات ما با استانداردهای بین‌المللی CE، EN1176 و ASTM تولید و تست می‌شوند تا بالاترین سطح ایمنی را برای کودکان فراهم کنند و خیال والدین راحت نگه دارند",
     color: "#13c8ff",
   },
   {
@@ -60,20 +46,23 @@ const services = [
   { icon: "Settings", text: "تعمیر و نگهداری تجهیزات موجود" },
 ]
 
-const milestones = [
+// محصولات ویژه برای نمایش در بخش محصولات
+const products = [
   {
-    year: "2017",
-    title: "تأسیس شرکت",
-    desc: "شروع فعالیت با تیم ۵ نفره متخصص و پرانگیزه در زمینه تجهیزات شهربازی",
+    image: "/pic1.png",
+    title: "لیزرتگ",
+    desc: "تجربه هیجان‌انگیز بازی لیزرتگ با تجهیزات مدرن و ایمن، مناسب برای تمامی سنین.",
   },
-  { year: "2019", title: "گسترش تولید", desc: "راه‌اندازی کارخانه ۲۰۰۰ متری با تجهیزات مدرن و خط تولید پیشرفته" },
-  { year: "2021", title: "صادرات", desc: "شروع صادرات محصولات به کشورهای همسایه و گسترش بازار منطقه‌ای" },
   {
-    year: "2023",
-    title: "گواهینامه‌های بین‌المللی",
-    desc: "دریافت استانداردهای CE و EN1176 از اروپا و تأیید کیفیت جهانی",
+    image: "/pic2.png",
+    title: "لیزرماز",
+    desc: "مسیر پرماجرا و پر از نورهای لیزری برای چالش و سرگرمی کودکان و نوجوانان.",
   },
-  { year: "2024", title: "رهبری بازار", desc: "تبدیل شدن به بزرگ‌ترین تولیدکننده تجهیزات شهربازی منطقه" },
+  {
+    image: "/pic3.png",
+    title: "اتاق وحشت",
+    desc: "اتاق وحشت با طراحی منحصربه‌فرد و جلوه‌های ویژه برای تجربه‌ای فراموش‌نشدنی.",
+  },
 ]
 
 const statData = [
@@ -113,12 +102,23 @@ const visualCards = [
 const ctaFeatures = ["مشاوره رایگان", "بازدید محل", "طراحی سه‌بعدی", "گارانتی ۵ ساله"]
 
 // این کامپوننت سروری، داده‌ها را به کامپوننت کلاینت پاس می‌دهد
+
+// Dynamic import for AboutClient with no SSR
+const AboutClient = dynamic(() => import("./AboutClient"), {
+  ssr: false,
+  loading: () => (
+    <div className="about-loading">
+      <div className="loading-spinner"></div>
+    </div>
+  ),
+})
+
 export default function AboutPage() {
   return (
     <AboutClient
       features={features}
       services={services}
-      milestones={milestones}
+      products={products}
       statData={statData}
       visualCards={visualCards}
       ctaFeatures={ctaFeatures}
