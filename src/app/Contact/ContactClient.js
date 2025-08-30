@@ -101,36 +101,8 @@ export default function ContactClient({ departments, socialLinks, addresses, foo
     },
   };
 
-  const [sparkles, setSparkles] = useState([]);
-  useEffect(() => {
-    const arr = Array.from({ length: 30 }, (_, i) => ({
-      id: i,
-      left: Math.random() * 100,
-      top: Math.random() * 100,
-      delay: Math.random() * 4,
-      size: Math.random() * 0.5 + 0.5,
-    }));
-    setSparkles(arr);
-  }, []);
-
-  // ...existing code... (touch detection moved to TouchDetector.client.js)
-
   return (
     <div id="contact" className="contact-container">
-      <div className="sparkles-container">
-        {sparkles.map((sparkle) => (
-          <div
-            key={sparkle.id}
-            className="sparkle"
-            style={{
-              left: `${sparkle.left}%`,
-              top: `${sparkle.top}%`,
-              animationDelay: `${sparkle.delay}s`,
-              transform: `scale(${sparkle.size})`,
-            }}
-          />
-        ))}
-      </div>
 
       <motion.div
         className="contact-wrapper"
@@ -140,7 +112,7 @@ export default function ContactClient({ departments, socialLinks, addresses, foo
         viewport={{ once: true, amount: 0.2 }}
       >
         <motion.h1 className="contact-title" variants={titleVariants}>
-          تماس با ما
+         ارتباط باما
         </motion.h1>
 
         <motion.div className="contact-content" variants={itemVariants}>

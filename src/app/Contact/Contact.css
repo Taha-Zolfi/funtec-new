@@ -8,25 +8,8 @@
   }
 }
 
-@keyframes sparkle-twinkle {
-  0%, 100% {
-    opacity: 0;
-    transform: scale(0) rotate(0deg);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1) rotate(180deg);
-  }
-}
 
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 25px rgba(255, 181, 39, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 50px rgba(255, 181, 39, 0.8);
-  }
-}
+
 
 @keyframes shimmer {
   0% {
@@ -46,16 +29,6 @@
   }
 }
 
-@keyframes title-glow {
-  0%, 100% {
-    text-shadow: 0 0 30px rgba(255, 181, 39, 0.6);
-    filter: drop-shadow(0 0 25px rgba(255, 181, 39, 0.4));
-  }
-  50% {
-    text-shadow: 0 0 50px rgba(255, 181, 39, 0.9);
-    filter: drop-shadow(0 0 40px rgba(255, 181, 39, 0.7));
-  }
-}
 
 /* Main container with improved layout */
 .contact-container {
@@ -87,16 +60,6 @@
   height: 100%;
   pointer-events: none;
   z-index: 2;
-}
-
-.sparkle {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  background: linear-gradient(45deg, #ffb527, #13c8ff);
-  border-radius: 50%;
-  box-shadow: 0 0 20px rgba(255, 181, 39, 1);
-  animation: sparkle-twinkle 4s ease-in-out infinite;
 }
 
 /* Content wrapper with better positioning */
@@ -153,7 +116,6 @@
   padding: 1.8rem;
   border-radius: 22px;
   background: linear-gradient(135deg, rgba(255, 181, 39, 0.15), rgba(19, 200, 255, 0.15));
-  backdrop-filter: blur(25px);
   border: 1px solid rgba(255, 255, 255, 0.22);
   transition: all 0.4s ease;
   overflow: hidden;
@@ -176,7 +138,6 @@
 
 .department-section:hover {
   transform: translateY(-3px);
-  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.3);
   background: linear-gradient(135deg, rgba(255, 181, 39, 0.2), rgba(19, 200, 255, 0.2));
 }
 
@@ -197,7 +158,6 @@
   height: 55px;
   border-radius: 16px;
   background: linear-gradient(135deg, rgba(255, 181, 39, 0.4), rgba(255, 181, 39, 0.2));
-  backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   flex-shrink: 0;
 }
@@ -205,7 +165,7 @@
 .department-icon {
   font-size: 1.6rem;
   color: #ffb527;
-  filter: drop-shadow(0 0 15px rgba(255, 181, 39, 0.6));
+
 }
 
 .department-title {
@@ -231,7 +191,6 @@
   padding: 0.8rem 1.2rem;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.15);
   text-decoration: none;
   color: #fff;
@@ -258,14 +217,14 @@
 .phone-link:hover {
   background: rgba(19, 200, 255, 0.15);
   border-color: rgba(19, 200, 255, 0.3);
-  box-shadow: 0 8px 25px rgba(19, 200, 255, 0.2);
+
   transform: translateX(-5px);
 }
 
 .phone-icon-small {
   font-size: 1.1rem;
   color: #13c8ff;
-  filter: drop-shadow(0 0 10px rgba(19, 200, 255, 0.6));
+
   flex-shrink: 0;
 }
 
@@ -294,7 +253,7 @@
   padding: 1.3rem;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.09);
-  backdrop-filter: blur(25px);
+
   border: 1px solid rgba(255, 255, 255, 0.18);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
@@ -318,9 +277,7 @@
 .contact-item:hover {
   background: rgba(255, 255, 255, 0.16);
   border-color: rgba(255, 255, 255, 0.35);
-  box-shadow: 
-    0 12px 35px rgba(0, 0, 0, 0.4),
-    0 0 25px rgba(255, 181, 39, 0.15);
+
   transform: translateY(-3px);
 }
 
@@ -331,7 +288,6 @@
   width: 50px;
   height: 50px;
   border-radius: 14px;
-  backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.25);
   flex-shrink: 0;
   transition: all 0.3s ease;
@@ -352,12 +308,12 @@
 .icon {
   font-size: 1.4rem;
   transition: all 0.3s ease;
-  filter: drop-shadow(0 0 10px currentColor);
+
 }
 
 .contact-item:hover .icon {
   transform: scale(1.1);
-  filter: drop-shadow(0 0 15px currentColor);
+
 }
 
 .instagram-icon {
@@ -376,7 +332,7 @@
   font-size: 1.1rem;
   font-weight: 600;
   color: #fff;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+
   flex: 1;
   text-align: right;
   transition: all 0.3s ease;
@@ -384,7 +340,7 @@
 
 .contact-item:hover span {
   color: #ffffff;
-  text-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+
 }
 
 .item-glow {
@@ -399,8 +355,7 @@
   pointer-events: none;
 }
 
-/* Mobile / touch device performance optimizations */
-@media (hover: none) and (pointer: coarse), (max-width: 860px) {
+@media (max-width: 860px) {
   /* remove decorative sparkles entirely on touch devices */
   .sparkles-container { display: none !important; }
 
@@ -511,7 +466,7 @@
   padding: 1.6rem;
   border-radius: 22px;
   background: linear-gradient(135deg, rgba(255, 181, 39, 0.12), rgba(19, 200, 255, 0.12));
-  backdrop-filter: blur(25px);
+
   border: 1px solid rgba(255, 255, 255, 0.22);
   transition: all 0.4s ease;
   position: relative;
@@ -565,7 +520,7 @@
   justify-content: center;
   gap: 1.5rem;
   background: rgba(255, 255, 255, 0.09);
-  backdrop-filter: blur(25px);
+
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 30px;
   padding: 1.3rem 2.5rem;
@@ -743,10 +698,6 @@
     display: none;
   }
 
-  .sparkle {
-    width: 4px;
-    height: 4px;
-  }
 }
 
 /* iPhone SE and very small screens optimization */
@@ -979,18 +930,3 @@
   }
 }
 
-/* If a touch interaction is detected, explicitly disable hover states even on devices that claim hover support */
-.is-touch .department-section:hover,
-.is-touch .phone-link:hover,
-.is-touch .contact-item:hover,
-.is-touch .contact-item:hover span,
-.is-touch .department-section:hover .department-title {
-  transform: none !important;
-  box-shadow: none !important;
-}
-
-.is-touch .department-section::before,
-.is-touch .phone-link::before,
-.is-touch .contact-item::before {
-  display: none !important;
-}

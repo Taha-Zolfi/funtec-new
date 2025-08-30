@@ -1,3 +1,5 @@
+// --- START OF FILE route.js ---
+
 import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 
@@ -38,14 +40,11 @@ export async function POST(request) {
     const data = await request.json();
     
     const result = await db.run(
-      'INSERT INTO news (title, content, excerpt, description, author, category, is_featured, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      'INSERT INTO news (title, content, excerpt, is_featured, image) VALUES (?, ?, ?, ?, ?)',
       [
         data.title,
         data.content,
         data.excerpt || null,
-        data.description || null,
-        data.author || null,
-        data.category || null,
         data.is_featured ? 1 : 0,
         data.image || null
       ]
@@ -66,14 +65,11 @@ export async function PUT(request) {
     const data = await request.json();
     
     await db.run(
-      'UPDATE news SET title = ?, content = ?, excerpt = ?, description = ?, author = ?, category = ?, is_featured = ?, image = ? WHERE id = ?',
+      'UPDATE news SET title = ?, content = ?, excerpt = ?, is_featured = ?, image = ? WHERE id = ?',
       [
         data.title,
         data.content,
         data.excerpt || null,
-        data.description || null,
-        data.author || null,
-        data.category || null,
         data.is_featured ? 1 : 0,
         data.image || null,
         id

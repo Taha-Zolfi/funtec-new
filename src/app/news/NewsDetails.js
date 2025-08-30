@@ -1,190 +1,208 @@
+/* -----------------------------------------------------------------------
+   NewsDetails.js – v2.0 (Complete Redesign)
+   -----------------------------------------------------------------------
+   • Modern hero section with background image.
+   • Two-column layout with a sticky sidebar for metadata and actions.
+   • Enhanced focus on readability and professional aesthetics.
+   • Refactored into logical sub-components for clarity.
+   • Preserves the original blue/dark theme.
+   ----------------------------------------------------------------------- */
+
 'use client';
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, memo, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { api } from '@/lib/api';
-import { Calendar, Clock, User, Eye, Share2, ArrowLeft, Bookmark, Heart, Star } from 'lucide-react';
-// Import the CSS file so Next.js can handle it
-import './NewsDetails.css';
+import {
+  Calendar,
+  Clock,
+  Eye,
+  Share2,
+  Bookmark,
+  Heart,
+  Star,
+  ArrowLeft,
+} from 'lucide-react';
+import './NewsDetails.css'; // We will use the new CSS file
 
+// --- Helper: Debounce (No changes needed) ---
+function useDebouncedCallback(callback, delay = 300) {
+  const timeout = useRef(null);
+  return (...args) => {
+    if (timeout.current) clearTimeout(timeout.current);
+    timeout.current = setTimeout(() => callback(...args), delay);
+  };
+}
+
+// --- NEW Sub-components for the Redesigned Layout ---
+
+// 1. The new impressive Hero Section
+const ArticleHero = memo(({ article }) => (
+  <section className="article-hero">
+    {article.image && (
+      <Image
+        src={article.image}
+        alt={article.title}
+        fill
+        className="hero-background-image"
+        priority
+      />
+    )}
+    <div className="hero-overlay" />
+    <div className="hero-content">
+      <nav className="breadcrumb">
+        <Link href="/news">اخبار</Link>
+        <span className="breadcrumb-separator">/</span>
+        <span>{article.title}</span>
+      </nav>
+      {article.is_featured && (
+        <div className="article-featured-badge">
+          <Star size={14} />
+          <span>خبر ویژه</span>
+        </div>
+      )}
+      <h1 className="article-title">{article.title}</h1>
+      {article.excerpt && <p className="article-excerpt">{article.excerpt}</p>}
+    </div>
+  </section>
+));
+
+// 2. The sticky sidebar for actions and metadata
+const ArticleSidebar = memo(
+  ({ article, readingTime, formattedDate, likes, hasLiked, isBookmarked, onLike, onBookmark }) => (
+    <aside className="article-sidebar">
+      <div className="sidebar-block">
+        <h3 className="sidebar-title">جزئیات</h3>
+        <div className="meta-grid">
+          <div className="meta-item">
+            <Calendar size={18} />
+            <div>
+              <strong>تاریخ انتشار</strong>
+              <span>{formattedDate}</span>
+            </div>
+          </div>
+          <div className="meta-item">
+            <Clock size={18} />
+            <div>
+              <strong>زمان مطالعه</strong>
+              <span>حدود {readingTime} دقیقه</span>
+            </div>
+          </div>
+          <div className="meta-item">
+            <Eye size={18} />
+            <div>
+              <strong>تعداد بازدید</strong>
+              <span>{article.views || 0}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="sidebar-block">
+        <h3 className="sidebar-title">تعامل</h3>
+        <div className="action-buttons">
+          <button className={`action-btn ${hasLiked ? 'active' : ''}`} onClick={onLike} aria-label="Like this article">
+            <Heart size={16} />
+            <span>{likes} پسند</span>
+          </button>
+          <button className={`action-btn ${isBookmarked ? 'active' : ''}`} onClick={onBookmark} aria-label="Bookmark this article">
+            <Bookmark size={16} />
+            <span>{isBookmarked ? 'ذخیره شد' : 'ذخیره'}</span>
+          </button>
+          <button className="action-btn" onClick={() => navigator.share({ title: article.title, url: window.location.href })} aria-label="Share this article">
+            <Share2 size={16} />
+            <span>اشتراک‌گذاری</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+  )
+);
+
+// --- Main Component (Re-structured) ---
 export default function NewsDetail({ article }) {
-  // --- State Management ---
-  const [likes, setLikes] = useState(article.likes || 0);
+  const [likes, setLikes] = useState(article.likes ?? 0);
   const [hasLiked, setHasLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // --- Effects ---
-  // Effect to add a 'loaded' class for fade-in animations
   useEffect(() => {
-    // Use a short timeout to ensure the component is mounted before animating
     const timer = setTimeout(() => setIsLoaded(true), 100);
     return () => clearTimeout(timer);
   }, []);
 
-  // --- Event Handlers ---
-  const handleLike = async () => {
-    // Prevents multiple rapid clicks and handles un-liking
-    const newLikeStatus = !hasLiked;
-    const newLikesCount = newLikeStatus ? likes + 1 : likes - 1;
-
-    setHasLiked(newLikeStatus);
-    setLikes(newLikesCount);
-
-    try {
-      // API call to update the likes count on the server
-      await api.updateNews(article.id, {
-        ...article,
-        likes: newLikesCount
-      });
-    } catch (error) {
-      console.error('Error updating likes:', error);
-      // Revert state if the API call fails
-      setHasLiked(!newLikeStatus);
-      setLikes(likes);
-    }
-  };
-
-  const handleBookmark = () => {
-    setIsBookmarked(!isBookmarked);
-    // Here you would typically make an API call to save the bookmark state for the user
-  };
-
-  // --- Data Formatting ---
   const formattedDate = new Date(article.created_at).toLocaleDateString('fa-IR', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   });
 
-  const readingTime = Math.ceil((article.content?.split(' ').length || 0) / 200); // Average reading speed
+  const readingTime = Math.ceil((article.content?.split(' ').length || 0) / 200);
 
-  // --- Render ---
+  const debouncedUpdate = useDebouncedCallback(async (newLikesCount) => {
+    try {
+      await api.updateNews(article.id, { ...article, likes: newLikesCount });
+    } catch (err) {
+      console.error('Failed to persist like count:', err);
+      setHasLiked((prev) => !prev);
+      setLikes((prev) => (hasLiked ? prev + 1 : prev - 1));
+    }
+  }, 300);
+
+  const handleLike = useCallback(() => {
+    setHasLiked((prev) => !prev);
+    setLikes((prev) => (hasLiked ? prev - 1 : prev + 1));
+    debouncedUpdate(hasLiked ? likes - 1 : likes + 1);
+  }, [hasLiked, likes, debouncedUpdate]);
+
+  const handleBookmark = useCallback(() => {
+    setIsBookmarked((prev) => !prev);
+  }, []);
+
   return (
     <div className={`news-detail-page ${isLoaded ? 'loaded' : ''}`}>
-      <div className="news-detail-background"></div>
+      <div className="news-detail-background" />
       <div className="news-detail-floating-elements">
-        <div className="news-detail-orb news-detail-orb-1"></div>
-        <div className="news-detail-orb news-detail-orb-2"></div>
+        <div className="news-detail-orb news-detail-orb-1" />
+        <div className="news-detail-orb news-detail-orb-2" />
       </div>
 
+      <ArticleHero article={article} />
+
       <div className="news-detail-container">
-        {/* --- Breadcrumb Navigation --- */}
-        <nav className="breadcrumb">
-          <Link href="/news">اخبار</Link>
-          <span className="breadcrumb-separator">/</span>
-          <span>{article.title}</span>
-        </nav>
-
-        <div className="article-container">
-          {/* --- Article Header --- */}
-          <header className="article-header">
-            <div className="article-badges">
-              {article.category && <div className="article-category">{article.category}</div>}
-              {article.is_featured && (
-                <div className="article-featured-badge">
-                  <Star size={14} />
-                  <span>خبر ویژه</span>
-                </div>
-              )}
-            </div>
-
-            <h1 className="article-title">{article.title}</h1>
-
-            {article.excerpt && <p className="article-excerpt">{article.excerpt}</p>}
-
-            <div className="article-meta">
-              <div className="article-meta-left">
-                {article.author && (
-                  <div className="meta-item">
-                    <User size={16} />
-                    <span>{article.author}</span>
-                  </div>
-                )}
-                <div className="meta-item">
-                  <Calendar size={16} />
-                  <span>{formattedDate}</span>
-                </div>
-                <div className="meta-item">
-                  <Clock size={16} />
-                  <span>زمان مطالعه: {readingTime} دقیقه</span>
-                </div>
-                <div className="meta-item">
-                  <Eye size={16} />
-                  <span>{article.views || 0} بازدید</span>
-                </div>
-              </div>
-              <div className="article-actions">
-                <button className="share-btn">
-                  <Share2 size={16} />
-                  <span>اشتراک گذاری</span>
-                </button>
-                <Link href="/news" className="nback-btn">
-                  <ArrowLeft size={16} />
-                  <span>بازگشت</span>
-                </Link>
-              </div>
-            </div>
-          </header>
-
-          {/* --- Article Image --- */}
-          {article.image && (
-            <div className="article-image-container">
-              <Image
-                src={article.image}
-                alt={article.title}
-                className="article-image"
-                layout="fill"
-                objectFit="cover"
-                priority
-              />
-            </div>
-          )}
-
-          {/* --- Article Content --- */}
-          <div className="article-content">
+        <div className="article-layout">
+          <main className="article-main-content">
             <div
               className="article-text"
               dangerouslySetInnerHTML={{ __html: article.content }}
             />
-          </div>
-
-          {/* --- Article Footer --- */}
-          <footer className="article-footer">
-            <div className="footer-info">
-              از مطالعه این مطلب لذت بردید؟
-            </div>
-            <div className="footer-actions">
-              <button
-                className={`naction-btn ${hasLiked ? 'active' : ''}`}
-                onClick={handleLike}
-              >
-                <Heart size={16} />
-                <span>{likes}</span>
-              </button>
-              <button
-                className={`naction-btn ${isBookmarked ? 'active' : ''}`}
-                onClick={handleBookmark}
-              >
-                <Bookmark size={16} />
-                <span>{isBookmarked ? 'ذخیره شد' : 'ذخیره'}</span>
-              </button>
-            </div>
-          </footer>
+          </main>
+          <ArticleSidebar
+            article={article}
+            readingTime={readingTime}
+            formattedDate={formattedDate}
+            likes={likes}
+            hasLiked={hasLiked}
+            isBookmarked={isBookmarked}
+            onLike={handleLike}
+            onBookmark={handleBookmark}
+          />
         </div>
-        
+
         {/* Placeholder for Related Articles section */}
         <section className="related-articles">
-            <div className="related-header">
-                <h2 className="related-title">اخبار مرتبط</h2>
-                <div className="related-line"></div>
+          <h2 className="section-title">اخبار مرتبط</h2>
+          <div className="related-grid">
+            {/* You can map over related articles here */}
+            <div className="empty-related">
+              <p>در حال حاضر خبر مرتبطی وجود ندارد.</p>
+              <Link href="/news" className="back-to-news-btn">
+                <ArrowLeft size={18} />
+                بازگشت به لیست اخبار
+              </Link>
             </div>
-            <div className="related-grid">
-                {/* Related articles would be mapped here */}
-            </div>
+          </div>
         </section>
-
       </div>
     </div>
   );

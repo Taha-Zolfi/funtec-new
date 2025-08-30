@@ -12,9 +12,11 @@ export const metadata = {
   }
 };
 
-export default function Home() {
+// ===== تغییر ۱: پراپ onReady را اینجا دریافت می‌کنیم =====
+export default function Home({ onReady }) {
   return (
-    <HomeClient>
+    // ===== تغییر ۲: و آن را به HomeClient پاس می‌دهیم =====
+    <HomeClient onReady={onReady}>
       <div className="content-container">
         <div className="main">
           <h1 className="h-title">فان تک</h1>
@@ -44,8 +46,6 @@ export default function Home() {
             </div>
           </section>
         </div>
-
-
       </div>
     </HomeClient>
   );

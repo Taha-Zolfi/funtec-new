@@ -1,0 +1,140 @@
+:root {
+  --primary-gold: #ffb527;
+  --primary-blue: #13c8ff;
+  --bg-darker: #0A0A0F;
+  --text-light: #f0f0f0;
+}
+
+/* ساختار اصلی صفحه لودینگ */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-darker);
+  direction: rtl;
+  overflow: hidden;
+  /* انیمیشن خروج (کشیده شدن به داخل) */
+transition: clip-path 0.8s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* وقتی کلاس hidden اضافه می‌شود، صفحه محو می‌شود */
+.loading-screen.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 1. پس‌زمینه سحابی (Cosmic Rift) */
+.rift-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  filter: blur(100px) brightness(1.2); /* بلور بسیار زیاد برای ایجاد حالت نرم و ابری */
+  opacity: 0;
+  animation: bg-fade-in 2s ease forwards;
+}
+
+@keyframes bg-fade-in {
+  to { opacity: 1; }
+}
+
+.rift-shape {
+  position: absolute;
+  border-radius: 50%;
+  animation: drift 25s infinite ease-in-out alternate;
+}
+
+.shape1 {
+  width: 60vw;
+  height: 60vw;
+  max-width: 600px;
+  max-height: 600px;
+  background: var(--primary-blue);
+  opacity: 0.5;
+  top: 10%;
+  left: 10%;
+}
+
+.shape2 {
+  width: 50vw;
+  height: 50vw;
+  max-width: 500px;
+  max-height: 500px;
+  background: var(--primary-gold);
+  opacity: 0.5;
+  bottom: 10%;
+  right: 10%;
+  animation-delay: -12s;
+}
+
+.shape3 {
+  width: 40vw;
+  height: 40vw;
+  max-width: 400px;
+  max-height: 400px;
+  background: var(--primary-blue);
+  opacity: 0.3;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: -6s;
+}
+
+@keyframes drift {
+  from { transform: translate(-20%, -10%) rotate(0deg) scale(1); }
+  to { transform: translate(20%, 10%) rotate(360deg) scale(1.2); }
+}
+
+/* 2. محتوای اصلی (لوگو و متن) */
+.loading-content {
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  text-align: center;
+  /* انیمیشن خروج برای محتوا */
+  transition: transform 0.8s cubic-bezier(0.76, 0, 0.24, 1), opacity 0.8s ease;
+}
+
+.loading-screen.hidden .loading-content {
+  transform: scale(0); /* محتوا به سمت مرکز کوچک و محو می‌شود */
+  opacity: 0;
+}
+
+.logo-container {
+  opacity: 0;
+  transform: scale(0.5);
+  animation: logo-emerge 1.5s cubic-bezier(0.165, 0.84, 0.44, 1) 0.5s forwards;
+  /* درخشش پشت لوگو */
+  filter: drop-shadow(0 0 15px rgba(255, 181, 39, 0.5)) drop-shadow(0 0 30px rgba(19, 200, 255, 0.4));
+}
+
+@keyframes logo-emerge {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* متن با انیمیشن ساده و باوقار */
+.loading-text {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-light);
+
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: text-fade-up 1.2s ease-out 1.5s forwards;
+}
+
+
+@keyframes text-fade-up {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

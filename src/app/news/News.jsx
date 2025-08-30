@@ -1,3 +1,5 @@
+// --- START OF FILE News.jsx ---
+
 "use client";
 import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { useRouter } from 'next/navigation';
@@ -103,7 +105,6 @@ const NewsItem = memo(({ article, index, viewMode, bookmarkedArticles, likedArti
 
       <div className="news-content">
         <div className="news-header-info">
-          <span className="news-category">{article.category || 'عمومی'}</span>
           <span className="news-date">
             {new Date(article.created_at).toLocaleDateString('fa-IR')}
           </span>
@@ -113,10 +114,6 @@ const NewsItem = memo(({ article, index, viewMode, bookmarkedArticles, likedArti
         <p className="news-excerpt">{article.excerpt}</p>
 
         <div className="news-footer">
-          <div className="news-author">
-            <User size={16} />
-            <span>{article.author || 'فان تک'}</span>
-          </div>
           <div className="news-stats">
             <div className="stat-item">
               <Eye size={16} />
@@ -180,7 +177,6 @@ const FeaturedNews = memo(({ article, bookmarkedArticles, likedArticles, onBookm
 
       <div className="featured-content">
         <div className="featured-meta">
-          <span className="featured-category">{article.category || 'عمومی'}</span>
           <span className="featured-date">
             {new Date(article.created_at).toLocaleDateString('fa-IR')}
           </span>
@@ -204,8 +200,6 @@ const News = () => {
   const [filteredArticles, setFilteredArticles] = useState([]);
   const [featuredArticle, setFeaturedArticle] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedAuthor, setSelectedAuthor] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
   const [dateRange, setDateRange] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
@@ -240,22 +234,6 @@ const News = () => {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-
-  // Optimized calculations with useMemo
-  const categories = useMemo(() =>
-    [...new Set(articles.map(article => article.category).filter(Boolean))],
-    [articles]
-  );
-
-  const authors = useMemo(() =>
-    [...new Set(articles.map(article => article.author).filter(Boolean))],
-    [articles]
-  );
-
-  const trendingTopics = useMemo(() =>
-    ['تجهیزات شهربازی', 'ایمنی کودکان', 'پارک‌های شهری', 'نوآوری', 'محیط زیست'],
-    []
-  );
 
   const totalPages = useMemo(() =>
     Math.ceil(filteredArticles.length / articlesPerPage),
@@ -441,14 +419,6 @@ const News = () => {
       );
     }
 
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(article => article.category === selectedCategory);
-    }
-
-    if (selectedAuthor !== 'all') {
-      filtered = filtered.filter(article => article.author === selectedAuthor);
-    }
-
     if (dateRange !== 'all') {
       const now = new Date();
       const filterDate = new Date();
@@ -495,7 +465,7 @@ const News = () => {
 
     setFilteredArticles(filtered);
     setCurrentPage(1);
-  }, [articles, searchTerm, selectedCategory, selectedAuthor, sortBy, dateRange, likedArticles]);
+  }, [articles, searchTerm, sortBy, dateRange, likedArticles]);
 
   const handleReadArticle = useCallback(async (article) => {
     try {
@@ -736,45 +706,10 @@ const News = () => {
                 {showMobileFilters ? <X size={16} /> : <Menu size={16} />}
               </button>
             )}
-
-            {/* Category Filters */}
-            <div className={`category-filters ${isMobile && showMobileFilters ? 'mobile-open' : ''} ${isMobile && !showMobileFilters ? 'mobile-hidden' : ''}`}>
-              {!isMobile && <Filter size={20} />}
-              <div className="category-buttons">
-                <button
-                  className={`category-btn ${selectedCategory === 'all' ? 'active' : ''}`}
-                  onClick={() => setSelectedCategory('all')}
-                >
-                  همه
-                </button>
-                {categories.map(category => (
-                  <button
-                    key={category}
-                    className={`category-btn ${selectedCategory === category ? 'active' : ''}`}
-                    onClick={() => setSelectedCategory(category)}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
 
           {/* Advanced Filters */}
           <div className={`advanced-filters ${isMobile && showMobileFilters ? 'mobile-open' : ''} ${isMobile && !showMobileFilters ? 'mobile-hidden' : ''}`}>
-            <div className="filter-group">
-              <select
-                className="filter-select"
-                value={selectedAuthor}
-                onChange={(e) => setSelectedAuthor(e.target.value)}
-              >
-                <option value="all">همه نویسندگان</option>
-                {authors.map(author => (
-                  <option key={author} value={author}>{author}</option>
-                ))}
-              </select>
-            </div>
-
             <div className="filter-group">
               <select
                 className="filter-select"

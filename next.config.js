@@ -3,13 +3,15 @@ const nextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60,
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
+    deviceSizes: [360, 480, 640, 750, 828, 1080, 1200],
   },
   compress: true,
   poweredByHeader: false,
   reactStrictMode: true,
+  swcMinify: true,
   experimental: {
     optimizeCss: true,
+    optimizeFonts: true,
     turbopack: {
       rules: {
         '*.js': ['swc-loader']
@@ -21,7 +23,6 @@ const nextConfig = {
   },
   productionBrowserSourceMaps: false,
   webpack: (config, { dev, isServer }) => {
-    // Optimize client-side bundles
     if (!dev && !isServer) {
       config.optimization.splitChunks = {
         chunks: 'all',

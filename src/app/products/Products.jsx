@@ -3,31 +3,31 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import "./Products.css";
-import StarRating from "@/app/components/StarRating";
 
-// Memoized Product Section Component
+
 const ProductSection = ({ product, index, onProductClick }) => {
-  const sectionRef = useRef(null)
+  const sectionRef = useRef(null);
   
   const calculateAverageRating = useCallback((reviews) => {
-    if (!reviews || reviews.length === 0) return 0
-    const sum = reviews.reduce((acc, review) => acc + (review.rating || 0), 0)
-    return (sum / reviews.length).toFixed(1)
-  }, [])
+    if (!reviews || reviews.length === 0) return 0;
+    const sum = reviews.reduce((acc, review) => acc + (review.rating || 0), 0);
+    return (sum / reviews.length).toFixed(1);
+  }, []);
 
   const averageRating = useMemo(() => 
     calculateAverageRating(product.reviews), 
     [product.reviews, calculateAverageRating]
-  )
+  );
 
   const handleProductClick = useCallback(() => {
-    onProductClick(product)
-  }, [product, onProductClick])
+    onProductClick(product);
+  }, [product, onProductClick]);
 
   return (
     <section 
       className="product-section scroll-animate snap-section"
       data-section-index={index + 1}
+      ref={sectionRef}
     >
       <div className="section-background">
         {product.background_video && product.background_video !== 'null' ? (
@@ -39,6 +39,7 @@ const ProductSection = ({ product, index, onProductClick }) => {
             className="bg-video"
             preload="metadata"
             key={product.background_video}
+            poster={product.images?.[0] || ''}
           >
             <source src={product.background_video} type="video/mp4" />
           </video>
@@ -49,6 +50,7 @@ const ProductSection = ({ product, index, onProductClick }) => {
             className="bg-image"
             loading="lazy"
             decoding="async"
+            fetchpriority={index < 2 ? "high" : "low"}
           />
         ) : null}
         <div className="dark-overlay"></div>
@@ -58,209 +60,172 @@ const ProductSection = ({ product, index, onProductClick }) => {
         <div className="product-info">
           <h2 className="product-title">{product.name || 'محصول بدون نام'}</h2>
           
-          <p className="product-desc">{product.short_description || 'توضیحی برای این محصول موجود نیست.'}</p>
+          <p className="product-desc">
+            {product.short_description || 'توضیحی برای این محصول موجود نیست.'}
+          </p>
 
           <button 
             type="button"
-            className="btn details-btn"
+            className="details-btn"
             onClick={handleProductClick}
+            aria-label={`مشاهده جزئیات ${product.name || 'محصول'}`}
           >
             <span className="details-btn-text">مشاهده جزئیات</span>
             <div id="container-stars">
               <div id="stars"></div>
             </div>
-            <div id="glow">
-              <div className="circle"></div>
-              <div className="circle"></div>
-            </div>
+
           </button>
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
 const Products = () => {
-  const router = useRouter()
-  const [products, setProducts] = useState([])
-  const [filteredProducts, setFilteredProducts] = useState([])
-  const [searchTerm, setSearchTerm] = useState("")
-  const [currentSection, setCurrentSection] = useState(0)
-  const [scrollProgress, setScrollProgress] = useState(0)
-  const [searchFocused, setSearchFocused] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter();
+  const [products, setProducts] = useState([]);
+  const [currentSection, setCurrentSection] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   
-  const scrollTimeoutRef = useRef(null)
-  const observerRef = useRef(null)
-  const containerRef = useRef(null)
-
-  // Memoized filtered products calculation
-  const memoizedFilteredProducts = useMemo(() => {
-    if (!searchTerm.trim()) return products
-
-    const searchLower = searchTerm.toLowerCase().trim()
-    return products.filter((product) => {
-      const titleMatch = product.title?.toLowerCase().includes(searchLower)
-      const descMatch = product.description?.toLowerCase().includes(searchLower)
-      const featureMatch = product.features?.some(f => 
-        f?.toLowerCase().includes(searchLower)
-      )
-      const specMatch = product.specifications?.some(s => 
-        s?.toLowerCase().includes(searchLower)
-      )
-      
-      return titleMatch || descMatch || featureMatch || specMatch
-    })
-  }, [products, searchTerm])
-
-  // Update filtered products when memoized result changes
-  useEffect(() => {
-    setFilteredProducts(memoizedFilteredProducts)
-  }, [memoizedFilteredProducts])
+  const scrollTimeoutRef = useRef(null);
+  const observerRef = useRef(null);
+  const containerRef = useRef(null);
+ const rafRef = useRef(null);
 
   // Optimized scroll handler with throttling
   const handleScroll = useCallback(() => {
-    if (scrollTimeoutRef.current) return
-    
-    scrollTimeoutRef.current = requestAnimationFrame(() => {
-      const container = containerRef.current
+    if (rafRef.current) return;
+    rafRef.current = requestAnimationFrame(() => {
+      const container = containerRef.current;
       if (container) {
-        const scrollTop = container.scrollTop
-        const scrollHeight = container.scrollHeight - container.clientHeight
-        const progress = (scrollTop / scrollHeight) * 100
-        setScrollProgress(Math.min(100, Math.max(0, progress)))
+        const scrollTop = container.scrollTop;
+        const scrollHeight = container.scrollHeight - container.clientHeight;
+        const progress = (scrollTop / scrollHeight) * 100;
+        setScrollProgress(Math.min(100, Math.max(0, progress)));
         
-        const sectionHeight = container.clientHeight
-        const currentSectionIndex = Math.round(scrollTop / sectionHeight)
-        setCurrentSection(currentSectionIndex)
+        const sectionHeight = container.clientHeight;
+        const currentSectionIndex = Math.round(scrollTop / sectionHeight);
+        setCurrentSection(currentSectionIndex);
       }
-      scrollTimeoutRef.current = null
-    })
-  }, [])
+      rafRef.current = null;
+    });
+  }, []);
 
   // Optimized intersection observer
   useEffect(() => {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+    const isLowEndDevice = typeof window !== 'undefined' && 
+      (navigator.hardwareConcurrency <= 4 || navigator.deviceMemory <= 4);
+    
     const observerOptions = {
-      threshold: [0.1, 0.3, 0.5],
-      rootMargin: "0px 0px -50px 0px",
-    }
+      threshold: isMobile || isLowEndDevice ? [0.5] : [0.1, 0.3, 0.5],
+      rootMargin: isMobile ? "0px 0px -20px 0px" : "0px 0px -50px 0px",
+    };
 
     observerRef.current = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.3) {
-          entry.target.classList.add("visible")
+        const threshold = isMobile || isLowEndDevice ? 0.5 : 0.3;
+        if (entry.isIntersecting && entry.intersectionRatio >= threshold) {
+          entry.target.classList.add("visible");
         }
-      })
-    }, observerOptions)
+      });
+    }, observerOptions);
 
     // Observe elements after a short delay to improve initial load performance
     const timeoutId = setTimeout(() => {
-      const elements = document.querySelectorAll(".scroll-animate")
-      elements.forEach((el) => observerRef.current?.observe(el))
-    }, 100)
+      const elements = document.querySelectorAll(".scroll-animate");
+      elements.forEach((el) => observerRef.current?.observe(el));
+    }, isMobile ? 200 : 100);
 
     return () => {
-      clearTimeout(timeoutId)
-      observerRef.current?.disconnect()
-    }
-  }, [filteredProducts])
+      clearTimeout(timeoutId);
+      observerRef.current?.disconnect();
+    };
+  }, [products]);
 
   // Scroll event listener setup
   useEffect(() => {
-    const container = containerRef.current
+    const container = containerRef.current;
     if (container) {
-      container.addEventListener('scroll', handleScroll, { passive: true })
-      return () => container.removeEventListener('scroll', handleScroll)
+      container.addEventListener('scroll', handleScroll, { passive: true });
+      return () => container.removeEventListener('scroll', handleScroll);
     }
-  }, [handleScroll])
+        if (rafRef.current) {
+          cancelAnimationFrame(rafRef.current);
+        }
+  }, [handleScroll]);
 
   // Load products with error handling and loading state
   const loadProducts = useCallback(async () => {
-    const BASE_URL = "https://funnytec.ir"
-    const PLACEHOLDER_IMAGE = "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg"
 
+    const PLACEHOLDER_IMAGE = "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg";
     try {
-      setIsLoading(true)
-      const allProducts = await api.getProducts()
-      console.log("Received products:", allProducts)
+      setIsLoading(true);
+      const allProducts = await api.getProducts();
+      console.log("Received products:", allProducts);
       const mappedProducts = allProducts.map((product) => {
-        // Image Processing
-        let processedImages = []
-        const rawImagesFromAPI = product.images
+        let processedImages = [];
+        const rawImagesFromAPI = product.images;
         if (Array.isArray(rawImagesFromAPI)) {
-          processedImages = rawImagesFromAPI
+          processedImages = rawImagesFromAPI;
         } else if (typeof rawImagesFromAPI === 'string' && rawImagesFromAPI.trim() !== '') {
-          processedImages = rawImagesFromAPI.split(',').map(img => img.trim())
+          processedImages = rawImagesFromAPI.split(',').map(img => img.trim());
         }
-
         const finalImages = processedImages
           .filter(img => img && typeof img === 'string' && img.trim() !== '')
           .map(img => {
-            const path = img.trim().startsWith('/') ? img.trim() : `/${img.trim()}`
-            return path
-          })
+            const path = img.trim().startsWith('/') ? img.trim() : `/${img.trim()}`;
+            return path;
+          });
           
-        // Fallback Image
-        let mainImage = finalImages.length > 0 ? finalImages[0] : PLACEHOLDER_IMAGE
+        let mainImage = finalImages.length > 0 ? finalImages[0] : PLACEHOLDER_IMAGE;
         if (finalImages.length === 0 && product.image && typeof product.image === 'string') {
-          const path = product.image.trim().startsWith('/') ? product.image.trim() : `/${product.image.trim()}`
-          mainImage = path
+          const path = product.image.trim().startsWith('/') ? product.image.trim() : `/${product.image.trim()}`;
+          mainImage = path;
         }
 
         return {
           ...product,
-          specifications: Array.isArray(product.specifications) ? product.specifications : 
-                         (product.specifications ? product.specifications.split(',') : []),
-          reviews: Array.isArray(product.reviews) ? product.reviews :
-                  (product.reviews ? product.reviews.split(',') : []),
+          specifications: Array.isArray(product.specifications)
+            ? product.specifications 
+            : (product.specifications ? product.specifications.split(',') : []),
+          reviews: Array.isArray(product.reviews)
+            ? product.reviews
+            : (product.reviews ? product.reviews.split(',') : []),
           images: finalImages,
           mainImage: mainImage
-        }
-      })
+        };
+      });
       
-      setProducts(mappedProducts)
+      setProducts(mappedProducts);
     } catch (error) {
-      console.error("Error loading products:", error)
-      setProducts([])
+      console.error("Error loading products:", error);
+      setProducts([]);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    loadProducts()
-  }, [loadProducts])
+    loadProducts();
+  }, [loadProducts]);
 
   const openProductDetail = useCallback((product) => {
-    router.push(`/products/${product.id}`)
-  }, [router])
+    router.push(`/products/${product.id}`);
+  }, [router]);
 
   const scrollToSection = useCallback((sectionIndex) => {
-    const container = containerRef.current
+    const container = containerRef.current;
     if (container) {
-      const sectionHeight = container.clientHeight
+      const sectionHeight = container.clientHeight;
       container.scrollTo({
         top: sectionIndex * sectionHeight,
         behavior: 'smooth'
-      })
+      });
     }
-  }, [])
-
-  const clearSearch = useCallback(() => {
-    setSearchTerm("")
-  }, [])
-
-  const handleSearchChange = useCallback((e) => {
-    setSearchTerm(e.target.value)
-  }, [])
-
-  const handleSearchFocus = useCallback(() => {
-    setSearchFocused(true)
-  }, [])
-
-  const handleSearchBlur = useCallback(() => {
-    setSearchFocused(false)
-  }, [])
+  }, []);
 
   // Memoized navigation dots
   const navigationDots = useMemo(() => (
@@ -273,28 +238,18 @@ const Products = () => {
         <span className="dot-tooltip">صفحه اصلی</span>
       </button>
       
-      {filteredProducts.map((product, index) => (
+      {products.map((product, index) => (
         <button 
           key={product.id}
           className={`nav-dot ${currentSection === index + 1 ? 'active' : ''}`}
           onClick={() => scrollToSection(index + 1)}
-          aria-label={`برو به ${product.title}`}
+          aria-label={`برو به ${product.name}`}
         >
-          <span className="dot-tooltip">{product.title}</span>
+          <span className="dot-tooltip">{product.name}</span>
         </button>
       ))}
-      
-      {filteredProducts.length === 0 && searchTerm && (
-        <button 
-          className={`nav-dot ${currentSection === 1 ? 'active' : ''}`}
-          onClick={() => scrollToSection(1)}
-          aria-label="هیچ محصولی یافت نشد"
-        >
-          <span className="dot-tooltip">نتیجه‌ای یافت نشد</span>
-        </button>
-      )}
     </div>
-  ), [currentSection, filteredProducts, searchTerm, scrollToSection])
+  ), [currentSection, products, scrollToSection]);
 
   if (isLoading) {
     return (
@@ -304,7 +259,7 @@ const Products = () => {
           <p>در حال بارگذاری محصولات...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -350,56 +305,27 @@ const Products = () => {
             </p>
           </div>
           
-          {/* Modern Search Section */}
-          <div className="search-section">
-            <div className={`modern-search-container ${searchFocused ? 'focused' : ''}`}>
-              <div className="search-input-wrapper">
-                <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <path d="m21 21-4.35-4.35"></path>
-                </svg>
-                <input
-                  type="text"
-                  placeholder="جستجو در محصولات..."
-                  value={searchTerm}
-                  onChange={handleSearchChange}
-                  onFocus={handleSearchFocus}
-                  onBlur={handleSearchBlur}
-                  className="modern-search-input"
-                />
-                {searchTerm && (
-                  <button 
-                    className="clear-search-btn"
-                    onClick={clearSearch}
-                    type="button"
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <line x1="18" y1="6" x2="6" y2="18"></line>
-                      <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                  </button>
-                )}
-              </div>
-              
-              {searchTerm && (
-                <div className="search-results-info">
-                  <span className="results-count">
-                    {filteredProducts.length} محصول یافت شد
-                  </span>
-                  {filteredProducts.length > 0 && (
-                    <span className="results-hint">
-                      برای مشاهده جزئیات روی محصول کلیک کنید
-                    </span>
-                  )}
-                </div>
-              )}
+          {/* Action Section */}
+          <div className="action-section">
+            <a href="/funtec-products.pdf" download>
+            <button className="catalog-download-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>دانلود کاتالوگ محصولات</span>
+            </button></a>
+            <div className="scroll-indicator">
+              <div className="scroll-icon"></div>
+              <span>اسکرول کنید</span>
             </div>
           </div>
         </div>
       </header>
 
       {/* Product Sections */}
-      {filteredProducts.map((product, index) => (
+      {products.map((product, index) => (
         <ProductSection
           key={product.id}
           product={product}
@@ -407,25 +333,8 @@ const Products = () => {
           onProductClick={openProductDetail}
         />
       ))}
-
-      {/* Empty State */}
-      {filteredProducts.length === 0 && searchTerm && (
-        <section className="empty-state scroll-animate snap-section">
-          <div className="empty-content">
-            <div className="empty-icon">🔍</div>
-            <h3>محصولی با این جستجو یافت نشد</h3>
-            <p>کلمات کلیدی دیگری امتحان کنید یا جستجو را پاک کنید</p>
-            <button 
-              className="reset-btn"
-              onClick={clearSearch}
-            >
-              پاک کردن جستجو
-            </button>
-          </div>
-        </section>
-      )}
     </div>
-  )
-}
+  );
+};
 
-export default Products
+export default Products;

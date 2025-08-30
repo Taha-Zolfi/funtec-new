@@ -1,3 +1,5 @@
+// --- START OF FILE src/lib/db.js ---
+
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 
@@ -20,7 +22,9 @@ async function createInitialSchema(database) {
       features TEXT,
       images TEXT,
       specifications TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      short_description TEXT,
+      full_description TEXT 
     );
 
     CREATE TABLE IF NOT EXISTS comments (
@@ -46,8 +50,6 @@ async function createInitialSchema(database) {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       description TEXT,
-      features TEXT,
-      benefits TEXT,
       images TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -57,15 +59,30 @@ async function createInitialSchema(database) {
       title TEXT NOT NULL,
       content TEXT,
       excerpt TEXT,
-      description TEXT,
-      author TEXT,
-      category TEXT,
       is_featured BOOLEAN DEFAULT 0,
       views INTEGER DEFAULT 0,
       image TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
+    CREATE TABLE IF NOT EXISTS cabins (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      cabin_number INTEGER NOT NULL UNIQUE,
+      image_url TEXT NOT NULL DEFAULT '/placeholder.webp',
+      target_link TEXT NOT NULL DEFAULT '/'
+    );
+
+    CREATE TABLE IF NOT EXISTS timeline_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      description TEXT,
+      image_url TEXT,
+      target_link TEXT,
+      sort_order INTEGER DEFAULT 0
+    );
+
+    INSERT OR IGNORE INTO cabins (cabin_number) VALUES (1), (2), (3), (4), (5), (6), (7), (8), (9), (10);
+    
     INSERT OR REPLACE INTO schema_version (version) VALUES (1);
     
     COMMIT;
@@ -74,55 +91,18 @@ async function createInitialSchema(database) {
 
 async function initializeDb() {
   if (db) return db;
-
-  if (initializing) {
-    // Wait for in-flight initialization
-    return await initializing;
-  }
+  if (initializing) return await initializing;
 
   initializing = (async () => {
     try {
-      // Open database connection
       db = await open({
-        filename: './database.sqlite',
+        filename: './database/database.sqlite',
         driver: sqlite3.Database
       });
-
-      // Reduce lock contention and allow concurrent readers
-      try {
-        await db.exec('PRAGMA journal_mode = WAL;');
-        await db.exec('PRAGMA busy_timeout = 5000;');
-      } catch (pragErr) {
-        console.warn('Failed to set PRAGMA settings:', pragErr);
-      }
-
-      console.log('Creating initial schema...');
+      await db.exec('PRAGMA journal_mode = WAL;');
+      await db.exec('PRAGMA busy_timeout = 5000;');
+      console.log('Creating/updating initial schema...');
       await createInitialSchema(db);
-
-      // Check for required columns and add missing ones safely
-      const tableInfo = await db.all('PRAGMA table_info(products)');
-      const cols = tableInfo.map(c => c.name);
-
-      if (!cols.includes('background_video')) {
-        console.log('Adding background_video column to products table');
-        await db.exec('ALTER TABLE products ADD COLUMN background_video TEXT');
-      }
-
-      if (!cols.includes('specifications')) {
-        console.log('Adding specifications column to products table');
-        await db.exec('ALTER TABLE products ADD COLUMN specifications TEXT');
-      }
-
-      if (!cols.includes('short_description')) {
-        console.log('Adding short_description column to products table');
-        await db.exec('ALTER TABLE products ADD COLUMN short_description TEXT');
-      }
-
-      if (!cols.includes('full_description')) {
-        console.log('Adding full_description column to products table');
-        await db.exec('ALTER TABLE products ADD COLUMN full_description TEXT');
-      }
-
       console.log('Database initialization completed');
       initializing = null;
       return db;
@@ -133,7 +113,6 @@ async function initializeDb() {
       throw error;
     }
   })();
-
   return await initializing;
 }
 

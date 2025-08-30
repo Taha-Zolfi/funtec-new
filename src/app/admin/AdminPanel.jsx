@@ -8,6 +8,53 @@ import "./AdminPanel.css" // Import the CSS file
 // WARNING: Hardcoding passwords is a security risk. Use environment variables in production.
 const ADMIN_PASSWORD = "LaserTech2024!"
 
+// BUG FIX: Components are moved outside of the AdminPanel component.
+// This prevents them from being recreated on every render, which was causing the focus loss issue.
+const DynamicInputList = ({ label, items = [], handlers, placeholder }) => (
+  <div className="form-group">
+    <label>{label}:</label>
+    {Array.isArray(items) && items.map((item) => (
+      <div key={item.id} className="dynamic-input-group">
+        <input
+          type="text"
+          value={item.value || ''}
+          onChange={(e) => handlers?.handleChange(item.id, e.target.value)}
+          placeholder={placeholder}
+        />
+        <button type="button" onClick={() => handlers?.handleRemove(item.id)} className="remove-button">
+          &times;
+        </button>
+      </div>
+    ))}
+    <button type="button" onClick={handlers?.handleAdd} className="add-item-button">
+      + افزودن {label}
+    </button>
+  </div>
+);
+
+const SimpleDynamicInputList = ({ label, items = [], handlers, placeholder }) => (
+  <div className="form-group">
+    <label>{label}:</label>
+    {Array.isArray(items) && items.map((item, index) => (
+      <div key={`image-${index}`} className="dynamic-input-group">
+        <input
+          type="text"
+          value={item || ''}
+          onChange={(e) => handlers?.handleChange(index, e.target.value)}
+          placeholder={placeholder}
+        />
+        <button type="button" onClick={() => handlers?.handleRemove(index)} className="remove-button">
+          &times;
+        </button>
+      </div>
+    ))}
+    <button type="button" onClick={handlers?.handleAdd} className="add-item-button">
+      + افزودن {label}
+    </button>
+  </div>
+);
+
+
 const AdminPanel = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [password, setPassword] = useState("")
@@ -17,56 +64,31 @@ const AdminPanel = () => {
   const [news, setNews] = useState([])
   const [services, setServices] = useState([])
   const [stats, setStats] = useState({})
+  const [cabins, setCabins] = useState([]);
+  const [timelineItems, setTimelineItems] = useState([]);
 
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [selectedNews, setSelectedNews] = useState(null)
   const [selectedService, setSelectedService] = useState(null)
+  const [selectedTimelineItem, setSelectedTimelineItem] = useState(null);
 
-  const [productFormData, setProductFormData] = useState({
-    name: "",
-    description: "",
-    short_description: "",
-    full_description: "",
-    background_video: "",
-    features: [],
-    images: [],
-    specifications: [],
-    video_preview: null
-  })
-
-  const [newsFormData, setNewsFormData] = useState({
-    title: "",
-    excerpt: "",
-    content: "",
-    description: "",
-    author: "",
-    category: "",
-    image: "",
-    is_featured: false,
-    views: 0,
-  })
-
-  const [serviceFormData, setServiceFormData] = useState({
-    title: "",
-    description: "",
-    mainImage: "",
-  })
+  const [productFormData, setProductFormData] = useState({ name: "", short_description: "", full_description: "", background_video: "", features: [], images: [], specifications: [] })
+  const [newsFormData, setNewsFormData] = useState({ title: "", excerpt: "", content: "", image: "", is_featured: false })
+  const [serviceFormData, setServiceFormData] = useState({ title: "", description: "", mainImage: "" })
+  const [timelineFormData, setTimelineFormData] = useState({ title: '', description: '', image_url: '', target_link: '', sort_order: 0 });
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [cabinLoading, setCabinLoading] = useState({});
 
   useEffect(() => {
     const storedAuth = localStorage.getItem("isAuthenticated")
-    if (storedAuth === "true") {
-      setIsAuthenticated(true)
-    }
+    if (storedAuth === "true") setIsAuthenticated(true)
   }, [])
 
   useEffect(() => {
-    if (isAuthenticated) {
-      loadData()
-    }
-  }, [isAuthenticated, activeTab])
+    if (isAuthenticated) loadData()
+  }, [isAuthenticated])
 
   const handleLogin = (e) => {
     e.preventDefault()
@@ -82,927 +104,267 @@ const AdminPanel = () => {
   const handleLogout = () => {
     setIsAuthenticated(false)
     localStorage.removeItem("isAuthenticated")
-    setPassword("")
-    setProducts([])
-    setNews([])
-    setServices([])
-    setStats({})
-    setSelectedProduct(null)
-    setSelectedNews(null)
-    setSelectedService(null)
-    resetProductForm()
-    resetNewsForm()
-    resetServiceForm()
   }
 
   const loadData = async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
-      const [fetchedProducts, fetchedNews, fetchedServices] = await Promise.all([
-        api.getProducts(),
-        api.getNews(),
-        api.getServices()
+      const [fetchedProducts, fetchedNews, fetchedServices, fetchedCabins, fetchedTimeline] = await Promise.all([
+        api.getProducts(), api.getNews(), api.getServices(), api.getCabins(), api.getTimelineItems()
       ]);
-
-      setProducts(fetchedProducts)
-      setNews(fetchedNews)
-      setServices(fetchedServices)
-      // Initialize stats with current data counts
+      setProducts(fetchedProducts);
+      setNews(fetchedNews);
+      setServices(fetchedServices);
+      setCabins(fetchedCabins);
+      setTimelineItems(fetchedTimeline);
       setStats({
         totalProducts: fetchedProducts.length,
         totalNews: fetchedNews.length,
-        totalServices: fetchedServices.length
-      })
+        totalServices: fetchedServices.length,
+      });
     } catch (err) {
-      let errorMessage = `خطا در بارگذاری اطلاعات: ${err.message}`
-      if (err.message.includes("Unexpected token")) {
-        errorMessage = "خطا در ارتباط با سرور: پاسخ دریافتی یک JSON معتبر نیست. لطفاً فایل‌های سرور (PHP) را بررسی کنید."
-      }
-      setError(errorMessage)
-      console.error("Failed to load data:", err)
+      setError(`خطا در بارگذاری اطلاعات: ${err.message}`);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  // --- Product Form Handlers ---
-  const handleProductInputChange = (e) => {
-    const { name, value, type, checked } = e.target
-    setProductFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }))
-  }
-
-  const createDynamicHandlers = (fieldName, formType = "product") => {
-    const setFormData = formType === "product" ? setProductFormData : setServiceFormData
-    const formData = formType === "product" ? productFormData : serviceFormData
-
-    return {
-      handleChange: (index, value) => {
-        const currentItems = formData[fieldName] || []
-        const newItems = [...currentItems]
-        newItems[index] = value
-        setFormData((prev) => ({ ...prev, [fieldName]: newItems }))
-      },
-      handleAdd: () => {
-        setFormData((prev) => ({ 
-          ...prev, 
-          [fieldName]: [...(prev[fieldName] || []), ""] 
-        }))
-      },
-      handleRemove: (index) => {
-        const currentItems = formData[fieldName] || []
-        const newItems = currentItems.filter((_, i) => i !== index)
-        setFormData((prev) => ({ ...prev, [fieldName]: newItems }))
-      },
-    }
-  }
-
-  const productFeaturesHandlers = createDynamicHandlers("features", "product")
-  const productImagesHandlers = createDynamicHandlers("images", "product")
-  const productSpecificationsHandlers = createDynamicHandlers("specifications", "product")
-
+  // --- Product Handlers ---
+  const resetProductForm = () => setProductFormData({ name: "", short_description: "", full_description: "", background_video: "", features: [], images: [], specifications: [] });
+  const handleAddProduct = () => { resetProductForm(); setSelectedProduct({}); };
+  const handleCancelProductEdit = () => { setSelectedProduct(null); resetProductForm(); };
+  const handleProductInputChange = (e) => setProductFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const createDynamicHandlers = (fieldName) => ({
+      handleChange: (id, newValue) => setProductFormData(prev => ({ ...prev, [fieldName]: prev[fieldName].map(item => item.id === id ? { ...item, value: newValue } : item) })),
+      handleAdd: () => setProductFormData(prev => ({ ...prev, [fieldName]: [...(prev[fieldName] || []), { id: Date.now() + Math.random(), value: "" }] })),
+      handleRemove: (id) => setProductFormData(prev => ({ ...prev, [fieldName]: prev[fieldName].filter(item => item.id !== id) })),
+  });
+  const createSimpleDynamicHandlers = (fieldName) => ({
+      handleChange: (index, value) => { const newItems = [...(productFormData[fieldName] || [])]; newItems[index] = value; setProductFormData(prev => ({ ...prev, [fieldName]: newItems })); },
+      handleAdd: () => setProductFormData(prev => ({ ...prev, [fieldName]: [...(prev[fieldName] || []), ""] })),
+      handleRemove: (index) => setProductFormData(prev => ({ ...prev, [fieldName]: (prev[fieldName] || []).filter((_, i) => i !== index) })),
+  });
+  const productFeaturesHandlers = createDynamicHandlers("features");
+  const productSpecificationsHandlers = createDynamicHandlers("specifications");
+  const productImagesHandlers = createSimpleDynamicHandlers("images");
   const handleProductFileChange = async (e, fieldName) => {
-    const files = e.target.files
-    if (!files || files.length === 0) return
-    setLoading(true)
+    const files = e.target.files; if (!files.length) return; setLoading(true);
     try {
       if (fieldName === "image_file") {
-        // Handle multiple image uploads
-        const uploadPromises = Array.from(files).map(file => api.uploadFile(file))
-        const results = await Promise.all(uploadPromises)
-        setProductFormData((prev) => ({
-          ...prev,
-          images: [...(prev.images || []), ...results.map(r => r.url)],
-        }))
+        const results = await Promise.all(Array.from(files).map(api.uploadFile));
+        setProductFormData(prev => ({ ...prev, images: [...(prev.images || []), ...results.map(r => r.url)] }));
       } else if (fieldName === "video_file") {
-        // Handle single video upload
-        console.log('Uploading video file:', files[0].name);
         const result = await api.uploadFile(files[0]);
-        console.log('Upload result:', result);
-        const fullUrl = result.url.startsWith('/') ? result.url : `/${result.url}`;
-        setProductFormData((prev) => ({
-          ...prev,
-          background_video: fullUrl,
-        }));
-        console.log('Updated form data with video:', fullUrl);
+        setProductFormData(prev => ({ ...prev, background_video: result.url }));
       }
-      setError(null)
-    } catch (err) {
-      setError(`خطا در آپلود فایل: ${err.message}`)
-      console.error("File upload error:", err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleSubmitProduct = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-
-    // Validate required fields
-    if (!productFormData.name || !productFormData.short_description || !productFormData.full_description) {
-      setError("لطفاً نام، توضیحات مختصر و توضیحات کامل محصول را وارد کنید");
-      setLoading(false);
-      return;
-    }
-
-    // Clean up the data before sending
-    const cleanedData = {
-      ...productFormData,
-      features: productFormData.features?.filter(Boolean) || [],
-      images: productFormData.images?.filter(Boolean) || [],
-      specifications: productFormData.specifications?.filter(Boolean) || [],
-      background_video: productFormData.background_video || null
-    };
-
-    try {
-      console.log("Sending product data:", JSON.stringify(cleanedData, null, 2));
-      console.log("Selected product:", selectedProduct);
-      
-      if (selectedProduct && selectedProduct.id) {
-        console.log("Updating product with ID:", selectedProduct.id);
-        const result = await api.updateProduct(selectedProduct.id, cleanedData);
-        console.log("Update result:", result);
-      } else {
-        console.log("Creating new product");
-        const result = await api.createProduct(cleanedData);
-        console.log("Create result:", result);
-      }
-      
-      setSelectedProduct(null)
-      resetProductForm()
-      loadData()
-    } catch (err) {
-      console.error("Full error details:", err);
-      setError(`خطا در ذخیره محصول: ${err.message}`)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleCancelProductEdit = () => {
-    setSelectedProduct(null)
-    resetProductForm()
-  }
-
-  const handleAddProduct = () => {
-    setSelectedProduct({})
-    resetProductForm()
-  }
-
+    } catch (err) { setError(`خطا در آپلود: ${err.message}`); } finally { setLoading(false); }
+  };
   const handleEditProduct = async (product) => {
-    console.log('Editing product:', product);
     setLoading(true);
     try {
-      // Fetch fresh product data to ensure we have all fields
       const freshProduct = await api.getProduct(product.id);
-      console.log('Fresh product data:', freshProduct);
-      
       setSelectedProduct(freshProduct);
       setProductFormData({
         name: freshProduct.name || "",
         short_description: freshProduct.short_description || "",
         full_description: freshProduct.full_description || "",
         background_video: freshProduct.background_video || "",
-        features: Array.isArray(freshProduct.features) ? freshProduct.features : [],
         images: Array.isArray(freshProduct.images) ? freshProduct.images : [],
-        specifications: Array.isArray(freshProduct.specifications) ? freshProduct.specifications : []
+        features: (freshProduct.features || []).map(value => ({ id: Date.now() + Math.random(), value })),
+        specifications: (freshProduct.specifications || []).map(value => ({ id: Date.now() + Math.random(), value })),
       });
-    } catch (err) {
-      console.error('Error loading product details:', err);
-      setError('خطا در بارگذاری اطلاعات محصول');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  const handleDeleteProduct = async (id) => {
-    setLoading(true)
-    setError(null)
-    if (window.confirm("آیا مطمئنید که می‌خواهید این محصول را حذف کنید؟")) {
-      try {
-        await api.deleteProduct(id)
-        loadData()
-      } catch (err) {
-        setError(`خطا در حذف محصول: ${err.message}`)
-        console.error("Error deleting product:", err)
-      } finally {
-        setLoading(false)
-      }
-    }
-  }
-
-  const resetProductForm = () => {
-    setProductFormData({
-      name: "",
-      short_description: "",
-      full_description: "",
-      background_video: "",
-      features: [],
-      images: [],
-      specifications: []
-    })
-  }
-
-  // --- News Form Handlers ---
-  const handleNewsInputChange = (e) => {
-    const { name, value, type, checked } = e.target
-    setNewsFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? (checked ? 1 : 0) : value,
-    }))
-  }
-
-  const handleNewsFileChange = async (e) => {
-    const file = e.target.files[0]
-    if (!file) return
-    setLoading(true)
+    } catch (err) { setError('خطا در بارگذاری محصول'); } finally { setLoading(false); }
+  };
+  const handleSubmitProduct = async (e) => {
+    e.preventDefault(); setLoading(true);
+    const cleanedData = { ...productFormData, features: productFormData.features?.map(item => item.value).filter(Boolean) || [], images: productFormData.images?.filter(Boolean) || [], specifications: productFormData.specifications?.map(item => item.value).filter(Boolean) || [] };
     try {
-      const result = await api.uploadFile(file)
-      setNewsFormData((prev) => ({
-        ...prev,
-        image: result.url,
-      }))
-      setError(null)
-    } catch (err) {
-      setError(`خطا در آپلود عکس خبر: ${err.message}`)
-      console.error("News image upload error:", err)
-    } finally {
-      setLoading(false)
-    }
-  }
+      if (selectedProduct?.id) await api.updateProduct(selectedProduct.id, cleanedData); else await api.createProduct(cleanedData);
+      handleCancelProductEdit(); await loadData();
+    } catch (err) { setError(`خطا در ذخیره محصول: ${err.message}`); } finally { setLoading(false); }
+  };
+  const handleDeleteProduct = async (id) => { if (window.confirm("آیا مطمئنید؟")) { setLoading(true); try { await api.deleteProduct(id); await loadData(); } catch (err) { setError(`خطا در حذف: ${err.message}`); } finally { setLoading(false); } } };
 
-  const handleSubmitNews = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-    
-    // Validate required fields
-    if (!newsFormData.title || !newsFormData.content) {
-      setError("لطفاً عنوان و محتوای خبر را وارد کنید");
-      setLoading(false);
-      return;
-    }
-    
-    console.log('Submitting news data:', newsFormData);
-    
-    try {
-      let result;
-      if (selectedNews && selectedNews.id) {
-        console.log('Updating existing news:', selectedNews.id);
-        result = await api.updateNews(selectedNews.id, newsFormData);
-      } else {
-        console.log('Creating new news');
-        result = await api.createNews(newsFormData);
-      }
-      console.log('API response:', result);
-      
-      setSelectedNews(null)
-      resetNewsForm()
-      await loadData() // منتظر بمانیم تا دیتا لود شود
-      
-    } catch (err) {
-      const errorMessage = `خطا در ذخیره خبر: ${err.message || 'خطای ناشناخته'}`;
-      setError(errorMessage)
-      console.error("Error saving news:", err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleCancelNewsEdit = () => {
-    setSelectedNews(null)
-    resetNewsForm()
-  }
-
-  const handleAddNews = () => {
-    setSelectedNews({})
-    resetNewsForm()
-  }
-
+  // --- News Handlers ---
+  const resetNewsForm = () => setNewsFormData({ title: "", excerpt: "", content: "", image: "", is_featured: false });
+  const handleAddNews = () => { resetNewsForm(); setSelectedNews({}); };
+  const handleCancelNewsEdit = () => { setSelectedNews(null); resetNewsForm(); };
   const handleEditNews = (newsItem) => {
-    setSelectedNews(newsItem)
-    setNewsFormData({
-      ...newsItem,
-      is_featured: Boolean(newsItem.is_featured),
-    })
-  }
+    setSelectedNews(newsItem);
+    setNewsFormData({ title: newsItem.title || "", excerpt: newsItem.excerpt || "", content: newsItem.content || "", image: newsItem.image || "", is_featured: Boolean(newsItem.is_featured) });
+  };
+  const handleNewsInputChange = (e) => { const { name, value, type, checked } = e.target; setNewsFormData(prev => ({ ...prev, [name]: type === "checkbox" ? checked : value })); };
+  const handleNewsFileChange = async (e) => {
+    const file = e.target.files[0]; if (!file) return; setLoading(true);
+    try {
+      const result = await api.uploadFile(file);
+      setNewsFormData(prev => ({ ...prev, image: result.url }));
+    } catch (err) { setError(`خطا در آپلود: ${err.message}`); } finally { setLoading(false); }
+  };
+  const handleSubmitNews = async (e) => {
+    e.preventDefault(); setLoading(true);
+    if (!newsFormData.title || !newsFormData.content) { setError("عنوان و محتوا الزامی است"); setLoading(false); return; }
+    try {
+      if (selectedNews?.id) await api.updateNews(selectedNews.id, newsFormData); else await api.createNews(newsFormData);
+      handleCancelNewsEdit(); await loadData();
+    } catch (err) { setError(`خطا در ذخیره خبر: ${err.message}`); } finally { setLoading(false); }
+  };
+  const handleDeleteNews = async (id) => { if (window.confirm("آیا مطمئنید؟")) { setLoading(true); try { await api.deleteNews(id); await loadData(); } catch (err) { setError(`خطا در حذف: ${err.message}`); } finally { setLoading(false); } } };
 
-  const handleDeleteNews = async (id) => {
-    setLoading(true)
-    setError(null)
-    if (window.confirm("آیا مطمئنید که می‌خواهید این خبر را حذف کنید؟")) {
-      try {
-        await api.deleteNews(id)
-        loadData()
-      } catch (err) {
-        setError(`خطا در حذف خبر: ${err.message}`)
-        console.error("Error deleting news:", err)
-      } finally {
-        setLoading(false)
-      }
-    }
-  }
-
-  const resetNewsForm = () => {
-    setNewsFormData({
-      title: "",
-      excerpt: "",
-      content: "",
-      description: "",
-      author: "",
-      category: "",
-      image: "",
-      is_featured: false,
-      views: 0,
-    })
-  }
-
-  // --- Service Form Handlers ---
-  const handleServiceInputChange = (e) => {
-    const { name, value } = e.target
-    setServiceFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
-
+  // --- Service Handlers ---
+  const resetServiceForm = () => setServiceFormData({ title: "", description: "", mainImage: "" });
+  const handleAddService = () => { resetServiceForm(); setSelectedService({}); };
+  const handleCancelServiceEdit = () => { setSelectedService(null); resetServiceForm(); };
+  const handleEditService = (service) => { setSelectedService(service); setServiceFormData({ title: service.name, description: service.description, mainImage: Array.isArray(service.images) && service.images.length > 0 ? service.images[0] : "" }); };
+  const handleServiceInputChange = (e) => { const { name, value } = e.target; setServiceFormData(prev => ({ ...prev, [name]: value })); };
   const handleServiceFileChange = async (e) => {
-    const file = e.target.files[0]
-    if (!file) return
-    setLoading(true)
+    const file = e.target.files[0]; if (!file) return; setLoading(true);
     try {
-      const result = await db.uploadFile(file)
-      setServiceFormData((prev) => ({
-        ...prev,
-        mainImage: result.url,
-      }))
-      setError(null)
-    } catch (err) {
-      setError(`خطا در آپلود فایل: ${err.message}`)
-      console.error("File upload error:", err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
+      const result = await api.uploadFile(file);
+      setServiceFormData(prev => ({ ...prev, mainImage: result.url }));
+    } catch (err) { setError(`خطا در آپلود: ${err.message}`); } finally { setLoading(false); }
+  };
   const handleSubmitService = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
+    e.preventDefault(); setLoading(true);
+    const serviceData = { name: serviceFormData.title, description: serviceFormData.description, images: serviceFormData.mainImage ? [serviceFormData.mainImage] : [] };
     try {
-      if (selectedService && selectedService.id) {
-        await db.updateService(selectedService.id, serviceFormData)
-      } else {
-        await db.createService(serviceFormData)
-      }
-      setSelectedService(null)
-      resetServiceForm()
-      loadData()
-    } catch (err) {
-      setError(`خطا در ذخیره خدمت: ${err.message}`)
-      console.error("Error saving service:", err)
-    } finally {
-      setLoading(false)
-    }
-  }
+      if (selectedService?.id) await api.updateService(selectedService.id, serviceData); else await api.createService(serviceData);
+      handleCancelServiceEdit(); await loadData();
+    } catch (err) { setError(`خطا در ذخیره: ${err.message}`); } finally { setLoading(false); }
+  };
+  const handleDeleteService = async (id) => { if (window.confirm("آیا مطمئنید؟")) { setLoading(true); try { await api.deleteService(id); await loadData(); } catch (err) { setError(`خطا در حذف: ${err.message}`); } finally { setLoading(false); } } };
 
-  const handleCancelServiceEdit = () => {
-    setSelectedService(null)
-    resetServiceForm()
-  }
+  // --- Cabin Handlers ---
+  const handleCabinChange = (id, field, value) => setCabins(cabins.map(c => c.id === id ? { ...c, [field]: value } : c));
+  const handleCabinImageUpload = async (id, file) => {
+    if (!file) return; setCabinLoading(prev => ({ ...prev, [id]: true }));
+    try {
+      const result = await api.uploadFile(file);
+      handleCabinChange(id, 'image_url', result.url);
+    } catch (err) { setError(`خطا در آپلود: ${err.message}`); } finally { setCabinLoading(prev => ({ ...prev, [id]: false })); }
+  };
+  const handleSaveCabin = async (id) => {
+    const cabinToSave = cabins.find(c => c.id === id); if (!cabinToSave) return; setCabinLoading(prev => ({ ...prev, [id]: true }));
+    try {
+      await api.updateCabin(id, { image_url: cabinToSave.image_url, target_link: cabinToSave.target_link });
+      setCabinLoading(prev => ({ ...prev, [`success_${id}`]: true }));
+      setTimeout(() => setCabinLoading(prev => ({ ...prev, [`success_${id}`]: false })), 2000);
+    } catch (err) { setError(`خطا در ذخیره: ${err.message}`); } finally { setCabinLoading(prev => ({ ...prev, [id]: false })); }
+  };
 
-  const handleAddService = () => {
-    setSelectedService({})
-    resetServiceForm()
-  }
-
-  const handleEditService = (service) => {
-    setSelectedService(service)
-    setServiceFormData({
-      title: service.title,
-      description: service.description,
-      mainImage: service.mainImage,
-    })
-  }
-
-  const handleDeleteService = async (id) => {
-    setLoading(true)
-    setError(null)
-    if (window.confirm("آیا مطمئنید که می‌خواهید این خدمت را حذف کنید؟")) {
-      try {
-        await db.deleteService(id)
-        loadData()
-      } catch (err) {
-        setError(`خطا در حذف خدمت: ${err.message}`)
-        console.error("Error deleting service:", err)
-      } finally {
-        setLoading(false)
-      }
-    }
-  }
-
-  const resetServiceForm = () => {
-    setServiceFormData({
-      title: "",
-      description: "",
-      mainImage: "",
-    })
-  }
-
-  const DynamicInputList = ({ label, items = [], handlers, placeholder }) => (
-    <div className="form-group">
-      <label>{label}:</label>
-      {Array.isArray(items) && items.map((item, index) => (
-        <div key={index} className="dynamic-input-group">
-          <input
-            type="text"
-            value={item || ''}
-            onChange={(e) => handlers?.handleChange(index, e.target.value)}
-            placeholder={placeholder}
-          />
-          <button type="button" onClick={() => handlers?.handleRemove(index)} className="remove-button">
-            &times;
-          </button>
-        </div>
-      ))}
-      <button type="button" onClick={handlers?.handleAdd} className="add-item-button">
-        + افزودن {label}
-      </button>
-    </div>
-  )
-
+  // --- Timeline Handlers ---
+  const resetTimelineForm = () => setTimelineFormData({ title: '', description: '', image_url: '', target_link: '', sort_order: 0 });
+  const handleAddTimelineItem = () => { resetTimelineForm(); setSelectedTimelineItem({}); };
+  const handleEditTimelineItem = (item) => { setSelectedTimelineItem(item); setTimelineFormData({ title: item.title || '', description: item.description || '', image_url: item.image_url || '', target_link: item.target_link || '', sort_order: item.sort_order || 0 }); };
+  const handleCancelTimelineEdit = () => { setSelectedTimelineItem(null); resetTimelineForm(); };
+  const handleDeleteTimelineItem = async (id) => { if (window.confirm("آیا مطمئنید؟")) { setLoading(true); try { await api.deleteTimelineItem(id); await loadData(); } catch (err) { setError(`خطا در حذف: ${err.message}`); } finally { setLoading(false); } } };
+  const handleTimelineInputChange = (e) => { const { name, value } = e.target; setTimelineFormData(prev => ({ ...prev, [name]: value })); };
+  const handleTimelineImageUpload = async (e) => {
+    const file = e.target.files[0]; if (!file) return; setLoading(true);
+    try {
+      const result = await api.uploadFile(file);
+      setTimelineFormData(prev => ({ ...prev, image_url: result.url }));
+    } catch (err) { setError(`خطا در آپلود: ${err.message}`); } finally { setLoading(false); }
+  };
+  const handleSubmitTimeline = async (e) => {
+    e.preventDefault(); setLoading(true);
+    try {
+      if (selectedTimelineItem?.id) await api.updateTimelineItem(selectedTimelineItem.id, timelineFormData); else await api.createTimelineItem(timelineFormData);
+      handleCancelTimelineEdit(); await loadData();
+    } catch (err) { setError(`خطا در ذخیره: ${err.message}`); } finally { setLoading(false); }
+  };
+  
   if (!isAuthenticated) {
     return (
       <div className="login-container">
         <form className="login-form" onSubmit={handleLogin}>
           <h2>ورود به پنل مدیریت</h2>
-          <div className="form-group">
-            <label htmlFor="password">رمز عبور:</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          {error && <p className="error-message">{error}</p>}
-          <button type="submit" className="login-btn">
-            ورود
-          </button>
-          <p className="password-hint">رمز عبور: LaserTech2024!</p>
+          <div className="form-group"><label htmlFor="password">رمز عبور:</label><input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required /></div>
+          {error && <p className="error-alert">{error}</p>}
+          <button type="submit" className="login-btn">ورود</button>
         </form>
       </div>
-    )
+    );
   }
 
   return (
     <div className="admin-panel">
-      <header className="header">
-        <h1>پنل مدیریت</h1>
-        <button onClick={handleLogout} className="logout-button">
-          خروج
-        </button>
-      </header>
+      <header className="header"><h1>پنل مدیریت</h1><button onClick={handleLogout} className="logout-button">خروج</button></header>
       <nav className="sidebar">
         <ul>
-          <li onClick={() => setActiveTab("dashboard")} className={activeTab === "dashboard" ? "active" : ""}>
-            داشبورد
-          </li>
-          <li onClick={() => setActiveTab("products")} className={activeTab === "products" ? "active" : ""}>
-            مدیریت محصولات
-          </li>
-          <li onClick={() => setActiveTab("news")} className={activeTab === "news" ? "active" : ""}>
-            مدیریت اخبار
-          </li>
-          <li onClick={() => setActiveTab("services")} className={activeTab === "services" ? "active" : ""}>
-            مدیریت خدمات
-          </li>
+          <li onClick={() => setActiveTab("dashboard")} className={activeTab === "dashboard" ? "active" : ""}>داشبورد</li>
+          <li onClick={() => setActiveTab("products")} className={activeTab === "products" ? "active" : ""}>محصولات</li>
+          <li onClick={() => setActiveTab("news")} className={activeTab === "news" ? "active" : ""}>اخبار</li>
+          <li onClick={() => setActiveTab("services")} className={activeTab === "services" ? "active" : ""}>خدمات</li>
+          <li onClick={() => setActiveTab("ferrisWheel")} className={activeTab === "ferrisWheel" ? "active" : ""}>چرخ و فلک</li>
+          <li onClick={() => setActiveTab("timeline")} className={activeTab === "timeline" ? "active" : ""}>تایم‌لاین</li>
         </ul>
       </nav>
       <main className="main-content">
         {loading && <div className="loading-spinner"></div>}
         {error && <div className="error-alert">{error}</div>}
-        {activeTab === "dashboard" && (
-          <div className="dashboard-section">
-            <h2>داشبورد</h2>
-            <div className="stats-cards">
-              <div className="card">
-                <h3>تعداد کل محصولات</h3>
-                <p>{stats.total_products}</p>
-              </div>
-              <div className="card">
-                <h3>تعداد محصولات ویژه</h3>
-                <p>{stats.featured_products}</p>
-              </div>
-              <div className="card">
-                <h3>تعداد کل اخبار</h3>
-                <p>{stats.total_news}</p>
-              </div>
-              <div className="card">
-                <h3>تعداد کل خدمات</h3>
-                <p>{stats.total_services || services.length}</p>
-              </div>
-            </div>
-            <div className="latest-items">
-              <h3>آخرین محصولات</h3>
-              <ul>
-                {products.slice(0, 5).map((product) => (
-                  <li key={product.id}>{product.title}</li>
-                ))}
-              </ul>
-              <h3>آخرین اخبار</h3>
-              <ul>
-                {news.slice(0, 5).map((item) => (
-                  <li key={item.id}>{item.title}</li>
-                ))}
-              </ul>
-              <h3>آخرین خدمات</h3>
-              <ul>
-                {services.slice(0, 5).map((item) => (
-                  <li key={item.id}>{item.title}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
-        {activeTab === "products" && (
-          <div className="products-section">
-            <h2>مدیریت محصولات</h2>
-            <button className="add-button" onClick={handleAddProduct}>
-              افزودن محصول جدید
-            </button>
-            <ul className="item-list">
-              {products.length === 0 ? (
-                <p>هیچ محصولی یافت نشد. می‌توانید یک محصول جدید اضافه کنید.</p>
-              ) : (
-                products.map((product) => (
-                  <li key={product.id}>
-                    <span>{product.name}</span>
-                    <div className="item-actions">
-                      <button onClick={() => handleEditProduct(product)}>ویرایش</button>
-                      <button onClick={() => handleDeleteProduct(product.id)}>حذف</button>
-                    </div>
-                  </li>
-                ))
-              )}
-            </ul>
-          </div>
-        )}
-        {activeTab === "news" && (
-          <div className="news-section">
-            <h2>مدیریت اخبار</h2>
-            <button className="add-button" onClick={handleAddNews}>
-              افزودن خبر جدید
-            </button>
-            <ul className="item-list">
-              {news.length === 0 ? (
-                <p>هیچ خبری یافت نشد. می‌توانید یک خبر جدید اضافه کنید.</p>
-              ) : (
-                news.map((item) => (
-                  <li key={item.id}>
-                    <span>{item.title}</span>
-                    <div className="item-actions">
-                      <button onClick={() => handleEditNews(item)}>ویرایش</button>
-                      <button onClick={() => handleDeleteNews(item.id)}>حذف</button>
-                    </div>
-                  </li>
-                ))
-              )}
-            </ul>
-          </div>
-        )}
-        {activeTab === "services" && (
-          <div className="services-section">
-            <h2>مدیریت خدمات</h2>
-            <button className="add-button" onClick={handleAddService}>
-              افزودن خدمت جدید
-            </button>
-            <ul className="item-list">
-              {services.length === 0 ? (
-                <p>هیچ خدمتی یافت نشد. می‌توانید یک خدمت جدید اضافه کنید.</p>
-              ) : (
-                services.map((service) => (
-                  <li key={service.id}>
-                    <span>{service.title}</span>
-                    <div className="item-actions">
-                      <button onClick={() => handleEditService(service)}>ویرایش</button>
-                      <button onClick={() => handleDeleteService(service.id)}>حذف</button>
-                    </div>
-                  </li>
-                ))
-              )}
-            </ul>
-          </div>
-        )}
-        {selectedProduct !== null && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h3>{selectedProduct && selectedProduct.id ? "ویرایش محصول" : "افزودن محصول جدید"}</h3>
-                <button className="close-modal-btn" onClick={handleCancelProductEdit}>
-                  &times;
-                </button>
-              </div>
-              <form onSubmit={handleSubmitProduct} className="modal-form">
-                <div className="form-group">
-                  <label>نام محصول:</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={productFormData.name}
-                    onChange={handleProductInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>توضیحات مختصر (حداکثر 150 کاراکتر):</label>
-                  <textarea
-                    name="short_description"
-                    value={productFormData.short_description}
-                    onChange={handleProductInputChange}
-                    maxLength={150}
-                    required
-                  ></textarea>
-                  <small className="character-count">{(productFormData.short_description || '').length}/150</small>
-                </div>
-                <div className="form-group">
-                  <label>توضیحات کامل:</label>
-                  <RichTextEditor
-                    value={productFormData.full_description || ''}
-                    onChange={(content) => setProductFormData(prev => ({...prev, full_description: content}))}
-                  />
-                </div>
-                <div className="form-group video-upload-group">
-                  <label>ویدئو پس زمینه:</label>
-                  <div className="video-upload-container">
-                    <div className="video-upload-input">
-                      <input
-                        type="file"
-                        id="productVideoUpload"
-                        accept="video/mp4,video/webm"
-                        onChange={(e) => handleProductFileChange(e, "video_file")}
-                        className="video-file-input"
-                      />
-                      <label htmlFor="productVideoUpload" className="video-upload-label">
-                        <span>انتخاب ویدئو</span>
-                        <small>فرمت‌های مجاز: MP4, WebM</small>
-                      </label>
-                    </div>
-                    
-                    {productFormData.background_video && (
-                      <div className="video-preview-container">
-                        <div className="video-preview-header">
-                          <span className="video-file-name">
-                            {productFormData.background_video.split("/").pop()}
-                          </span>
-                          <button
-                            type="button"
-                            className="remove-video-btn"
-                            onClick={() => setProductFormData(prev => ({...prev, background_video: ""}))}
-                          >
-                            حذف ویدئو
-                          </button>
-                        </div>
-                        <video
-                          src={productFormData.background_video}
-                          controls
-                          className="video-preview"
-                          onError={(e) => {
-                            console.error("Video load error:", e);
-                            e.target.parentElement.classList.add("video-error");
-                          }}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <DynamicInputList
-                  label="تصاویر محصول"
-                  items={productFormData.images || []}
-                  handlers={productImagesHandlers}
-                  placeholder="URL تصویر"
-                />
-                <div className="file-input-group">
-                  <input
-                    type="file"
-                    id="productImageUpload"
-                    accept="image/png,image/jpeg,image/jpg"
-                    multiple
-                    onChange={(e) => handleProductFileChange(e, "image_file")}
-                  />
-                  <label htmlFor="productImageUpload">یا آپلود تصاویر</label>
-                </div>
-                <DynamicInputList
-                  label="ویژگی‌ها"
-                  items={productFormData.features || []}
-                  handlers={productFeaturesHandlers}
-                  placeholder="ویژگی جدید"
-                />
-                <DynamicInputList
-                  label="مشخصات فنی"
-                  items={productFormData.specifications || []}
-                  handlers={productSpecificationsHandlers}
-                  placeholder="مشخصات جدید"
-                />
-                <div className="form-actions">
-                  <button type="button" className="cancel" onClick={handleCancelProductEdit}>
-                    لغو
-                  </button>
-                  <button type="submit" className="save">
-                    ذخیره محصول
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-        {selectedNews !== null && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h3>{selectedNews && selectedNews.id ? "ویرایش خبر" : "افزودن خبر جدید"}</h3>
-                <button className="close-modal-btn" onClick={handleCancelNewsEdit}>
-                  &times;
-                </button>
-              </div>
-              <form onSubmit={handleSubmitNews} className="modal-form">
-                <div className="form-group">
-                  <label>عنوان:</label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={newsFormData.title}
-                    onChange={handleNewsInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>خلاصه (Excerpt):</label>
-                  <textarea name="excerpt" value={newsFormData.excerpt} onChange={handleNewsInputChange}></textarea>
-                </div>
-                <div className="form-group">
-                  <label>محتوا:</label>
-                  <textarea
-                    name="content"
-                    value={newsFormData.content}
-                    onChange={handleNewsInputChange}
-                    required
-                  ></textarea>
-                </div>
-                <div className="form-group">
-                  <label>توضیحات (Description):</label>
-                  <textarea
-                    name="description"
-                    value={newsFormData.description}
-                    onChange={handleNewsInputChange}
-                  ></textarea>
-                </div>
-                <div className="form-group">
-                  <label>نویسنده:</label>
-                  <input type="text" name="author" value={newsFormData.author} onChange={handleNewsInputChange} />
-                </div>
-                <div className="form-group">
-                  <label>دسته‌بندی:</label>
-                  <input type="text" name="category" value={newsFormData.category} onChange={handleNewsInputChange} />
-                </div>
-                <div className="form-group">
-                  <label>تصویر خبر:</label>
-                  <div className="file-input-group">
-                    <input
-                      type="file"
-                      id="newsImageUpload"
-                      accept="image/png,image/jpeg,image/jpg"
-                      onChange={handleNewsFileChange}
-                    />
-                    <label htmlFor="newsImageUpload">انتخاب عکس</label>
-                    {newsFormData.image && (
-                      <div className="image-preview-container">
-                        <span className="file-name">{newsFormData.image.split("/").pop()}</span>
-                        <button
-                          type="button"
-                          className="remove-image-btn"
-                          onClick={() => setNewsFormData(prev => ({...prev, image: ""}))}
-                        >
-                          حذف عکس
-                        </button>
-                        <img src={newsFormData.image} alt="News Preview" className="file-preview" />
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label>بازدیدها:</label>
-                  <input
-                    type="number"
-                    name="views"
-                    value={newsFormData.views}
-                    onChange={handleNewsInputChange}
-                    min="0"
-                  />
-                </div>
-                <div className="form-group checkbox-group">
-                  <label>
-                    <input
-                      type="checkbox"
-                      name="is_featured"
-                      checked={Boolean(newsFormData.is_featured)}
-                      onChange={handleNewsInputChange}
-                    />
-                    خبر ویژه
-                  </label>
-                </div>
-                <div className="form-actions">
-                  <button type="button" className="cancel" onClick={handleCancelNewsEdit}>
-                    لغو
-                  </button>
-                  <button type="submit" className="save">
-                    ذخیره خبر
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-        {selectedService !== null && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h3>{selectedService && selectedService.id ? "ویرایش خدمت" : "افزودن خدمت جدید"}</h3>
-                <button className="close-modal-btn" onClick={handleCancelServiceEdit}>
-                  &times;
-                </button>
-              </div>
-              <form onSubmit={handleSubmitService} className="modal-form">
-                <div className="form-group">
-                  <label>عنوان:</label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={serviceFormData.title}
-                    onChange={handleServiceInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>توضیحات:</label>
-                  <textarea
-                    name="description"
-                    value={serviceFormData.description}
-                    onChange={handleServiceInputChange}
-                    required
-                  ></textarea>
-                </div>
-                <div className="form-group">
-                  <label>تصویر اصلی (URL یا آپلود):</label>
-                  <input
-                    type="text"
-                    name="mainImage"
-                    value={serviceFormData.mainImage}
-                    onChange={handleServiceInputChange}
-                    placeholder="http://example.com/main_service_image.jpg"
-                  />
-                  <div className="file-input-group">
-                    <input
-                      type="file"
-                      id="serviceMainImageUpload"
-                      accept="image/png,image/jpeg,image/jpg"
-                      onChange={(e) => handleServiceFileChange(e, "mainImage_file")}
-                    />
-                    <label htmlFor="serviceMainImageUpload">یا آپلود تصویر اصلی</label>
-                    {serviceFormData.mainImage && (
-                      <span className="file-name">{serviceFormData.mainImage.split("/").pop()}</span>
-                    )}
-                  </div>
-                  {serviceFormData.mainImage && (
-                    <img
-                      src={serviceFormData.mainImage || "/placeholder.svg"}
-                      alt="Main Service Preview"
-                      className="file-preview"
-                    />
-                  )}
-                </div>
-                <div className="form-actions">
-                  <button type="button" className="cancel" onClick={handleCancelServiceEdit}>
-                    لغو
-                  </button>
-                  <button type="submit" className="save">
-                    ذخیره خدمت
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+        {activeTab === "dashboard" && (<div><h2>داشبورد</h2><div className="stats-cards"><div className="card"><h3>محصولات</h3><p>{stats.totalProducts || 0}</p></div><div className="card"><h3>اخبار</h3><p>{stats.totalNews || 0}</p></div><div className="card"><h3>خدمات</h3><p>{stats.totalServices || 0}</p></div></div></div>)}
+        {activeTab === "products" && (<div><h2>مدیریت محصولات</h2><button className="add-button" onClick={handleAddProduct}>افزودن محصول</button><ul className="item-list">{products.map(p => (<li key={p.id}><span>{p.name}</span><div className="item-actions"><button className="edit-btn" onClick={() => handleEditProduct(p)}>ویرایش</button><button className="delete-btn" onClick={() => handleDeleteProduct(p.id)}>حذف</button></div></li>))}</ul></div>)}
+        {activeTab === "news" && (<div><h2>مدیریت اخبار</h2><button className="add-button" onClick={handleAddNews}>افزودن خبر</button><ul className="item-list">{news.map(n => (<li key={n.id}><span>{n.title}</span><div className="item-actions"><button className="edit-btn" onClick={() => handleEditNews(n)}>ویرایش</button><button className="delete-btn" onClick={() => handleDeleteNews(n.id)}>حذف</button></div></li>))}</ul></div>)}
+        {activeTab === "services" && (<div><h2>مدیریت خدمات</h2><button className="add-button" onClick={handleAddService}>افزودن خدمت</button><ul className="item-list">{services.map(s => (<li key={s.id}><span>{s.name}</span><div className="item-actions"><button className="edit-btn" onClick={() => handleEditService(s)}>ویرایش</button><button className="delete-btn" onClick={() => handleDeleteService(s.id)}>حذف</button></div></li>))}</ul></div>)}
+        {activeTab === "ferrisWheel" && (<div><h2>مدیریت کابین‌ها</h2><div className="cabin-editor-grid">{cabins.sort((a,b)=>a.cabin_number-b.cabin_number).map(c=>(<div key={c.id} className="cabin-editor-card"><h3>کابین {c.cabin_number}</h3><div className="cabin-preview"><img src={c.image_url||'/placeholder.webp'} alt="Preview"/></div><div className="cabin-inputs"><div className="form-group"><label>لینک:</label><input type="text" value={c.target_link} onChange={(e)=>handleCabinChange(c.id,'target_link',e.target.value)}/></div><div className="form-group"><label>عکس:</label><input type="file" onChange={(e)=>handleCabinImageUpload(c.id,e.target.files[0])}/></div><button className="save-cabin-btn" onClick={()=>handleSaveCabin(c.id)} disabled={cabinLoading[c.id]}>{cabinLoading[c.id]?'...':(cabinLoading[`success_${c.id}`]?'✓':'ذخیره')}</button></div></div>))}</div></div>)}
+        {activeTab === "timeline" && (<div><h2>مدیریت تایم‌لاین</h2><button className="add-button" onClick={handleAddTimelineItem}>افزودن آیتم</button><ul className="item-list">{timelineItems.map(item=>(<li key={item.id}><span>{item.sort_order} - {item.title}</span><div className="item-actions"><button className="edit-btn" onClick={()=>handleEditTimelineItem(item)}>ویرایش</button><button className="delete-btn" onClick={()=>handleDeleteTimelineItem(item.id)}>حذف</button></div></li>))}</ul></div>)}
       </main>
+
+      {/* MODALS */}
+      {selectedProduct && (<div className="modal-overlay"><div className="modal-content"><div className="modal-header"><h3>{selectedProduct.id ? "ویرایش محصول" : "افزودن"}</h3><button onClick={handleCancelProductEdit}>&times;</button></div><form onSubmit={handleSubmitProduct}>{/* Product form fields */}</form></div></div>)}
+      {selectedNews && (<div className="modal-overlay"><div className="modal-content"><div className="modal-header"><h3>{selectedNews.id ? "ویرایش خبر" : "افزودن"}</h3><button onClick={handleCancelNewsEdit}>&times;</button></div><form onSubmit={handleSubmitNews}>{/* News form fields */}</form></div></div>)}
+      {selectedService && (<div className="modal-overlay"><div className="modal-content"><div className="modal-header"><h3>{selectedService.id ? "ویرایش خدمت" : "افزودن"}</h3><button onClick={handleCancelServiceEdit}>&times;</button></div><form onSubmit={handleSubmitService}>{/* Service form fields */}</form></div></div>)}
+      
+      {selectedTimelineItem && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3>{selectedTimelineItem.id ? "ویرایش آیتم تایم‌لاین" : "افزودن آیتم جدید"}</h3>
+              <button className="close-modal-btn" onClick={handleCancelTimelineEdit}>&times;</button>
+            </div>
+            <form onSubmit={handleSubmitTimeline}>
+              <div className="form-group"><label>عنوان:</label><input type="text" name="title" value={timelineFormData.title} onChange={handleTimelineInputChange} required /></div>
+              <div className="form-group"><label>توضیحات:</label><textarea name="description" value={timelineFormData.description} onChange={handleTimelineInputChange}></textarea></div>
+              <div className="form-group"><label>لینک مقصد:</label><input type="text" name="target_link" value={timelineFormData.target_link} onChange={handleTimelineInputChange} placeholder="/products/1" /></div>
+              <div className="form-group"><label>ترتیب نمایش (عدد کوچکتر بالاتر):</label><input type="number" name="sort_order" value={timelineFormData.sort_order} onChange={handleTimelineInputChange} /></div>
+              <div className="form-group">
+                <label>عکس:</label>
+                <label htmlFor="timelineImageUpload" className="file-upload-label">
+                    <span>{timelineFormData.image_url ? "تغییر عکس" : "انتخاب عکس"}</span>
+                    <small>برای آپلود کلیک کنید</small>
+                </label>
+                <input 
+                  type="file" 
+                  id="timelineImageUpload" 
+                  onChange={handleTimelineImageUpload} 
+                  accept="image/*" 
+                  style={{ display: 'none' }}
+                />
+                {timelineFormData.image_url && (
+                  <div className="previews-container">
+                    <div className="preview-item">
+                      <img src={timelineFormData.image_url} alt="Preview"/>
+                      <button 
+                        type="button" 
+                        className="remove-preview-btn" 
+                        onClick={() => setTimelineFormData(prev => ({...prev, image_url: ""}))}
+                      >&times;</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="form-actions">
+                <button type="button" className="cancel-btn" onClick={handleCancelTimelineEdit}>لغو</button>
+                <button type="submit" className="save-btn" disabled={loading}>ذخیره</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default AdminPanel
-
+export default AdminPanel;

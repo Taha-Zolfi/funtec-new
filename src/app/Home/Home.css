@@ -26,7 +26,11 @@
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
-  will-change: transform;
+  /*
+    The 'contain' property helps browsers optimize rendering by isolating this element.
+    'layout', 'style', and 'paint' tell the browser that this element's internals
+    won't affect the rest of the page's layout or style.
+  */
   contain: layout style paint;
 }
 
@@ -133,10 +137,19 @@
   position: fixed; /* place it fixed so it can sit left of the content */
   left: 0;
   top: 0;
-  transform: translateZ(0); /* Enable hardware acceleration */
+  /*
+    Promotes the element to its own layer for hardware acceleration.
+    This is a highly performant way to handle complex visual elements.
+  */
+  transform: translateZ(0);
   margin: 0;
   padding: 0;
-  contain: strict; /* Improve performance by isolating this component */
+  /*
+    Changed from 'strict' to be safer. This still provides significant
+    performance gains by isolating the component without being overly
+    restrictive about its size, which can prevent layout issues.
+  */
+  contain: layout style paint;
   z-index: 0; /* keep the 3D canvas behind the main content */
 }
 
@@ -144,10 +157,11 @@
   width: 100% !important;
   height: 100% !important;
   display: block;
-  backface-visibility: hidden; /* Reduce paint */
-  perspective: 1000px; /* Improve 3D performance */
-  transform: translate3d(0,0,0); /* Force GPU acceleration */
-  z-index: -1; /* ensure canvas is painted behind the content */
+  /* These properties help optimize rendering for 3D content */
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform: translate3d(0,0,0);
+  z-index: -1;
 }
 
 /* Shift content to the right so ferris wheel appears on the left side */
@@ -181,15 +195,35 @@
 .h-title {
   font-size: clamp(5.5rem, 9vw, 12rem);
   font-weight: 900;
+  position: relative; /* Needed for the pseudo-element positioning */
+  color: transparent; /* Hide the original text color */
+  background: linear-gradient(135deg, var(--primary-gold), var(--primary-blue), var(--primary-gold));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  /*
+    Removed 'will-change' here. Modern browsers are good at layer promotion
+    for animations, and removing it can save GPU memory.
+  */
+}
+
+/*
+  PERFORMANCE OPTIMIZATION:
+  Instead of animating the `background-position` of the text itself (which is costly),
+  we create a pseudo-element with the animated gradient and clip it to the text shape.
+  This is much more performant.
+*/
+.h-title::before {
+  content: '';
+  position: absolute;
+  inset: 0;
   background: linear-gradient(135deg, var(--primary-gold), var(--primary-blue), var(--primary-gold));
   background-size: 200% 200%;
   animation: gradientShift 16s ease-in-out infinite;
-  background-clip: text;
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   background-clip: text;
-  will-change: background-position; /* Optimize animation performance */
 }
+
 
 /* Desktop: keep title and subtitle on a single line */
 @media (min-width: 769px) {
@@ -211,9 +245,7 @@
   font-size: clamp(1.6rem, 2.8vw, 3.2rem);
   font-weight: 600;
   margin: 1.5rem 0;
-
   color: var(--text-light);
-  text-shadow: 0 3px 15px rgba(0, 0, 0, 0.6);
 }
 
 .home-buttons {
@@ -232,7 +264,7 @@
   background: transparent;
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.63);
   border: 2px solid;
 }
 
@@ -244,12 +276,10 @@
 .gallery:hover {
   background: rgba(255, 181, 39, 0.1);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(255, 181, 39, 0.15);
 }
 
 .gallery:active {
   transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(255, 181, 39, 0.1);
 }
 
 .contact {
@@ -260,15 +290,11 @@
 .contact:hover {
   background: rgba(19, 200, 255, 0.1);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(19, 200, 255, 0.15);
 }
 
 .contact:active {
   transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(19, 200, 255, 0.1);
 }
-
-.contact:hover::before { left: 0; }
 
 .scroll-indicator {
   display: none;
@@ -303,7 +329,7 @@
     max-width: 100%;
     text-align: center;
     padding-right: 0;
-     margin-top: -5rem;
+    margin-top: -5rem;
   }
   .ferris-wheel-container {
     width: 100%;
@@ -327,7 +353,6 @@
   /* mobile: allow wrapping and use smaller sizes so title doesn't overflow */
   .h-title {
     white-space: normal;
-
     word-break: keep-all; /* Persian: prefer not breaking words between letters */
   }
   .subtitle {
@@ -359,4 +384,3 @@ spline-viewer::part(footer),
   pointer-events: none !important;
   opacity: 0 !important;
 }
-
