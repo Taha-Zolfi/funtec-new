@@ -55,6 +55,16 @@ const SectionWrapper = ({ children, id }) => {
     );
 }
 
+// Cursor spotlight utility
+const setMouseCSSVariables = (event) => {
+  const element = event.currentTarget;
+  const rect = element.getBoundingClientRect();
+  const posX = event.clientX - rect.left;
+  const posY = event.clientY - rect.top;
+  element.style.setProperty('--mouse-x', `${posX}px`);
+  element.style.setProperty('--mouse-y', `${posY}px`);
+};
+
 // --- Memoized Card Components ---
 
 const StatCard = memo(({ stat, index, isVisible }) => {
@@ -88,7 +98,7 @@ StatCard.displayName = "StatCard";
 const FeatureCard = memo(({ feature }) => {
     const Icon = iconMap[feature.icon];
     return (
-      <div className="about-feature-card" style={{ "--feature-color": feature.color }}>
+      <div className="about-feature-card" style={{ "--feature-color": feature.color }} onMouseMove={setMouseCSSVariables}>
         <div className="about-feature-icon">{Icon && <Icon size={30} />}</div>
         <div>
           <h3 className="about-feature-title">{feature.title}</h3>
@@ -102,7 +112,7 @@ FeatureCard.displayName = "FeatureCard";
 const ProcessCard = memo(({ step }) => {
     const Icon = iconMap[step.icon];
     return (
-      <div className="process-card">
+      <div className="process-card" onMouseMove={setMouseCSSVariables}>
         <div className="process-card-icon">{Icon && <Icon size={32} />}</div>
         <h3 className="process-card-title">{step.title}</h3>
         <p className="process-card-description">{step.description}</p>
@@ -132,7 +142,7 @@ const TimelineItem = memo(({ milestone }) => {
     return (
         <div className="timeline-item">
         <a {...linkProps} className="timeline-card-link">
-            <div className="timeline-card">
+            <div className="timeline-card" onMouseMove={setMouseCSSVariables}>
             <Image
                 src={milestone.image_url || "/placeholder.svg"}
                 alt={milestone.title}
@@ -229,9 +239,45 @@ export default function AboutClient({ data }) {
             <div className="light-effect light-effect-1"></div>
             <div className="light-effect light-effect-2"></div>
             <div className="light-effect light-effect-3"></div>
-            <div className="shooting-star"></div>
-            <div className="shooting-star"></div>
-            <div className="shooting-star"></div>
+            <div className="shooting-star s1"></div>
+            <div className="shooting-star s2"></div>
+            <div className="shooting-star s3"></div>
+
+            {/* Decorative SVG Vector Layer (arrows + orbs) */}
+            <svg className="about-vector-layer" viewBox="0 0 1000 1000" aria-hidden="true" focusable="false">
+              <defs>
+                <linearGradient id="arrowGradBlue" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#13c8ff" stopOpacity="0.8" />
+                  <stop offset="100%" stopColor="#ffffff" stopOpacity="0.0" />
+                </linearGradient>
+                <linearGradient id="arrowGradOrange" x1="1" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#ffb527" stopOpacity="0.7" />
+                  <stop offset="100%" stopColor="#ffffff" stopOpacity="0.0" />
+                </linearGradient>
+                <marker id="arrowHeadBlue" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L6,3 L0,6 Z" fill="#13c8ff" />
+                </marker>
+                <marker id="arrowHeadOrange" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L6,3 L0,6 Z" fill="#ffb527" />
+                </marker>
+              </defs>
+
+              {/* Curved arrows */}
+              <path className="vector-arrow" d="M 40 820 C 260 700 480 520 860 520" stroke="url(#arrowGradBlue)" markerEnd="url(#arrowHeadBlue)" />
+              <path className="vector-arrow" d="M 140 180 C 440 260 660 160 920 280" stroke="url(#arrowGradOrange)" markerEnd="url(#arrowHeadOrange)" />
+              <path className="vector-arrow" d="M 80 500 C 300 380 520 460 780 360" stroke="url(#arrowGradBlue)" markerEnd="url(#arrowHeadBlue)" />
+
+              {/* Accent dotted orbs */}
+              <g className="vector-orb" transform="translate(180,260)">
+                <circle r="8" fill="#13c8ff" />
+              </g>
+              <g className="vector-orb" transform="translate(840,620)">
+                <circle r="10" fill="#ffb527" />
+              </g>
+              <g className="vector-orb" transform="translate(420,840)">
+                <circle r="6" fill="#13c8ff" />
+              </g>
+            </svg>
         </div>
       
         <div className="about-container">
