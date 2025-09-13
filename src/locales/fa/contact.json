@@ -1,0 +1,53 @@
+{
+  "mainTitle": "ارتباط با ما",
+  "logoAlt": "فان تک",
+  "copyright": "© 1404 فان تک. تمامی حقوق محفوظ است.",
+  "departments": [
+    {
+      "title": "واحد بازاریابی و فروش",
+      "phones": ["021 33 49 99 01", "021 33 49 99 02"],
+      "icon": "FaBuilding"
+    },
+    {
+      "title": "تیم فروش",
+      "phones": ["0919 177 17 27", "0910 910 13 80"],
+      "icon": "FaUsers"
+    },
+    {
+      "title": "خدمات پس از فروش",
+      "phones": ["021 33 47 73 55", "0990 477 277 1"],
+      "icon": "FaHeadset"
+    }
+  ],
+  "socialLinks": [
+    {
+      "href": "https://instagram.com/Funtec.co",
+      "handle": "@Funtec.co",
+      "icon": "FaInstagram",
+      "className": "instagram-link",
+      "wrapperClass": "instagram-wrapper",
+      "iconClass": "instagram-icon",
+      "glowClass": "instagram-glow"
+    },
+    {
+      "href": "https://t.me/funtec_co",
+      "handle": "@funtec_co",
+      "icon": "FaTelegram",
+      "className": "telegram-link",
+      "wrapperClass": "telegram-wrapper",
+      "iconClass": "telegram-icon",
+      "glowClass": "telegram-glow"
+    }
+  ],
+  "addresses": [
+    {
+      "title": "آدرس دفتر مرکزی",
+      "text": "تهران میدان ولی عصر نبش خیابان فتحی شقاقی برج بلورین"
+    },
+    {
+      "title": "آدرس دفتر خدمات",
+      "text": "تهران میدان آقا نور مجتمع تجاری پاساژ اطمینان ایرانیان"
+    }
+  ],
+  "footerText": "فان تک - بی نقص شدن یک سفر بی پایان است"
+}

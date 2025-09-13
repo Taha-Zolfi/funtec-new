@@ -1,0 +1,68 @@
+{
+  "list": {
+    "loading": "در حال بارگذاری محصولات...",
+    "unnamedProduct": "محصول بدون نام",
+    "noDescription": "توضیحی برای این محصول موجود نیست.",
+    "detailsButton": "مشاهده جزئیات",
+    "detailsAriaLabel": "مشاهده جزئیات {{productName}}",
+    "navDots": {
+      "scrollToTopAriaLabel": "برو به بالای صفحه",
+      "mainPageTooltip": "صفحه اصلی",
+      "scrollToProductAriaLabel": "برو به {{productName}}"
+    },
+    "hero": {
+      "title": "محصولات",
+      "subtitle": "انواع محصولات شهربازی با کیفیت برتر",
+      "downloadButton": "دانلود کاتالوگ محصولات",
+      "scrollIndicator": "اسکرول کنید"
+    }
+  },
+  "detail": {
+    "featuresTitle": "ویژگی‌ها",
+    "specsTitle": "مشخصات فنی",
+    "comments": {
+      "title": "نظرات کاربران",
+      "noComments": "هنوز نظری برای این محصول ثبت نشده است.",
+      "formTitle": "ثبت نظر",
+      "formDescription": "نظر خود را درباره این محصول با دیگران به اشتراک بگذارید.",
+      "nameLabel": "نام شما",
+      "namePlaceholder": "نام خود را وارد کنید",
+      "ratingLabel": "امتیاز شما",
+      "commentLabel": "متن نظر",
+      "commentPlaceholder": "نظر خود را بنویسید...",
+      "submittingButton": "در حال ارسال...",
+      "submitButton": "ثبت نظر",
+      "submitError": "خطا در ثبت نظر. لطفا دوباره تلاش کنید."
+    },
+    "notFound": {
+      "title": "محصول یافت نشد",
+      "body": "متأسفانه محصول مورد نظر شما یافت نشد.",
+      "button": "بازگشت به صفحه محصولات"
+    },
+    "hero": {
+      "backButton": "بازگشت",
+      "ratingText": "{{rating}} از 5 ({{count}} نظر)",
+      "contactButton": "تماس با ما"
+    },
+    "noFullDescription": "توضیحات تکمیلی موجود نیست.",
+    "shareAlert": "لینک کپی شد!",
+    "phoneModal": {
+      "closeAriaLabel": "بستن",
+      "title": "انتخاب شماره تماس",
+      "subtitle": "برای مشاوره و خرید، با یکی از شماره‌های زیر تماس بگیرید:",
+      "numbers": [
+        { "labelKey": "detail.phoneModal.salesSupport", "number": "021-33499901", "defaultLabel": "پشتیبانی فروش" },
+        { "labelKey": "detail.phoneModal.techSupport", "number": "021-33499902", "defaultLabel": "مشاوره فنی" }
+      ],
+      "salesSupport": "پشتیبانی فروش",
+      "techSupport": "مشاوره فنی"
+    },
+    "galleryModal": {
+      "closeAriaLabel": "بستن گالری",
+      "imageAlt": "تصویر {{index}}",
+      "prevAriaLabel": "تصویر قبلی",
+      "nextAriaLabel": "تصویر بعدی",
+      "thumbnailAlt": "تصویر کوچک {{index}}"
+    }
+  }
+}

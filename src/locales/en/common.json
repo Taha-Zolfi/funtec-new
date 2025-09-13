@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "mobileMenuTitle": "Menu",
+    "menuItems": [
+      { "title": "Home", "icon": "FaHome", "href": "/" },
+      {
+        "title": "Products",
+        "icon": "FaBoxOpen",
+        "key": "products",
+        "children": [
+          {
+            "title": "Group Games",
+            "children": [
+              { "title": "Laser Tag", "href": "/products/2" },
+              { "title": "Laser Maze", "href": "/products/3" },
+              { "title": "Escape Room", "href": "/products/10" },
+              { "title": "Horror Zone", "href": "/products/11" },
+              { "title": "Horror Cinema", "href": "/products/12" }
+            ]
+          },
+          {
+            "title": "Arcade Games",
+            "children": [
+              { "title": "Fall Ball", "href": "/products/13" },
+              { "title": "Fireball", "href": "/products/14" },
+              { "title": "Air Hockey", "href": "/products/20" },
+              { "title": "Hand Speed", "href": "/products/21" },
+              { "title": "Hammer", "href": "/products/22" }
+            ]
+          }
+        ]
+      },
+      { "title": "About Us", "icon": "FaInfoCircle", "href": "/#about" },
+      { "title": "News", "icon": "FaNewspaper", "href": "/news" },
+      { "title": "Contact Us", "icon": "FaPhone", "href": "/#contact" }
+    ]
+  }
+}

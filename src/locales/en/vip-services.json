@@ -1,0 +1,34 @@
+{
+  "title": "VIP Services",
+  "welcome": "Welcome",
+  "subtitle": "You have access to our premium services",
+  "serviceCard": {
+    "vipBadge": "VIP",
+    "requestService": "Request Service",
+    "priceRange": "Price Range",
+    "estimatedDuration": "Estimated Duration"
+  },
+  "requestModal": {
+    "title": "Service Request",
+    "requestTitle": "Request Title",
+    "requestTitlePlaceholder": "Example: Ferris Wheel Repair",
+    "description": "Full Description",
+    "descriptionPlaceholder": "Please describe the details of your request...",
+    "location": "Service Location",
+    "locationPlaceholder": "Address or location name",
+    "preferredDate": "Preferred Date",
+    "preferredTime": "Preferred Time",
+    "estimatedCost": "Estimated Cost",
+    "estimatedCostPlaceholder": "Example: $500",
+    "cancel": "Cancel",
+    "submit": "Submit Request",
+    "successMessage": "Your request has been submitted successfully!",
+    "errorMessage": "Error submitting request"
+  },
+  "errors": {
+    "notAuthenticated": "Please login first",
+    "noVipAccess": "You don't have VIP access",
+    "loadingError": "Error loading data"
+  }
+}
+

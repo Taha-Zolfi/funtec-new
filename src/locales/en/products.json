@@ -1,0 +1,68 @@
+{
+  "list": {
+    "loading": "Loading products...",
+    "unnamedProduct": "Unnamed Product",
+    "noDescription": "No description is available for this product.",
+    "detailsButton": "View Details",
+    "detailsAriaLabel": "View details for {{productName}}",
+    "navDots": {
+      "scrollToTopAriaLabel": "Go to top of page",
+      "mainPageTooltip": "Main Page",
+      "scrollToProductAriaLabel": "Go to {{productName}}"
+    },
+    "hero": {
+      "title": "Products",
+      "subtitle": "A variety of top-quality amusement park products",
+      "downloadButton": "Download Product Catalog",
+      "scrollIndicator": "Scroll Down"
+    }
+  },
+  "detail": {
+    "featuresTitle": "Features",
+    "specsTitle": "Specifications",
+    "comments": {
+      "title": "User Reviews",
+      "noComments": "No reviews have been submitted for this product yet.",
+      "formTitle": "Post a Review",
+      "formDescription": "Share your opinion about this product with others.",
+      "nameLabel": "Your Name",
+      "namePlaceholder": "Enter your name",
+      "ratingLabel": "Your Rating",
+      "commentLabel": "Your Comment",
+      "commentPlaceholder": "Write your review...",
+      "submittingButton": "Submitting...",
+      "submitButton": "Submit Review",
+      "submitError": "Error submitting review. Please try again."
+    },
+    "notFound": {
+      "title": "Product Not Found",
+      "body": "Unfortunately, the product you are looking for was not found.",
+      "button": "Back to Products Page"
+    },
+    "hero": {
+      "backButton": "Back",
+      "ratingText": "{{rating}} of 5 ({{count}} reviews)",
+      "contactButton": "Contact Us"
+    },
+    "noFullDescription": "No detailed description available.",
+    "shareAlert": "Link copied to clipboard!",
+    "phoneModal": {
+      "closeAriaLabel": "Close",
+      "title": "Select a Contact Number",
+      "subtitle": "For consultation and purchase, please call one of the numbers below:",
+      "numbers": [
+        { "labelKey": "detail.phoneModal.salesSupport", "number": "021-33499901", "defaultLabel": "Sales Support" },
+        { "labelKey": "detail.phoneModal.techSupport", "number": "021-33499902", "defaultLabel": "Technical Consultation" }
+      ],
+      "salesSupport": "Sales Support",
+      "techSupport": "Technical Consultation"
+    },
+    "galleryModal": {
+      "closeAriaLabel": "Close gallery",
+      "imageAlt": "Image {{index}}",
+      "prevAriaLabel": "Previous image",
+      "nextAriaLabel": "Next image",
+      "thumbnailAlt": "Thumbnail {{index}}"
+    }
+  }
+}

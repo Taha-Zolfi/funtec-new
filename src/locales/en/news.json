@@ -1,0 +1,85 @@
+{
+  "details": {
+    "breadcrumb": "News",
+    "featuredBadge": "Featured News",
+    "sidebar": {
+      "title": "Details",
+      "publishDate": "Publish Date",
+      "readingTimeLabel": "Reading Time",
+      "readingTimeText": "About {{time}} min",
+      "viewsLabel": "Views",
+      "interactionTitle": "Interaction",
+      "likes": "{{count}} Likes",
+      "bookmark": "Bookmark",
+      "bookmarked": "Bookmarked",
+      "share": "Share"
+    },
+    "related": {
+      "title": "Related News",
+      "emptyText": "There are currently no related articles.",
+      "backButton": "Back to News List"
+    }
+  },
+  "list": {
+    "item": {
+      "bookmarkTitle": "Bookmark",
+      "likeTitle": "Like",
+      "shareTitle": "Share",
+      "readingTime": "{{time}} min read"
+    },
+    "featured": {
+      "badge": "Featured News",
+      "readMore": "Read More"
+    },
+    "breakingNewsPrefix": "🔴 Breaking:",
+    "hero": {
+      "badge": "Latest News & Events",
+      "title": "Funtech News Center",
+      "subtitle": "Stay informed about the latest news, new products, completed projects, and important events in the amusement equipment industry.",
+      "refreshButton": "Refresh",
+  "refreshingButton": "Refreshing..."
+    },
+    "stats": {
+      "totalArticles": "Total Articles",
+      "totalViews": "Total Views",
+      "todayArticles": "Today's Articles",
+      "readArticles": "Read"
+    },
+    "filters": {
+      "searchPlaceholder": "Search in news...",
+      "mobileToggle": "Filters",
+      "sortOptions": [
+        { "value": "newest", "label": "Newest" },
+        { "value": "oldest", "label": "Oldest" },
+        { "value": "popular", "label": "Most Popular" },
+        { "value": "title", "label": "By Title" },
+        { "value": "likes", "label": "Liked" }
+      ],
+      "dateOptions": [
+        { "value": "all", "label": "All Time" },
+        { "value": "today", "label": "Today" },
+        { "value": "week", "label": "Last Week" },
+        { "value": "month", "label": "Last Month" }
+      ]
+    },
+    "empty": {
+      "title": "No News Found",
+      "body": "Unfortunately, no news was found with these filters. Please try another search."
+    },
+    "archive": {
+      "title": "News Archive",
+      "months": [
+        { "link": "/news?date=2024-01", "label": "Jan 2024" },
+        { "link": "/news?date=2024-02", "label": "Feb 2024" },
+        { "link": "/news?date=2024-03", "label": "Mar 2024" },
+        { "link": "/news?date=2024-04", "label": "Apr 2024" }
+      ]
+    },
+    "newsletter": {
+      "title": "Subscribe to Newsletter",
+      "subtitle": "Subscribe to our newsletter to receive the latest news and updates.",
+      "placeholder": "Enter your email address",
+      "button": "Subscribe"
+    }
+  }
+}

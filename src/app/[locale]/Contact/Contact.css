@@ -1,0 +1,336 @@
+/* Enhanced keyframes with new effects */
+@keyframes backgroundMove { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+@keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+@keyframes float-gentle { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
+
+/* --- [NEW] Language Direction Control --- */
+.contact-page-wrapper.lang-fa,
+.contact-page-wrapper.lang-ar {
+  direction: rtl;
+}
+.contact-page-wrapper.lang-en {
+  direction: ltr;
+}
+/* --- End Language Direction --- */
+
+
+/* Main container with improved layout */
+.contact-container {
+  position: relative;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(255, 181, 39, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(19, 200, 255, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255, 181, 39, 0.06) 0%, transparent 50%),
+    linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #000000 100%);
+  background-size: 400% 400%;
+  animation: backgroundMove 25s ease infinite;
+  color: #fff;
+  min-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 2rem 1.5rem;
+}
+
+/* Enhanced sparkles overlay */
+.sparkles-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Content wrapper with better positioning */
+.contact-wrapper {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 8vh;
+  padding-bottom: 2rem;
+}
+
+/* Title positioned lower with better mobile support */
+.contact-title {
+  font-size: clamp(2.2rem, 6vw, 4.5rem);
+  background: linear-gradient(135deg, #ffb527 0%, #13c8ff 50%, #ffb527 100%);
+  background-size: 200% 200%;
+  animation: backgroundMove 5s ease infinite, title-glow 3s ease-in-out infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  font-weight: 900;
+  margin: 0 0 1rem 0;
+}
+
+/* Content with improved spacing */
+.contact-content {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2.5rem;
+}
+
+/* Departments Grid */
+.departments-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.department-section {
+  position: relative;
+  padding: 1.8rem;
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(255, 181, 39, 0.15), rgba(19, 200, 255, 0.15));
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  transition: all 0.4s ease;
+  overflow: hidden;
+}
+
+.department-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+  transition: left 0.5s ease;
+}
+
+.department-section:hover::before {
+  left: 100%;
+}
+
+.department-section:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(135deg, rgba(255, 181, 39, 0.2), rgba(19, 200, 255, 0.2));
+}
+
+.department-header {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.department-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 55px;
+  height: 55px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255, 181, 39, 0.4), rgba(255, 181, 39, 0.2));
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.department-icon {
+  font-size: 1.6rem;
+  color: #ffb527;
+}
+
+.department-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  text-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
+  flex: 1;
+}
+/* [FIX] Text alignment based on language */
+.lang-fa .department-title, .lang-ar .department-title { text-align: right; }
+.lang-en .department-title { text-align: left; }
+
+.department-phones {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.phone-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  text-decoration: none;
+  color: #fff;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.phone-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(19, 200, 255, 0.15), transparent);
+  transition: left 0.4s ease;
+}
+
+.phone-link:hover::before {
+  left: 100%;
+}
+
+.phone-link:hover {
+  background: rgba(19, 200, 255, 0.15);
+  border-color: rgba(19, 200, 255, 0.3);
+}
+.lang-fa .phone-link:hover, .lang-ar .phone-link:hover { transform: translateX(5px); }
+.lang-en .phone-link:hover { transform: translateX(-5px); }
+
+.phone-icon-small {
+  font-size: 1.1rem;
+  color: #13c8ff;
+  flex-shrink: 0;
+}
+
+.phone-link span {
+  font-size: 1.1rem;
+  font-weight: 600;
+  flex: 1;
+  direction: ltr; /* Always keep phone numbers LTR */
+  letter-spacing: 0.5px;
+}
+/* [FIX] Text alignment based on language */
+.lang-fa .phone-link span, .lang-ar .phone-link span { text-align: right; }
+.lang-en .phone-link span { text-align: left; }
+
+
+/* Social Media Grid */
+.social-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.contact-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.3rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  overflow: hidden;
+  text-decoration: none; /* Add for Link */
+  color: #fff; /* Add for Link */
+}
+
+.contact-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  transition: left 0.5s ease;
+}
+
+.contact-item:hover::before {
+  left: 100%;
+}
+
+.contact-item:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-3px);
+}
+
+.icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.instagram-wrapper { background: linear-gradient(135deg, rgba(19, 200, 255, 0.35), rgba(19, 200, 255, 0.15)); }
+.telegram-wrapper { background: linear-gradient(135deg, rgba(19, 200, 255, 0.35), rgba(19, 200, 255, 0.15)); }
+.location-wrapper { background: linear-gradient(135deg, rgba(255, 181, 39, 0.35), rgba(255, 181, 39, 0.15)); }
+
+.icon {
+  font-size: 1.4rem;
+  transition: all 0.3s ease;
+}
+.contact-item:hover .icon { transform: scale(1.1); }
+.instagram-icon { color: #13c8ff; }
+.telegram-icon { color: #13c8ff; }
+.location-icon { color: #ffb527; }
+
+.contact-item span {
+  font-size: 1.1rem;
+  font-weight: 600;
+  flex: 1;
+  transition: all 0.3s ease;
+}
+/* [FIX] Text alignment based on language */
+.lang-fa .contact-item span, .lang-ar .contact-item span { text-align: right; }
+.lang-en .contact-item span { text-align: left; }
+
+.contact-item:hover span { color: #ffffff; }
+
+/* ... (بقیه کد CSS بدون تغییر باقی می‌ماند) ... */
+.item-glow { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 18px; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
+.contact-item:hover .item-glow { opacity: 1; }
+.instagram-glow { background: linear-gradient(135deg, rgba(19, 200, 255, 0.15), rgba(19, 200, 255, 0.08)); }
+.telegram-glow { background: linear-gradient(135deg, rgba(19, 200, 255, 0.15), rgba(19, 200, 255, 0.08)); }
+.location-glow { background: linear-gradient(135deg, rgba(255, 181, 39, 0.15), rgba(255, 181, 39, 0.08)); }
+.address-section { width: 100%; }
+.address-card { display: flex; align-items: center; gap: 1.5rem; padding: 1.6rem; border-radius: 22px; background: linear-gradient(135deg, rgba(255, 181, 39, 0.12), rgba(19, 200, 255, 0.12)); border: 1px solid rgba(255, 255, 255, 0.22); transition: all 0.4s ease; position: relative; overflow: hidden; }
+.address-card::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent); transition: left 0.5s ease; }
+.address-card:hover::before { left: 100%; }
+.address-card:hover { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3); }
+.address-content { flex: 1; }
+/* [FIX] Text alignment based on language */
+.lang-fa .address-content, .lang-ar .address-content { text-align: right; }
+.lang-en .address-content { text-align: left; }
+.address-title { font-size: 1.2rem; font-weight: 700; color: #ffb527; margin: 0 0 0.4rem 0; text-shadow: 0 0 20px rgba(255, 181, 39, 0.6); }
+.address-text { font-size: 1rem; font-weight: 500; color: rgba(255, 255, 255, 0.95); line-height: 1.4; }
+.contact-footer { display: flex; align-items: center; justify-content: center; gap: 1.5rem; background: rgba(255, 255, 255, 0.09); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 30px; padding: 1.3rem 2.5rem; transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden; }
+.contact-footer::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent); transition: left 0.5s ease; }
+.contact-footer:hover::before { left: 100%; }
+.contact-footer:hover { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3); }
+.contact-logo { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; filter: drop-shadow(0 0 15px rgba(255, 181, 39, 0.5)); transition: all 0.3s ease; }
+.contact-footer:hover .contact-logo { filter: drop-shadow(0 0 25px rgba(255, 181, 39, 0.7)); transform: scale(1.05); }
+.contact-footer span { font-size: 1.2rem; font-weight: 600; background: linear-gradient(135deg, #ffb527, #13c8ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-align: center; }
+.copyright { font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); text-align: center; margin: 0; font-weight: 300; }
+.desktop-only { display: block; }
+@media (max-width: 768px) { .contact-container { padding: 1.5rem 1rem; justify-content: flex-start; } .contact-wrapper { margin-top: 6vh; gap: 2rem; padding-bottom: 1.5rem; } .contact-title { font-size: clamp(2rem, 8vw, 3rem); margin-bottom: 1rem; line-height: 1.3; } .contact-content { gap: 2rem; } .departments-grid { gap: 1.5rem; } .department-section { padding: 1.5rem; } .department-header { margin-bottom: 1.2rem; gap: 1rem; } .department-icon-wrapper { width: 50px; height: 50px; } .department-icon { font-size: 1.4rem; } .department-title { font-size: 1.2rem; } .phone-link { padding: 0.7rem 1rem; } .phone-link span { font-size: 1rem; } .social-grid { grid-template-columns: 1fr; gap: 1.2rem; } .contact-item { padding: 1.2rem; gap: 1rem; } .contact-item span { font-size: 1rem; } .icon-wrapper { width: 45px; height: 45px; } .icon { font-size: 1.3rem; } .address-card { padding: 1.4rem; gap: 1.2rem; } .address-title { font-size: 1.1rem; } .address-text { font-size: 0.95rem; } .contact-footer { padding: 1.2rem 2rem; gap: 1.2rem; } .contact-logo { width: 45px; height: 45px; } .contact-footer span { font-size: 1.1rem; } .desktop-only { display: none; } }
+@media (max-width: 375px) { .contact-container { padding: 1rem 0.8rem; } .contact-wrapper { margin-top: 4vh; gap: 1.5rem; max-width: 100%; } .contact-title { font-size: clamp(1.8rem, 10vw, 2.5rem); margin-bottom: 0.8rem; padding: 0 0.5rem; line-height: 1.4; } .contact-content { gap: 1.5rem; padding: 0 0.2rem; } .departments-grid { gap: 1.2rem; } .department-section { padding: 1.2rem; } .department-header { gap: 0.8rem; margin-bottom: 1rem; } .department-icon-wrapper { width: 45px; height: 45px; } .department-title { font-size: 1.1rem; } .phone-link { padding: 0.6rem 0.8rem; } .phone-link span { font-size: 0.95rem; } .contact-item { padding: 1rem; gap: 0.8rem; border-radius: 15px; } .contact-item span { font-size: 0.95rem; font-weight: 500; } .icon-wrapper { width: 40px; height: 40px; border-radius: 10px; } .icon { font-size: 1.2rem; } .address-card { padding: 1.2rem; gap: 1rem; border-radius: 18px; } .address-title { font-size: 1rem; } .address-text { font-size: 0.9rem; line-height: 1.5; } .contact-footer { padding: 1rem 1.5rem; gap: 1rem; border-radius: 25px; } .contact-logo { width: 50px; height: 50px; } .contact-footer span { font-size: 1.3rem; line-height: 1.3; } }
+@media (max-width: 320px) { .contact-title { font-size: clamp(1.6rem, 12vw, 2.2rem); padding: 0 0.3rem; } .department-title { font-size: 1rem; } .phone-link span { font-size: 0.9rem; } .contact-item span { font-size: 0.9rem; } .address-text { font-size: 0.85rem; } .contact-footer span { font-size: 0.95rem; } }
+@media (hover: none) and (pointer: coarse) { .contact-item:hover { transform: none; } .contact-item:active { transform: scale(0.97); background: rgba(255, 255, 255, 0.18); } .department-section:hover { transform: none; } .department-section:active { transform: scale(0.97); } .phone-link:hover { transform: none; } .phone-link:active { transform: scale(0.97); } .contact-footer:hover { transform: none; } .contact-footer:active { transform: scale(0.97); } .address-card:hover { transform: none; } .address-card:active { transform: scale(0.97); } }
+@media (max-height: 500px) and (orientation: landscape) { .contact-container { padding: 1rem; } .contact-wrapper { margin-top: 2vh; gap: 1.2rem; } .contact-title { font-size: clamp(1.5rem, 6vw, 2.2rem); margin-bottom: 0.5rem; } .contact-content { gap: 1.2rem; } .departments-grid { gap: 1rem; } .department-section { padding: 1rem; } .social-grid { gap: 1rem; } .contact-item { padding: 0.8rem; } .address-card { padding: 1rem; } .contact-footer { padding: 0.8rem 1.5rem; } }

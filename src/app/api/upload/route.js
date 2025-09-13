@@ -1,4 +1,5 @@
-// src/app/api/upload/route.js
+// مسیر: src/app/api/upload/route.js
+
 import { NextResponse } from 'next/server';
 import { writeFile } from 'fs/promises';
 import fs from 'fs';
@@ -8,7 +9,7 @@ const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
 
 // مطمئن می‌شویم پوشه uploads وجود دارد
 if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR);
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true }); // اضافه کردن recursive برای اطمینان
 }
 
 export async function POST(request) {
@@ -23,7 +24,7 @@ export async function POST(request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const filename = `${Date.now()}-${file.name}`;
+    const filename = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
     const filepath = path.join(UPLOAD_DIR, filename);
 
     await writeFile(filepath, buffer);
@@ -36,6 +37,7 @@ export async function POST(request) {
       url: fileUrl,
     });
   } catch (error) {
+    console.error("API Upload Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -63,13 +65,13 @@ export async function GET(request) {
     else if (ext === '.png') contentType = 'image/png';
     else if (ext === '.gif') contentType = 'image/gif';
     else if (ext === '.webp') contentType = 'image/webp';
+    else if (ext === '.mp4') contentType = 'video/mp4'; // اضافه کردن پشتیبانی از ویدیو
 
     return new Response(fileStream, {
-      headers: {
-        'Content-Type': contentType,
-      },
+      headers: { 'Content-Type': contentType },
     });
   } catch (error) {
+    console.error("API GET File Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

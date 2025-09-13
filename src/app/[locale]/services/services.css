@@ -1,0 +1,193 @@
+/* ============================================================================ */
+/* Aurora Design - Final Version - Variables & Base */
+/* ============================================================================ */
+:root {
+  --primary-gold: #ffc94a;
+  --primary-blue: #00e0ff;
+  --primary-purple: #be2eff;
+  --success-green: #34d399;
+  --error-red: #f87171;
+  
+  --bg-dark: #050509;
+  --text-primary: #f0f2f5;
+  --text-secondary: #a8b2c2;
+  --card-bg-solid: #0A0A0F;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.25);
+  
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --border-radius-lg: 18px;
+  --border-radius-md: 10px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background-color: var(--bg-dark); color: var(--text-primary); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; overflow-x: hidden; }
+
+/* ============================================================================ */
+/* Loading Screen & Toast Notifications */
+/* ============================================================================ */
+.aurora-loading { position: fixed; inset: 0; background-color: var(--bg-dark); display: grid; place-items: center; z-index: 1001; }
+.aurora-spinner { width: 50px; height: 50px; position: relative; filter: drop-shadow(0 0 10px var(--primary-blue)); }
+.aurora-spinner::before, .aurora-spinner::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 4px solid transparent; animation: aurora-spin 1.5s ease-in-out infinite; }
+.aurora-spinner::before { border-top-color: var(--primary-blue); }
+.aurora-spinner::after { border-bottom-color: var(--primary-gold); animation-delay: -0.75s; }
+@keyframes aurora-spin { to { transform: rotate(360deg); } }
+.aurora-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); padding: 14px 24px; border-radius: var(--border-radius-md); background: rgba(30, 30, 45, 0.8); backdrop-filter: blur(10px); border: 1px solid var(--border-color); color: var(--text-primary); display: flex; align-items: center; gap: 12px; z-index: 2000; box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: toast-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.aurora-toast.success { border-left: 4px solid var(--success-green); }
+.aurora-toast.success svg { color: var(--success-green); }
+.aurora-toast.error { border-left: 4px solid var(--error-red); }
+.aurora-toast.error svg { color: var(--error-red); }
+@keyframes toast-in { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+/* ============================================================================ */
+/* Aurora Background & Page Layout */
+/* ============================================================================ */
+.aurora-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; overflow: hidden; }
+.aurora-shape { position: absolute; filter: blur(160px); border-radius: 50%; opacity: 0.3; will-change: transform; }
+.shape1 { width: 500px; height: 500px; background: var(--primary-blue); top: -150px; left: -150px; animation: aurora-drift 20s ease-in-out infinite alternate; }
+.shape2 { width: 600px; height: 600px; background: var(--primary-gold); bottom: -200px; right: -200px; animation: aurora-drift 25s ease-in-out infinite alternate-reverse; }
+.shape3 { width: 450px; height: 450px; background: var(--primary-purple); bottom: 5%; left: 15%; animation: aurora-drift 30s ease-in-out infinite alternate; }
+@keyframes aurora-drift { from { transform: translate(0, 0) scale(1) rotate(0deg); } to { transform: translate(100px, 50px) scale(1.2) rotate(45deg); } }
+.aurora-page { max-width: 1300px; margin: 0 auto; padding: 100px 24px; }
+.aurora-hero { text-align: center; margin-bottom: 80px; }
+.aurora-hero-title { font-size: clamp(2.8rem, 6vw, 4.5rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; color: var(--text-primary); margin-bottom: 24px; animation: fade-in-up 0.8s 0.1s both; }
+.aurora-hero-highlight { background: linear-gradient(135deg, var(--primary-gold), var(--primary-blue)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.aurora-hero-subtitle { font-size: clamp(1.1rem, 2vw, 1.25rem); color: var(--text-secondary); max-width: 750px; margin: 0 auto; line-height: 1.8; animation: fade-in-up 0.8s 0.3s both; }
+
+/* ============================================================================ */
+/* Grid & Cards (3D INTERACTIVE DESIGN) */
+/* ============================================================================ */
+.aurora-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 32px;
+}
+
+.aurora-card {
+  background: var(--card-bg-solid);
+  border-radius: var(--border-radius-lg);
+  position: relative;
+  cursor: pointer;
+  
+  /* 3D Effect Properties */
+  transform-style: preserve-3d;
+  transform: perspective(1000px) rotateY(var(--rotate-y, 0)) rotateX(var(--rotate-x, 0)) scale(1);
+  /* Smooth transition for mouse leave */
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+  will-change: transform, box-shadow;
+  
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+
+  /* Entrance Animation */
+  opacity: 0;
+  animation: card-enter 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: var(--delay);
+}
+
+.aurora-card:hover {
+  box-shadow: 0 25px 50px -10px rgba(0,0,0,0.5);
+  /* Use a faster transition on hover for responsiveness */
+  transition: transform 0.1s ease-out, box-shadow 0.3s ease;
+}
+
+/* Spotlight Effect */
+.aurora-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.1), transparent 80%);
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.aurora-card:hover::before {
+  opacity: 1;
+}
+
+.aurora-card-border {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid var(--border-color);
+  transition: border-color 0.3s;
+}
+
+.aurora-card:hover .aurora-card-border {
+  border-color: var(--border-hover);
+}
+
+.aurora-card-content {
+  /* Move content to a 3D layer */
+  transform: translateZ(20px);
+  transform-style: preserve-3d;
+  
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: inherit;
+  position: relative;
+}
+
+.aurora-card-img {
+  /* Give the image even more depth */
+  transform: translateZ(40px);
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.aurora-card-body { padding: 24px; display: flex; flex-direction: column; flex-grow: 1; gap: 16px; }
+.aurora-card-title { font-size: 1.35rem; font-weight: 600; }
+.aurora-card-excerpt { color: var(--text-secondary); line-height: 1.75; font-size: 1rem; flex-grow: 1; }
+.aurora-card-footer { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+.aurora-card-features { display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; color: var(--text-secondary); }
+.aurora-card-features span { display: flex; align-items: center; gap: 8px; }
+.aurora-card-features svg { color: var(--primary-gold); }
+.aurora-action-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); color: var(--text-primary); font-family: inherit; font-weight: 500; padding: 10px 20px; border-radius: var(--border-radius-md); cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease; position: relative; overflow: hidden; }
+.aurora-action-btn:hover { background: var(--primary-blue); color: #000; border-color: var(--primary-blue); box-shadow: 0 0 25px rgba(0, 224, 255, 0.4); transform: scale(1.05); }
+.aurora-action-btn svg { transition: transform 0.3s ease; }
+.aurora-action-btn:hover svg { transform: translateX(4px); }
+
+
+/* ============================================================================ */
+/* Modal & Empty State */
+/* ============================================================================ */
+.aurora-modal-overlay { position: fixed; inset: 0; background: rgba(10, 10, 15, 0.5); display: grid; place-items: center; z-index: 1000; backdrop-filter: blur(12px); animation: fade-in 0.4s ease; }
+.aurora-modal { background: radial-gradient(circle at 50% 0%, rgba(25, 29, 44, 1) 0%, rgba(13, 13, 21, 1) 100%); border-radius: var(--border-radius-lg); padding: 32px; width: 90%; max-width: 500px; border: 1px solid var(--border-color); box-shadow: 0 25px 60px -15px rgba(0,0,0,0.6); animation: slide-up 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); position: relative; }
+
+.aurora-modal-close { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.1); border: none; color: var(--text-primary); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: grid; place-items: center; transition: all 0.3s ease; }
+.aurora-modal-close:hover { background: rgba(255,255,255,0.2); transform: rotate(90deg); }
+.aurora-modal-header { text-align: center; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border-color); animation: fade-in-up 0.5s 0.2s both; }
+.aurora-modal-title { font-size: 1.8rem; margin-bottom: 8px; }
+.aurora-modal-subtitle { color: var(--text-secondary); }
+.aurora-form { animation: fade-in-up 0.5s 0.3s both; }
+.aurora-form-group label { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-weight: 500; }
+.aurora-form-group textarea { width: 100%; background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 12px; color: var(--text-primary); font-family: inherit; font-size: 1rem; resize: vertical; transition: all 0.3s ease; }
+.aurora-form-group textarea:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(0, 224, 255, 0.2), 0 0 15px rgba(0, 224, 255, 0.1); }
+.aurora-submit-btn { width: 100%; margin-top: 16px; background: linear-gradient(135deg, var(--primary-blue), var(--primary-gold)); color: #000; border: none; border-radius: var(--border-radius-md); padding: 14px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+.aurora-submit-btn:not(:disabled):hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 224, 255, 0.25); }
+.aurora-submit-btn:disabled { opacity: .6; cursor: not-allowed; filter: grayscale(40%); }
+.aurora-empty-state { text-align: center; padding: 80px 20px; background: rgba(255,255,255,0.03); border: 1px dashed var(--border-color); border-radius: var(--border-radius-lg); backdrop-filter: blur(10px); }
+.aurora-empty-state h3 { font-size: 1.4rem; margin: 16px 0; }
+.aurora-empty-state p { color: var(--text-secondary); }
+
+/* ============================================================================ */
+/* Animations & Responsive */
+/* ============================================================================ */
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slide-up { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fade-in-up { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes card-enter { from { opacity: 0; transform: translateY(50px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+@media (max-width: 768px) {
+  /* Disable 3D effect on touch devices */
+  .aurora-card {
+    transform: perspective(1000px) !important;
+  }
+  .aurora-page { padding: 60px 16px; }
+  .aurora-grid { grid-template-columns: 1fr; gap: 24px; }
+  .shape1, .shape2, .shape3 { filter: blur(100px); opacity: 0.3; }
+}

@@ -1,0 +1,68 @@
+{
+  "list": {
+    "loading": "جاري تحميل المنتجات...",
+    "unnamedProduct": "منتج بدون اسم",
+    "noDescription": "لا يوجد وصف متاح لهذا المنتج.",
+    "detailsButton": "عرض التفاصيل",
+    "detailsAriaLabel": "عرض تفاصيل {{productName}}",
+    "navDots": {
+      "scrollToTopAriaLabel": "اذهب إلى أعلى الصفحة",
+      "mainPageTooltip": "الصفحة الرئيسية",
+      "scrollToProductAriaLabel": "اذهب إلى {{productName}}"
+    },
+    "hero": {
+      "title": "المنتجات",
+      "subtitle": "مجموعة متنوعة من منتجات الملاهي عالية الجودة",
+      "downloadButton": "تحميل كتالوج المنتجات",
+      "scrollIndicator": "مرر للأسفل"
+    }
+  },
+  "detail": {
+    "featuresTitle": "الميزات",
+    "specsTitle": "المواصفات الفنية",
+    "comments": {
+      "title": "تقييمات المستخدمين",
+      "noComments": "لم يتم تسجيل أي تقييمات لهذا المنتج بعد.",
+      "formTitle": "أضف تقييمك",
+      "formDescription": "شارك رأيك حول هذا المنتج مع الآخرين.",
+      "nameLabel": "اسمك",
+      "namePlaceholder": "أدخل اسمك",
+      "ratingLabel": "تقييمك",
+      "commentLabel": "تعليقك",
+      "commentPlaceholder": "اكتب تقييمك هنا...",
+      "submittingButton": "جاري الإرسال...",
+      "submitButton": "إرسال التقييم",
+      "submitError": "خطأ في إرسال التقييم. يرجى المحاولة مرة أخرى."
+    },
+    "notFound": {
+      "title": "المنتج غير موجود",
+      "body": "للأسف، المنتج الذي تبحث عنه غير موجود.",
+      "button": "العودة إلى صفحة المنتجات"
+    },
+    "hero": {
+      "backButton": "رجوع",
+      "ratingText": "{{rating}} من 5 ({{count}} تقييمات)",
+      "contactButton": "اتصل بنا"
+    },
+    "noFullDescription": "لا يوجد وصف تفصيلي متاح.",
+    "shareAlert": "تم نسخ الرابط!",
+    "phoneModal": {
+      "closeAriaLabel": "إغلاق",
+      "title": "اختر رقم اتصال",
+      "subtitle": "للاستشارة والشراء، يرجى الاتصال بأحد الأرقام التالية:",
+      "numbers": [
+        { "labelKey": "detail.phoneModal.salesSupport", "number": "021-33499901", "defaultLabel": "دعم المبيعات" },
+        { "labelKey": "detail.phoneModal.techSupport", "number": "021-33499902", "defaultLabel": "استشارة فنية" }
+      ],
+      "salesSupport": "دعم المبيعات",
+      "techSupport": "استشارة فنية"
+    },
+    "galleryModal": {
+      "closeAriaLabel": "إغلاق المعرض",
+      "imageAlt": "صورة {{index}}",
+      "prevAriaLabel": "الصورة السابقة",
+      "nextAriaLabel": "الصورة التالية",
+      "thumbnailAlt": "صورة مصغرة {{index}}"
+    }
+  }
+}

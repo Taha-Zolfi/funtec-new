@@ -1,0 +1,34 @@
+{
+  "title": "خدمات VIP المميزة",
+  "welcome": "أهلاً وسهلاً",
+  "subtitle": "لديك وصول إلى خدماتنا المميزة",
+  "serviceCard": {
+    "vipBadge": "VIP",
+    "requestService": "طلب خدمة",
+    "priceRange": "نطاق السعر",
+    "estimatedDuration": "المدة المقدرة"
+  },
+  "requestModal": {
+    "title": "طلب خدمة",
+    "requestTitle": "عنوان الطلب",
+    "requestTitlePlaceholder": "مثال: إصلاح عجلة فيريس",
+    "description": "وصف كامل",
+    "descriptionPlaceholder": "يرجى وصف تفاصيل طلبك...",
+    "location": "موقع الخدمة",
+    "locationPlaceholder": "العنوان أو اسم الموقع",
+    "preferredDate": "التاريخ المفضل",
+    "preferredTime": "الوقت المفضل",
+    "estimatedCost": "التكلفة المقدرة",
+    "estimatedCostPlaceholder": "مثال: 500 دولار",
+    "cancel": "إلغاء",
+    "submit": "إرسال الطلب",
+    "successMessage": "تم إرسال طلبك بنجاح!",
+    "errorMessage": "خطأ في إرسال الطلب"
+  },
+  "errors": {
+    "notAuthenticated": "يرجى تسجيل الدخول أولاً",
+    "noVipAccess": "ليس لديك وصول VIP",
+    "loadingError": "خطأ في تحميل البيانات"
+  }
+}
+

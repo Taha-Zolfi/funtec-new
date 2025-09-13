@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "mobileMenuTitle": "منو",
+    "menuItems": [
+      { "title": "خانه", "icon": "FaHome", "href": "/" },
+      {
+        "title": "محصولات",
+        "icon": "FaBoxOpen",
+        "key": "products",
+        "children": [
+          {
+            "title": "محصولات گروهی",
+            "children": [
+              { "title": "لیزرتگ", "href": "/products/2" },
+              { "title": "لیزرماز", "href": "/products/3" },
+              { "title": "اتاق فرار", "href": "/products/10" },
+              { "title": "حریم وحشت", "href": "/products/11" },
+              { "title": "سینما وحشت", "href": "/products/12" }
+            ]
+          },
+          {
+            "title": "محصولات گیمی",
+            "children": [
+              { "title": "فال بال", "href": "/products/13" },
+              { "title": "فایربال", "href": "/products/14" },
+              { "title": "ایرهاکی", "href": "/products/20" },
+              { "title": "هند اسپید", "href": "/products/21" },
+              { "title": "هامر", "href": "/products/22" }
+            ]
+          }
+        ]
+      },
+      { "title": "درباره ما", "icon": "FaInfoCircle", "href": "/#about" },
+      { "title": "اخبار", "icon": "FaNewspaper", "href": "/news" },
+      { "title": "تماس با ما", "icon": "FaPhone", "href": "/#contact" }
+    ]
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "mainTitle": "Contact Us",
+  "logoAlt": "Funtech",
+  "copyright": "© 2025 Funtech. All rights reserved.",
+  "departments": [
+    {
+      "title": "Marketing & Sales Department",
+      "phones": ["+98 21 33 49 99 01", "+98 21 33 49 99 02"],
+      "icon": "FaBuilding"
+    },
+    {
+      "title": "Sales Team",
+      "phones": ["+98 919 177 17 27", "+98 910 910 13 80"],
+      "icon": "FaUsers"
+    },
+    {
+      "title": "After-Sales Service",
+      "phones": ["+98 21 33 47 73 55", "+98 990 477 277 1"],
+      "icon": "FaHeadset"
+    }
+  ],
+  "socialLinks": [
+    {
+      "href": "https://instagram.com/Funtec.co",
+      "handle": "@Funtec.co",
+      "icon": "FaInstagram",
+      "className": "instagram-link",
+      "wrapperClass": "instagram-wrapper",
+      "iconClass": "instagram-icon",
+      "glowClass": "instagram-glow"
+    },
+    {
+      "href": "https://t.me/funtec_co",
+      "handle": "@funtec_co",
+      "icon": "FaTelegram",
+      "className": "telegram-link",
+      "wrapperClass": "telegram-wrapper",
+      "iconClass": "telegram-icon",
+      "glowClass": "telegram-glow"
+    }
+  ],
+  "addresses": [
+    {
+      "title": "Head Office Address",
+      "text": "Tehran, Valiasr Square, Corner of Fathi Shaghaghi St, Bolourin Tower"
+    },
+    {
+      "title": "Service Office Address",
+      "text": "Tehran, Agha Noor Square, Etminan Iranian Shopping Mall"
+    }
+  ],
+  "footerText": "Funtech - Becoming perfect is a never-ending journey"
+}

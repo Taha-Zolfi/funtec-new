@@ -1,0 +1,143 @@
+// --- START OF FILE ContactClient.js ---
+
+'use client';
+
+import { useRef, useMemo, useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { FaMapMarkerAlt, FaTelegram, FaInstagram, FaPhone, FaHeadset, FaUsers, FaBuilding } from 'react-icons/fa';
+import Image from 'next/image';
+import { useTranslation } from 'next-i18next'; // ایمپورت هوک
+
+import './Contact.css';
+import logo from './logo.png';
+
+// Map of icons (بدون تغییر)
+const iconMap = {
+  FaMapMarkerAlt, FaTelegram, FaInstagram, FaPhone, FaHeadset, FaUsers, FaBuilding,
+};
+
+// کامپوننت DepartmentContact بدون تغییر باقی می‌ماند
+const DepartmentContact = ({ title, phones, icon: Icon, delay = 0 }) => {
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30, scale: 0.9 },
+    visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94], delay } },
+  };
+
+  return (
+    <motion.div className="department-section" variants={itemVariants}>
+      <div className="department-header">
+        <div className="department-icon-wrapper">{Icon && <Icon className="department-icon" />}</div>
+        <h3 className="department-title">{title}</h3>
+      </div>
+      <div className="department-phones">
+        {phones.map((phone, index) => (
+          <motion.a key={index} href={`tel:${phone.replace(/\s/g, '')}`} className="phone-link" whileHover={{ scale: 1.02, x: -5 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.2 }}>
+            <FaPhone className="phone-icon-small" />
+            <span>{phone}</span>
+          </motion.a>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
+
+export default function ContactClient({ departments: initialDepartments, socialLinks: initialSocialLinks, addresses: initialAddresses, footerText }) {
+  const { t } = useTranslation('contact'); // استفاده از هوک ترجمه
+
+  const departments = Array.isArray(initialDepartments) ? initialDepartments : [];
+  const socialLinks = Array.isArray(initialSocialLinks) ? initialSocialLinks : [];
+  const addresses = Array.isArray(initialAddresses) ? initialAddresses : [];
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.2 } },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 40, scale: 0.9 },
+    visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] } },
+  };
+
+  const titleVariants = {
+    hidden: { opacity: 0, y: 50, scale: 0.8 },
+    visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.3 } },
+  };
+
+  return (
+    <div id="contact" className="contact-container">
+      <motion.div
+        className="contact-wrapper"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+      >
+        <motion.h1 className="contact-title" variants={titleVariants}>
+          {t('mainTitle')} {/* متن ترجمه شده */}
+        </motion.h1>
+
+        <motion.div className="contact-content" variants={itemVariants}>
+          <div className="departments-grid">
+            {departments.map((dept, index) => (
+              <DepartmentContact
+                key={index}
+                title={dept.title}
+                phones={dept.phones}
+                icon={iconMap[dept.icon]}
+                delay={0.1 * (index + 1)}
+              />
+            ))}
+          </div>
+
+          <motion.div className="social-grid" variants={itemVariants}>
+            {socialLinks.map((link, index) => {
+              const Icon = iconMap[link.icon];
+              return (
+                <motion.a
+                  key={index}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`contact-item social-item ${link.className}`}
+                  whileHover={{ scale: 1.03, y: -3 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className={`icon-wrapper ${link.wrapperClass}`}>
+                    {Icon && <Icon className={`icon ${link.iconClass}`} />}
+                  </div>
+                  <span>{link.handle}</span>
+                  <div className={`item-glow ${link.glowClass}`} />
+                </motion.a>
+              );
+            })}
+          </motion.div>
+
+          {addresses.map((address, index) => (
+            <motion.div key={index} className="address-section" variants={itemVariants}>
+              <div className="address-card">
+                <div className="icon-wrapper location-wrapper">
+                  <FaMapMarkerAlt className="icon location-icon" />
+                </div>
+                <div className="address-content">
+                  <h3 className="address-title">{address.title}</h3>
+                  <span className="address-text">{address.text}</span>
+                </div>
+                <div className="item-glow location-glow" />
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        <motion.div className="contact-footer" variants={itemVariants}>
+          <Image src={logo} alt={t('logoAlt')} className="contact-logo" /> {/* alt لوگو هم ترجمه شد */}
+          <span>{footerText}</span>
+        </motion.div>
+
+        <motion.p className="copyright desktop-only" variants={itemVariants}>
+          {t('copyright')} {/* متن ترجمه شده */}
+        </motion.p>
+      </motion.div>
+    </div>
+  );
+}

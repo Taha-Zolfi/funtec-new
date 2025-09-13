@@ -1,0 +1,87 @@
+{
+  "hero": {
+    "badge": "Pioneers of Innovative Experiences in Amusement Parks",
+    "title": "Funtech Biography",
+    "subtitle": "In a world where the pace of technological change has gained unprecedented momentum, Funtech was born with a clear dream and a high mission to innovate the gaming experience and bring new technologies to amusement parks."
+  },
+  "vision": {
+    "title": "Our Vision",
+    "subtitle": "An exciting future in your hands. Creating a world where the boundaries of entertainment are constantly shifting and new technologies are tools for creating immersive and unforgettable experiences.",
+    "content": "We envision a future where every amusement park is a gallery of technological innovations that invites visitors into a world of adventure, competition, and excitement. We are not just manufacturers of amusement park equipment; we are architects of experiences that make life more colorful and dynamic. Our goal is to transform amusement parks into destinations that people of all ages and tastes are eager to return to by providing innovative and creative solutions."
+  },
+  "mission": {
+    "title": "Creating Excitement by Relying on Innovation and Quality",
+    "description": "Funtech's main mission is to design, produce, and deliver products that elevate the amusement park gaming experience to a whole new level. We achieve this mission by focusing on the following key values:",
+    "points": [
+      "Relentless Innovation: We are always searching for new ideas and advanced technologies to deliver unprecedented products. R&D is the beating heart of Funtech.",
+      "Pure Excitement: Our goal is to create a sense of excitement, wonder, and deep engagement among players to bring maximum adrenaline and enjoyment.",
+      "Highest Level of Safety: We believe that real excitement depends on absolute safety, and all products are manufactured in strict compliance with the most rigorous standards.",
+      "Unmatched Quality: From raw materials to production processes and support, we are committed to providing the highest level of quality to ensure durability and flawless performance.",
+      "New Technologies: We are leaders in integrating the latest technological achievements, including Augmented Reality (AR), Virtual Reality (VR), and Artificial Intelligence (AI)."
+    ]
+  },
+  "values": {
+    "title": "Our Values: Pillars of Trust and Excellence",
+    "subtitle": "The identity of Funtech is built on solid foundations that flow through all aspects of our work."
+  },
+  "whyChooseUs": {
+    "title": "Why Choose Funtech?",
+    "subtitle": "Our commitment goes beyond manufacturing. We are your partners in creating unparalleled entertainment destinations."
+  },
+  "process": {
+    "title": "Our Process: From Idea to Reality",
+    "subtitle": "We follow a meticulous and collaborative process to ensure every project is a masterpiece of innovation and quality.",
+    "steps": [
+      { "icon": "Search", "title": "1. Discovery & Consultation", "description": "We begin by understanding your vision, goals, and spatial constraints through in-depth consultations and site visits." },
+      { "icon": "Drafting", "title": "2. Conceptual Design & 3D Modeling", "description": "Our creative team translates ideas into stunning 3D visuals, allowing you to experience the project before it's built." },
+      { "icon": "Cog", "title": "3. Engineering & Prototyping", "description": "Rigorous engineering and prototyping ensure every component meets our standards for safety, durability, and performance." },
+      { "icon": "Construction", "title": "4. Manufacturing & Quality Assurance", "description": "Using premium materials and cutting-edge technology, we craft your equipment under strict quality control protocols." },
+      { "icon": "Wrench", "title": "5. Installation & Support", "description": "Our expert team handles on-site installation, and our commitment continues with comprehensive after-sales support and warranties." }
+    ]
+  },
+  "team": {
+    "title": "Meet Our Team",
+    "subtitle": "The creative minds and technical experts dedicated to revolutionizing the world of amusement.",
+    "members": [
+      { "image": "/team/member1.jpg", "name": "Alex Morgan", "role": "Founder & CEO", "bio": "With a vision to merge technology and fun, Alex leads Funtech's strategic direction and innovation." },
+      { "image": "/team/member2.jpg", "name": "Jasmine Kaur", "role": "Lead Engineer", "bio": "Jasmine is the mastermind behind our products' safety and groundbreaking mechanical designs." },
+      { "image": "/team/member3.jpg", "name": "Leo Chen", "role": "Creative Director", "bio": "Leo transforms concepts into immersive experiences, ensuring every game is a visual and sensory masterpiece." }
+    ]
+  },
+  "timeline": {
+    "title": "Special Products",
+    "subtitle": "Get to know some of Funtech's most attractive and special products that will create a different and exciting experience for you."
+  },
+  "cta": {
+    "title": "Funtech's Future: Collaborating to Create Better Experiences",
+    "description": "We are ready to transform your amusement parks into leading and attractive destinations with our technical knowledge, creativity, and commitment. Let's build the exciting future of amusement parks together. Funtech: Innovation in play, excitement in life.",
+    "phone_button": "Call: +98-919-177-1727",
+    "consult_button": "Request a Free Consultation"
+  },
+  "valuesData": [
+    { "icon": "Sparkles", "title": "Innovation", "description": "We never stop. A creative and curious mindset is our driving force for discovering new ways and providing novel experiences." },
+    { "icon": "Heart", "title": "Excitement", "description": "For us, entertainment is not just about passing the time, but about creating exciting and unforgettable memories to bring smiles, joy, and adrenaline to faces." },
+    { "icon": "Shield", "title": "Safety", "description": "Our highest priority is to protect the health and safety of users. We adhere to international safety laws and regulations." },
+    { "icon": "Award", "title": "Quality", "description": "Using the best raw materials, employing advanced production techniques, and strict quality control guarantee the longevity and flawless performance of our products." },
+    { "icon": "Cpu", "title": "Cutting-Edge Technologies", "description": "We do not shy away from adopting and integrating the latest technological advancements in our products, from artificial intelligence to the Internet of Things (IoT)." },
+    { "icon": "Users", "title": "Customer Experience", "description": "Customer satisfaction is our ultimate goal. We seek to build stable and long-term relationships with customers through strong technical support." }
+  ],
+  "features": [
+    { "icon": "Shield", "title": "Safety and National Standards Compliance", "description": "All Funtech products are certified with national standards.", "color": "#13c8ff" },
+    { "icon": "Palette", "title": "Creative and Unique Design", "description": "Relying on its design team's capabilities, Funtech offers the best designs for customers using the latest technologies and innovative methods in the entertainment industry.", "color": "#ffb527" },
+    { "icon": "Heart", "title": "High Quality and Durability", "description": "Funtech has been able to design and produce high-quality products by using the best materials available in the market.", "color": "#13c8ff" },
+    { "icon": "Users", "title": "Comprehensive and Professional After-Sales Services", "description": "From initial consultation and 3D design to product manufacturing and installation, we are with you to the end, providing full and comprehensive after-sales support.", "color": "#ffb527" }
+  ],
+  "statData": [
+    { "value": 480, "label": "Successful Projects" },
+    { "value": 7, "label": "Years of Experience" },
+    { "value": 240, "label": "Satisfied Customers" },
+    { "value": 60, "label": "Cities Covered" }
+  ],
+  "ctaFeatures": [
+    "Free Consultation",
+    "Site Visit",
+    "3D Design",
+    "5-Year Warranty"
+  ]
+}

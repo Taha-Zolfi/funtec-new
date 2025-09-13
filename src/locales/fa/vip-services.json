@@ -1,0 +1,34 @@
+{
+  "title": "خدمات ویژه VIP",
+  "welcome": "خوش آمدید",
+  "subtitle": "شما دسترسی به خدمات ویژه ما را دارید",
+  "serviceCard": {
+    "vipBadge": "VIP",
+    "requestService": "درخواست خدمت",
+    "priceRange": "محدوده قیمت",
+    "estimatedDuration": "مدت زمان تخمینی"
+  },
+  "requestModal": {
+    "title": "درخواست خدمت",
+    "requestTitle": "عنوان درخواست",
+    "requestTitlePlaceholder": "مثال: تعمیر چرخ و فلک",
+    "description": "توضیحات کامل",
+    "descriptionPlaceholder": "لطفاً جزئیات درخواست خود را شرح دهید...",
+    "location": "محل انجام کار",
+    "locationPlaceholder": "آدرس یا نام مکان",
+    "preferredDate": "تاریخ پیشنهادی",
+    "preferredTime": "ساعت پیشنهادی",
+    "estimatedCost": "هزینه پیشنهادی",
+    "estimatedCostPlaceholder": "مثال: 5,000,000 تومان",
+    "cancel": "لغو",
+    "submit": "ارسال درخواست",
+    "successMessage": "درخواست شما با موفقیت ارسال شد!",
+    "errorMessage": "خطا در ارسال درخواست"
+  },
+  "errors": {
+    "notAuthenticated": "لطفاً ابتدا وارد شوید",
+    "noVipAccess": "شما دسترسی VIP ندارید",
+    "loadingError": "خطا در بارگذاری اطلاعات"
+  }
+}
+

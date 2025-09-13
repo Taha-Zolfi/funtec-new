@@ -1,0 +1,53 @@
+{
+  "mainTitle": "اتصل بنا",
+  "logoAlt": "فانتك",
+  "copyright": "© 2025 فانتك. جميع الحقوق محفوظة.",
+  "departments": [
+    {
+      "title": "قسم التسويق والمبيعات",
+      "phones": ["01 99 49 33 21 98+", "02 99 49 33 21 98+"],
+      "icon": "FaBuilding"
+    },
+    {
+      "title": "فريق المبيعات",
+      "phones": ["27 17 177 919 98+", "80 13 910 910 98+"],
+      "icon": "FaUsers"
+    },
+    {
+      "title": "خدمات ما بعد البيع",
+      "phones": ["55 73 47 33 21 98+", "1 277 477 990 98+"],
+      "icon": "FaHeadset"
+    }
+  ],
+  "socialLinks": [
+    {
+      "href": "https://instagram.com/Funtec.co",
+      "handle": "@Funtec.co",
+      "icon": "FaInstagram",
+      "className": "instagram-link",
+      "wrapperClass": "instagram-wrapper",
+      "iconClass": "instagram-icon",
+      "glowClass": "instagram-glow"
+    },
+    {
+      "href": "https://t.me/funtec_co",
+      "handle": "@funtec_co",
+      "icon": "FaTelegram",
+      "className": "telegram-link",
+      "wrapperClass": "telegram-wrapper",
+      "iconClass": "telegram-icon",
+      "glowClass": "telegram-glow"
+    }
+  ],
+  "addresses": [
+    {
+      "title": "عنوان المكتب الرئيسي",
+      "text": "طهران، ميدان ولي عصر، زاوية شارع فتحي شقاقي، برج بلورين"
+    },
+    {
+      "title": "عنوان مكتب الخدمات",
+      "text": "طهران، ميدان آقا نور، مركز تسوق اطمينان إيرانيان"
+    }
+  ],
+  "footerText": "فانتك - أن تصبح مثالياً هي رحلة لا تنتهي"
+}

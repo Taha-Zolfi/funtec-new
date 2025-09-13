@@ -1,95 +1,42 @@
-// --- START OF FILE route.js ---
+// مسیر: src/app/api/news/route.js
 
 import { NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { getNewsData } from '@/lib/data';
+import { getDb } from '@/lib/db'; // <-- [FIX] ایمپورت getDb
 
 export async function GET(request) {
-  const db = await getDb();
   const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
+  const locale = searchParams.get('locale') || 'fa'; 
 
   try {
-    if (id) {
-      const item = await db.get('SELECT * FROM news WHERE id = ?', id);
-      if (!item) return NextResponse.json({ error: 'News item not found' }, { status: 404 });
-      
-      // Increment views
-      await db.run('UPDATE news SET views = views + 1 WHERE id = ?', id);
-      
-      return NextResponse.json({
-        ...item,
-        is_featured: Boolean(item.is_featured),
-        views: Number(item.views) + 1
-      });
-    } else {
-      const news = await db.all('SELECT * FROM news ORDER BY created_at DESC');
-      return NextResponse.json(news.map(item => ({
-        ...item,
-        is_featured: Boolean(item.is_featured),
-        views: Number(item.views)
-      })));
-    }
+    const newsItems = await getNewsData({ locale });
+    return NextResponse.json(newsItems);
   } catch (error) {
+    console.error("API Error GET /news:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
+// تابع POST شما حالا به درستی کار خواهد کرد
 export async function POST(request) {
-  const db = await getDb();
+  const db = await getDb(); // <-- این خط دیگر خطا نمی‌دهد
   try {
-    const data = await request.json();
-    
-    const result = await db.run(
-      'INSERT INTO news (title, content, excerpt, is_featured, image) VALUES (?, ?, ?, ?, ?)',
-      [
-        data.title,
-        data.content,
-        data.excerpt || null,
-        data.is_featured ? 1 : 0,
-        data.image || null
-      ]
-    );
-
-    return NextResponse.json({ id: result.lastID }, { status: 201 });
+    const { translations, ...newsData } = await request.json();
+    await db.run('BEGIN TRANSACTION');
+    const result = await db.run('INSERT INTO news (image, is_featured) VALUES (?, ?)', [ newsData.image || null, newsData.is_featured ? 1 : 0 ]);
+    const newsId = result.lastID;
+    const stmt = await db.prepare('INSERT INTO news_translations (news_id, locale, title, excerpt, content) VALUES (?, ?, ?, ?, ?)');
+    for (const [locale, trans] of Object.entries(translations)) {
+        if (trans.title) {
+            await stmt.run(newsId, locale, trans.title, trans.excerpt || '', trans.content || '');
+        }
+    }
+    await stmt.finalize();
+    await db.run('COMMIT');
+    return NextResponse.json({ id: newsId }, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-}
-
-export async function PUT(request) {
-  const db = await getDb();
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
-  
-  try {
-    const data = await request.json();
-    
-    await db.run(
-      'UPDATE news SET title = ?, content = ?, excerpt = ?, is_featured = ?, image = ? WHERE id = ?',
-      [
-        data.title,
-        data.content,
-        data.excerpt || null,
-        data.is_featured ? 1 : 0,
-        data.image || null,
-        id
-      ]
-    );
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-}
-
-export async function DELETE(request) {
-  const db = await getDb();
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
-  
-  try {
-    await db.run('DELETE FROM news WHERE id = ?', id);
-    return NextResponse.json({ success: true });
-  } catch (error) {
+    await db.run('ROLLBACK');
+    console.error("API Error POST /news:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

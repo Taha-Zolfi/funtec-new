@@ -1,80 +1,97 @@
-// --- START OF FILE src/lib/api.js ---
+// مسیر: src/lib/api.js
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 async function handleResponse(response) {
   if (!response.ok) {
-    const error = await response.json().catch(() => ({
-      message: response.statusText,
-      details: 'Failed to parse error response'
-    }));
-    
-    const errorMessage = error.details 
-      ? `${error.message}\nDetails: ${error.details}`
-      : error.message || 'Unknown error';
-      
-    throw new Error(`API Error: ${response.status} - ${errorMessage}`);
+    const errorBody = await response.text();
+    throw new Error(`API Error: ${response.status} - ${response.statusText} - ${errorBody}`);
   }
-  return response.json();
+  const contentType = response.headers.get("content-type");
+  if (contentType && contentType.indexOf("application/json") !== -1) {
+    return response.json();
+  }
+  return {};
+}
+
+function getUrl(path) {
+  return `${API_BASE_URL}${path}`;
 }
 
 export const api = {
   // --- Product Operations ---
-  getProducts: () => fetch('/api/products').then(handleResponse),
-  getProduct: (id) => fetch(`/api/products?id=${id}`).then(handleResponse),
-  createProduct: (productData) => fetch('/api/products', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(productData) }).then(handleResponse),
-  updateProduct: (id, productData) => fetch(`/api/products?id=${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(productData) }).then(handleResponse),
-  deleteProduct: (id) => fetch(`/api/products?id=${id}`, { method: 'DELETE' }).then(handleResponse),
+  getProducts: (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return fetch(getUrl(`/products?${query}`)).then(handleResponse);
+  },
+  getProduct: (id, params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return fetch(getUrl(`/products/${id}?${query}`)).then(handleResponse);
+  },
+  createProduct: (productData) => fetch(getUrl('/products'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(productData) }).then(handleResponse),
+  updateProduct: (id, productData) => fetch(getUrl(`/products/${id}`), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(productData) }).then(handleResponse),
+  deleteProduct: (id) => fetch(getUrl(`/products/${id}`), { method: 'DELETE' }).then(handleResponse),
   
   // --- Service Operations ---
-  getServices: () => fetch('/api/services').then(handleResponse),
-  getService: (id) => fetch(`/api/services?id=${id}`).then(handleResponse),
-  createService: (serviceData) => fetch('/api/services', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(serviceData) }).then(handleResponse),
-  updateService: (id, serviceData) => fetch(`/api/services?id=${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(serviceData) }).then(handleResponse),
-  deleteService: (id) => fetch(`/api/services?id=${id}`, { method: 'DELETE' }).then(handleResponse),
-
-  // --- Comment Operations ---
-  submitComment: (productId, commentData) => fetch('/api/comments', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ productId, ...commentData }) }).then(handleResponse),
+  getServices: (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return fetch(getUrl(`/services?${query}`)).then(handleResponse);
+  },
+  getService: (id, params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return fetch(getUrl(`/services/${id}?${query}`)).then(handleResponse);
+  },
+  createService: (serviceData) => fetch(getUrl('/services'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(serviceData) }).then(handleResponse),
+  updateService: (id, serviceData) => fetch(getUrl(`/services/${id}`), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(serviceData) }).then(handleResponse),
+  deleteService: (id) => fetch(getUrl(`/services/${id}`), { method: 'DELETE' }).then(handleResponse),
 
   // --- News Operations ---
-  getNews: () => fetch('/api/news').then(handleResponse),
-  getNewsItem: (id) => fetch(`/api/news?id=${id}`).then(handleResponse),
-  createNews: (newsData) => fetch('/api/news', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newsData) }).then(handleResponse),
-  updateNews: (id, newsData) => fetch(`/api/news?id=${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newsData) }).then(handleResponse),
-  deleteNews: (id) => fetch(`/api/news?id=${id}`, { method: 'DELETE' }).then(handleResponse),
+  getNews: (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return fetch(getUrl(`/news?${query}`)).then(handleResponse);
+  },
+  getNewsItem: (id, params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return fetch(getUrl(`/news/${id}?${query}`)).then(handleResponse);
+  },
+  createNews: (newsData) => fetch(getUrl('/news'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newsData) }).then(handleResponse),
+  updateNews: (id, newsData) => fetch(getUrl(`/news/${id}`), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newsData) }).then(handleResponse),
+  deleteNews: (id) => fetch(getUrl(`/news/${id}`), { method: 'DELETE' }).then(handleResponse),
 
-  // --- Cabin Operations ---
-  getCabins: () => fetch('/api/cabins').then(handleResponse),
-  updateCabin: (id, cabinData) => fetch('/api/cabins', {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id, ...cabinData }),
+  // --- Comment Operations ---
+  submitComment: (productId, commentData) => fetch(getUrl('/comments'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ productId, ...commentData }) }).then(handleResponse),
+  
+  // --- Cabin & Timeline Operations ---
+  getCabins: () => fetch(getUrl('/cabins')).then(handleResponse),
+  updateCabin: (id, cabinData) => fetch(getUrl(`/cabins/${id}`), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cabinData) }).then(handleResponse),
+  
+  getTimelineItems: () => fetch(getUrl('/timeline')).then(handleResponse),
+  
+  createTimelineItem: (itemData) => fetch(getUrl('/timeline'), { 
+    method: 'POST', 
+    headers: { 'Content-Type': 'application/json' }, 
+    body: JSON.stringify(itemData) 
   }).then(handleResponse),
-
-  // --- Timeline Operations ---
-  getTimelineItems: () => fetch('/api/timeline').then(handleResponse),
-  createTimelineItem: (itemData) => fetch('/api/timeline', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(itemData),
+  
+  // [FIX] اصلاح تابع به‌روزرسانی برای هماهنگی با بک‌اند
+  updateTimelineItem: (id, itemData) => fetch(getUrl('/timeline'), { // به آدرس /timeline می‌فرستد
+    method: 'PUT', 
+    headers: { 'Content-Type': 'application/json' }, 
+    body: JSON.stringify({ id, ...itemData }) // id را هم در body می‌فرستد
   }).then(handleResponse),
-  updateTimelineItem: (id, itemData) => fetch('/api/timeline', {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id, ...itemData }),
-  }).then(handleResponse),
-  deleteTimelineItem: (id) => fetch('/api/timeline', {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id }),
+  
+  // [FIX] اصلاح تابع حذف برای هماهنگی با بک‌اند
+  deleteTimelineItem: (id) => fetch(getUrl('/timeline'), { // ۱. به آدرس /api/timeline درخواست می‌فرستد
+    method: 'DELETE', 
+    headers: { 'Content-Type': 'application/json' }, 
+    body: JSON.stringify({ id }) // ۲. شناسه را در بدنه (body) درخواست قرار می‌دهد
   }).then(handleResponse),
 
   // --- File Upload ---
   uploadFile: async (file) => {
     const formData = new FormData();
     formData.append('file', file);
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
+    const response = await fetch(getUrl('/upload'), { method: 'POST', body: formData });
     return handleResponse(response);
   }
 };

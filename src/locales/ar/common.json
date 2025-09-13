@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "mobileMenuTitle": "القائمة",
+    "menuItems": [
+      { "title": "الرئيسية", "icon": "FaHome", "href": "/" },
+      {
+        "title": "المنتجات",
+        "icon": "FaBoxOpen",
+        "key": "products",
+        "children": [
+          {
+            "title": "الألعاب الجماعية",
+            "children": [
+              { "title": "ليزر تاغ", "href": "/products/2" },
+              { "title": "متاهة الليزر", "href": "/products/3" },
+              { "title": "غرفة الهروب", "href": "/products/10" },
+              { "title": "منطقة الرعب", "href": "/products/11" },
+              { "title": "سينما الرعب", "href": "/products/12" }
+            ]
+          },
+          {
+            "title": "ألعاب الأركيد",
+            "children": [
+              { "title": "فول بول", "href": "/products/13" },
+              { "title": "فايربول", "href": "/products/14" },
+              { "title": "هوكي الهواء", "href": "/products/20" },
+              { "title": "هاند سبيد", "href": "/products/21" },
+              { "title": "المطرقة", "href": "/products/22" }
+            ]
+          }
+        ]
+      },
+      { "title": "من نحن", "icon": "FaInfoCircle", "href": "/#about" },
+      { "title": "الأخبار", "icon": "FaNewspaper", "href": "/news" },
+      { "title": "اتصل بنا", "icon": "FaPhone", "href": "/#contact" }
+    ]
+  }
+}

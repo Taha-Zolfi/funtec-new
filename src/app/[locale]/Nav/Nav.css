@@ -1,0 +1,213 @@
+/* مسیر: src/app/[locale]/Nav/Nav.css */
+
+/* ==========================================================================
+   Base Navigation Styles
+   ========================================================================== */
+.Nav {
+  position: fixed; top: 24px; left: 0; right: 0; margin: 0 auto;
+  width: 100%; max-width: 980px; display: flex; justify-content: center;
+  align-items: center; padding: 0.7rem 1.5rem; z-index: 99998;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(0, 9, 14, 0.5); backdrop-filter: blur(8px);
+  border-radius: 228px; border: 2.5px solid rgba(255,181,39,0.25);
+  overflow: visible;
+}
+.Nav--hidden { transform: translateY(-120%); opacity: 0; pointer-events: none; }
+.Nav--visible { transform: translateY(0); opacity: 1; pointer-events: auto; }
+.right {
+  display: flex; align-items: center; gap: 1.2rem;
+  position: relative; justify-content: center; width: 100%;
+}
+.right > a, .right .has-dropdown {
+  position: relative; color: #eee; text-decoration: none;
+  padding: 0.6rem 1rem; transition: all 0.3s ease;
+  font-weight: 600; font-size: 1.5rem; border-radius: 8px;
+  cursor: pointer; white-space: nowrap;
+}
+.right > a:not(.has-dropdown)::after {
+  content: ""; position: absolute; bottom: 0; right: 0;
+  width: 0; height: 2px; background: linear-gradient(90deg, #ffb527, #13c8ff);
+  transition: width 0.3s ease; border-radius: 2px;
+}
+.right > a:not(.has-dropdown):hover::after { width: 100%; left: 0; right: auto; }
+.right:hover > * { opacity: 0.5; filter: grayscale(50%); }
+.right > *:hover {
+  opacity: 1; filter: grayscale(0%); background: rgba(255, 181, 39, 0.1);
+  color: #ffb527; transform: translateY(-2px);
+}
+.right .language-switcher-container { transition: all 0.3s ease; padding: 0; }
+.right .language-switcher-container:hover { opacity: 1; filter: grayscale(0%); background: none; }
+
+/* ==========================================================================
+   Desktop Dropdown Menu (طراحی شیشه‌ای و حل مشکل پرش)
+   ========================================================================== */
+
+/* === راه حل کلیدی شماره ۱: حل مشکل پرش منو === */
+/* این شبه‌المان یک پل نامرئی به ارتفاع 8px بین دکمه و منو ایجاد می‌کند */
+.has-dropdown::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 8px; /* این ارتفاع باید با فاصله `top` در `.nav-dropdown` برابر باشد */
+  background: transparent;
+}
+
+.has-dropdown:hover > .nav-dropdown {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.nav-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 240px;
+  
+  /* === راه حل کلیدی شماره ۲: استایل شیشه‌ای (Glassmorphism) === */
+  background: rgba(30, 35, 45, 0.6); /* پس‌زمینه نیمه‌شفاف برای افکت شیشه */
+  backdrop-filter: blur(20px); /* مات کردن بیشتر محتوای زیرین */
+  border: 1px solid rgba(255, 255, 255, 0.15); /* لبه‌ی شیشه‌ای ظریف */
+  
+  border-radius: 12px; /* گردی بیشتر لبه‌ها */
+  padding: 8px;
+  box-shadow: 0px 16px 48px rgba(0, 0, 0, 0.5); /* سایه عمیق‌تر */
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(15px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 30;
+  text-align: right;
+}
+
+.nav-dropdown-item-wrapper {
+  position: relative;
+}
+
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  color: #cdd5e0;
+  font-size: 1.45rem;
+  border-radius: 8px; /* گردی هماهنگ با کانتینر اصلی */
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.nav-dropdown-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 3px;
+  height: 100%;
+  background: #ffb527;
+  transform: scaleY(0);
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform-origin: bottom;
+}
+.nav-dropdown-item:hover {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.05); /* هاور کمی روشن‌تر */
+}
+.nav-dropdown-item:hover::before {
+  transform: scaleY(1);
+  transform-origin: top;
+}
+
+/* انیمیشن ورود آبشاری (بدون تغییر) */
+@keyframes item-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.nav-dropdown-item {
+  opacity: 0;
+}
+.has-dropdown:hover .nav-dropdown-item {
+  animation: item-fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.has-dropdown:hover .nav-dropdown-item-wrapper:nth-child(1) .nav-dropdown-item { animation-delay: 0.08s; }
+.has-dropdown:hover .nav-dropdown-item-wrapper:nth-child(2) .nav-dropdown-item { animation-delay: 0.12s; }
+.has-dropdown:hover .nav-dropdown-item-wrapper:nth-child(3) .nav-dropdown-item { animation-delay: 0.16s; }
+.has-dropdown:hover .nav-dropdown-item-wrapper:nth-child(4) .nav-dropdown-item { animation-delay: 0.20s; }
+
+
+/* منوی تو در تو (بدون تغییر) */
+.nav-dropdown.level-1 {
+  top: -8px; /* هماهنگ‌سازی با padding جدید */
+  right: calc(100% + 8px);
+  transform: translateX(15px);
+}
+.nav-dropdown-item-wrapper:hover > .nav-dropdown {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+/* استایل فلش‌های راهنما (بدون تغییر) */
+.has-dropdown > span::after {
+  content: '▾';
+  font-family: sans-serif;
+  margin-right: 8px;
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+.has-dropdown:hover > span::after {
+  transform: rotate(180deg);
+}
+.nav-dropdown-item.has-children > span::after {
+  content: '‹';
+  font-family: sans-serif;
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: all 0.3s ease;
+  color: #8a99b3;
+}
+.nav-dropdown-item-wrapper:hover > .has-children > span::after {
+  color: #fff;
+}
+
+/* ==========================================================================
+   Logo & Mobile Menu (بدون تغییر)
+   ========================================================================== */
+.nav-logo { display: none; position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 100000; }
+.menu-icon { display: none; flex-direction: column; justify-content: space-between; width: 28px; height: 22px; cursor: pointer; padding: 4px; border-radius: 6px; transition: all 0.3s ease; z-index: 100001; }
+.menu-icon:hover { background: rgba(255, 181, 39, 0.1); }
+.menu-icon div { height: 3px; background: linear-gradient(90deg, #ffb527, #13c8ff); border-radius: 2px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); transform-origin: center; }
+.menu-icon.open div:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); background: #ff4757; }
+.menu-icon.open div:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.menu-icon.open div:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); background: #ff4757; }
+.mobile-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); z-index: 99999; opacity: 0; visibility: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+.mobile-overlay.active { opacity: 1; visibility: visible; }
+.mobile-menu { position: absolute; top: 0; right: 0; left: auto; width: 85%; max-width: 350px; height: 100vh; background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(20, 20, 20, 0.95)); border-left: 2px solid rgba(255, 181, 39, 0.3); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; display: flex; flex-direction: column; }
+.mobile-overlay.active .mobile-menu { transform: translateX(0); }
+.mobile-menu-header { display: flex; justify-content: space-between; align-items: center; padding: 2rem 1.5rem 1rem; border-bottom: 1px solid rgba(255, 181, 39, 0.2); }
+.mobile-menu-header h2 { margin: 0; font-size: 1.8rem; background: linear-gradient(135deg, #ffb527, #13c8ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.close-btn { background: none; border: none; color: #ffb527; font-size: 1.5rem; cursor: pointer; padding: 0.5rem; border-radius: 50%; transition: all 0.3s ease; }
+.close-btn:hover { background: rgba(255, 181, 39, 0.1); transform: rotate(90deg); }
+.mobile-menu-content { padding: 1rem 0; flex-grow: 1; }
+.mobile-menu-item, .mobile-dropdown-header { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem; color: #eee; font-size: 1.2rem; font-weight: 600; transition: all 0.3s ease; cursor: pointer; }
+.mobile-menu-item:hover, .mobile-dropdown-header:hover { background: linear-gradient(90deg, rgba(255, 181, 39, 0.1), rgba(19, 200, 255, 0.1)); color: #ffb527; }
+.mobile-dropdown-header.active { background: rgba(255, 181, 39, 0.1); color: #ffb527; }
+.mobile-dropdown-content { max-height: 0; overflow: hidden; background: rgba(0, 0, 0, 0.3); transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+.mobile-dropdown-content.open { max-height: 1000px; }
+.mobile-menu-item.level-1, .mobile-dropdown-header.level-1 { padding-right: 3rem; font-size: 1.1rem; color: #ccc; }
+.mobile-menu-item.level-2, .mobile-dropdown-header.level-2 { padding-right: 4.5rem; font-size: 1rem; color: #aaa; }
+.mobile-menu-item.level-3, .mobile-dropdown-header.level-3 { padding-right: 6rem; font-size: 0.95rem; color: #999; }
+.dropdown-arrow { font-size: 0.8rem; transition: transform 0.3s ease; margin-left: auto; }
+.dropdown-arrow.open { transform: rotate(180deg); }
+.language-switcher-container-mobile { padding: 1.5rem; margin-top: auto; border-top: 1px solid rgba(255, 181, 39, 0.2); }
+@media (max-width: 1024px) and (min-width: 861px) { .right { gap: 0.8rem; } .right > a, .right .has-dropdown, .right .language-switcher-container { font-size: 1.4rem; padding: 0.6rem 0.8rem; } }
+@media (max-width: 860px) { .Nav { top: 0; left: 0; right: 0; margin: 0; max-width: 100%; padding: 0.5rem 1.5rem; border-radius: 0; background: rgba(0, 9, 14, 0.95); border: none; border-bottom: 1px solid rgba(255, 181, 39, 0.1); height: 60px; display: flex; justify-content: space-between; align-items: center; } .right { display: none; } .menu-icon { display: flex; } .nav-logo { display: block; } }
+@media (max-width: 480px) { .Nav { padding: 0.5rem 1rem; } .mobile-menu { width: 100%; max-width: none; } }

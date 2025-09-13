@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
+
+
 const nextConfig = {
+  // اضافه کردن تنظیمات i18n در اینجا
+
+
+  // بقیه تنظیمات شما بدون تغییر باقی می‌مانند
   images: {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60,

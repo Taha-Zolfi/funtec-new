@@ -1,0 +1,49 @@
+{
+  "error": "Error fetching data. Please try again later.",
+  "serviceCard": {
+    "newBadge": "New",
+    "moreInfoButton": "More Info"
+  },
+  "productCard": {
+    "viewDetailsLink": "View Details"
+  },
+  "hero": {
+    "badge": "Innovation in Recreation",
+    "title": {
+      "part1": "Welcome to the future of",
+      "highlight": "recreation",
+      "part2": ""
+    },
+    "description": "With Funtech, discover an experience beyond your imagination in the world of modern amusement parks. We turn your dreams into reality using the most advanced technologies.",
+    "metric1": "Successful Projects",
+    "metric2": "Satisfied Customers",
+    "metric3": "Support"
+  },
+  "servicesSection": {
+    "title": {
+      "part1": "Our",
+      "highlight": "Innovative",
+      "part2": "Solutions"
+    },
+    "subtitle": "From idea to execution, we are with you every step of the way.",
+    "empty": "There are currently no services to display."
+  },
+  "productsSection": {
+    "title": {
+      "part1": "A Sample of Our",
+      "highlight": "Products",
+      "part2": ""
+    },
+    "subtitle": "Take a look at some of our successful projects and quality products.",
+    "empty": "There are no products to display."
+  },
+  "cta": {
+    "title": "Need More Consultation?",
+    "description": "Contact our expert team and take the first step towards building your dream amusement park.",
+    "callButton": "Call Now",
+    "consultButton": "Request Free Consultation",
+    "feature1": "Free Consultation",
+    "feature2": "3D Design",
+    "feature3": "Full Support"
+  }
+}

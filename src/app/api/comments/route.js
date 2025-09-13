@@ -1,5 +1,7 @@
+// مسیر: src/app/api/comments/route.js
+
 import { NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { getDb } from '@/lib/db'; // <-- [FIX] این خط اضافه شد
 
 export async function POST(request) {
   try {
