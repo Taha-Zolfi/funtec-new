@@ -229,6 +229,30 @@
   pointer-events: none;
   z-index: 0;
 }
+/* Ultra-modern vector overlay with subtle arrows and grid accents */
+.about-vector-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(60px 60px at 20% 30%, rgba(19, 200, 255, 0.12), transparent 70%),
+    radial-gradient(80px 80px at 80% 70%, rgba(255, 181, 39, 0.12), transparent 70%),
+    linear-gradient(transparent 98%, rgba(255,255,255,0.05) 100%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 40px),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 40px),
+    url("data:image/svg+xml,%3Csvg width='800' height='600' viewBox='0 0 800 600' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop stop-color='%2313c8ff' stop-opacity='0.7'/%3E%3Cstop offset='1' stop-color='%23ffb527' stop-opacity='0.7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill='none' stroke='url(%23g)' stroke-width='2' stroke-linecap='round' stroke-opacity='0.35'%3E%3Cpath d='M50 120 Q200 60 350 120 T650 120'/%3E%3Cpath d='M150 180 Q300 120 450 180 T750 180'/%3E%3C/ g%3E%3C/svg%3E");
+  background-repeat: no-repeat, no-repeat, repeat, repeat, repeat, no-repeat;
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 800px 600px;
+  background-position: center center, center center, bottom center, center center, center center, right -10% top 20%;
+  opacity: 0.6;
+  mix-blend-mode: screen;
+  animation: vectorOverlayParallax 20s ease-in-out infinite alternate;
+}
+
+@keyframes vectorOverlayParallax {
+  0% { transform: translateY(0); opacity: 0.55; }
+  100% { transform: translateY(-20px); opacity: 0.7; }
+}
   .about-products-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -3256,6 +3280,32 @@
 }
 .about-process-horizontal-scroller::-webkit-scrollbar { display: none; }
 
+/* Animated gradient arrow belt behind process cards */
+.process-arrows-belt {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% - 18px);
+  height: 36px;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(90deg,
+    rgba(19, 200, 255, 0.18) 0 16px,
+    rgba(255, 181, 39, 0.18) 16px 32px
+  ), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='36' viewBox='0 0 220 36'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.45'%3E%3Cpath d='M10 18 H170'/%3E%3Cpath d='M170 5 L210 18 L170 31'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: repeat, repeat;
+  background-size: 48px 36px, 220px 36px;
+  background-position: 0 0, 0 0;
+  filter: blur(0.3px) saturate(1.2);
+  mix-blend-mode: screen;
+  opacity: 0.45;
+  animation: arrowsMarquee 14s linear infinite;
+}
+
+@keyframes arrowsMarquee {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 480px 0, 220px 0; }
+}
+
 .process-card {
   scroll-snap-align: center;
   min-width: 280px;
@@ -3333,6 +3383,7 @@
   overflow: hidden;
   transition: transform 280ms ease, box-shadow 280ms ease, border-color 280ms ease;
   backdrop-filter: blur(10px);
+  position: relative;
 }
 
 .about-team-card:hover {
@@ -3340,6 +3391,18 @@
   border-color: rgba(19, 200, 255, 0.4);
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
 }
+
+.about-team-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(80px 80px at var(--mx, 50%) var(--my, 30%), rgba(19, 200, 255, 0.14), transparent 60%);
+  opacity: 0;
+  transition: opacity 240ms ease;
+  pointer-events: none;
+}
+
+.about-team-card:hover::after { opacity: 1; }
 
 .team-card-image-wrapper {
   position: relative;

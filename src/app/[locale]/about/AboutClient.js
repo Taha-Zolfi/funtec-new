@@ -232,6 +232,7 @@ export default function AboutClient({ data }) {
             <div className="shooting-star"></div>
             <div className="shooting-star"></div>
             <div className="shooting-star"></div>
+            <div className="about-vector-overlay" aria-hidden="true"></div>
         </div>
       
         <div className="about-container">
@@ -279,6 +280,7 @@ export default function AboutClient({ data }) {
                         <p className="about-section-subtitle">{data.process.subtitle}</p>
                     </div>
                     <div className="about-process-container">
+                        <div className="process-arrows-belt" aria-hidden="true"></div>
                         <div className="process-connector-line"></div>
                         <div className="about-process-horizontal-scroller">
                         {data.process.steps.map((step, index) => (
