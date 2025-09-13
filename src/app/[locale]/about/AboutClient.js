@@ -232,6 +232,21 @@ export default function AboutClient({ data }) {
             <div className="shooting-star"></div>
             <div className="shooting-star"></div>
             <div className="shooting-star"></div>
+            
+            {/* Enhanced Floating Elements */}
+            <div className="floating-orb floating-orb-1"></div>
+            <div className="floating-orb floating-orb-2"></div>
+            <div className="floating-orb floating-orb-3"></div>
+            
+            {/* Modern Vector Arrows */}
+            <div className="vector-arrow vector-arrow-1" style={{'--rotation': '45deg'}}></div>
+            <div className="vector-arrow vector-arrow-2" style={{'--rotation': '-30deg'}}></div>
+            <div className="vector-arrow vector-arrow-3" style={{'--rotation': '120deg'}}></div>
+            
+            {/* Geometric Shapes */}
+            <div className="geometric-shape geometric-triangle"></div>
+            <div className="geometric-shape geometric-circle"></div>
+            <div className="geometric-shape geometric-diamond"></div>
         </div>
       
         <div className="about-container">
