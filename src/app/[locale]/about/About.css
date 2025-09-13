@@ -223,7 +223,12 @@
   top: 0;
   left: 0;
   right: 0;
-
+  bottom: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(19, 200, 255, 0.08), transparent 60%),
+    radial-gradient(circle at 70% 80%, rgba(255, 181, 39, 0.08), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
   .about-products-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -288,7 +293,7 @@
     margin: 0;
   }
 
-}
+/* fixed: removed stray closing brace */
 
 @media (max-width: 768px) {
   .about-products-container {
@@ -3181,4 +3186,207 @@
   .about-cta-features { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 
   .about-cta-feature { padding: 10px 8px; font-size: 0.92rem; border-radius: 10px;text-align: start; }
+}
+
+/* ==========================================================================
+   Base Section + Loading
+   ========================================================================== */
+.about-section {
+  position: relative;
+  padding: 100px 0;
+}
+
+.about-loading {
+  width: 100%;
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-spinner {
+  width: 56px;
+  height: 56px;
+  border: 4px solid rgba(255, 255, 255, 0.15);
+  border-top-color: #13c8ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   Process Section (horizontal scroller)
+   ========================================================================== */
+.about-process {
+  position: relative;
+  padding: 120px 0;
+  background: linear-gradient(135deg, rgba(20, 20, 35, 0.7), rgba(30, 30, 50, 0.7));
+}
+
+.about-process-container {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.process-connector-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, transparent, rgba(255, 181, 39, 0.4), rgba(19, 200, 255, 0.4), transparent);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.about-process-horizontal-scroller {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 20px 6px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.about-process-horizontal-scroller::-webkit-scrollbar { display: none; }
+
+.process-card {
+  scroll-snap-align: center;
+  min-width: 280px;
+  background: linear-gradient(165deg, rgba(26, 26, 46, 0.9) 0%, rgba(10, 10, 15, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 24px;
+  text-align: center;
+  transition: transform 280ms ease, border-color 280ms ease, box-shadow 280ms ease;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.process-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  border-color: rgba(19, 200, 255, 0.4);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+}
+
+.process-card-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  color: #ffb527;
+  background: linear-gradient(135deg, rgba(255, 181, 39, 0.22), rgba(255, 181, 39, 0.1));
+  transition: transform 280ms ease, background 280ms ease, color 280ms ease;
+}
+
+.process-card:hover .process-card-icon {
+  transform: scale(1.08) rotate(6deg);
+  color: #000;
+  background: #ffb527;
+}
+
+.process-card-title {
+  margin: 8px 0 10px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.process-card-description {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.7;
+  font-size: 0.98rem;
+}
+
+@media (max-width: 768px) {
+  .about-process { padding: 80px 0; }
+  .process-connector-line { display: none; }
+  .process-card { min-width: 240px; padding: 18px; border-radius: 16px; }
+}
+
+/* ==========================================================================
+   Team Section
+   ========================================================================== */
+.about-team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.about-team-card {
+  background: linear-gradient(165deg, rgba(26, 26, 46, 0.9) 0%, rgba(10, 10, 15, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: transform 280ms ease, box-shadow 280ms ease, border-color 280ms ease;
+  backdrop-filter: blur(10px);
+}
+
+.about-team-card:hover {
+  transform: translateY(-10px);
+  border-color: rgba(19, 200, 255, 0.4);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+}
+
+.team-card-image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+}
+
+.team-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 320ms ease;
+}
+
+.about-team-card:hover .team-card-image {
+  transform: scale(1.06);
+}
+
+.team-card-content {
+  padding: 18px 16px 22px;
+  text-align: center;
+}
+
+.team-card-name {
+  margin: 0 0 6px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.team-card-role {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  color: #13c8ff;
+  font-weight: 700;
+}
+
+.team-card-bio {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .about-team-grid { gap: 16px; padding: 0 12px; }
+  .team-card-content { padding: 14px 12px 16px; }
+  .team-card-name { font-size: 1.05rem; }
 }
