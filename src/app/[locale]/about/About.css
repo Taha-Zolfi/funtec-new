@@ -10,20 +10,62 @@
   min-height: 100vh;
 }
 
-/* Animated Geometric Background Pattern */
-.about-page::before {
+/* Additional pattern overlay to ensure visibility throughout scroll */
+.about-page::after {
   content: '';
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  min-height: 100vh;
+  background-image: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 58px,
+      rgba(255, 255, 255, 0.01) 60px,
+      rgba(255, 255, 255, 0.01) 62px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 58px,
+      rgba(19, 200, 255, 0.02) 60px,
+      rgba(19, 200, 255, 0.02) 62px
+    );
+  pointer-events: none;
+  z-index: -1;
+  animation: patternShift 30s linear infinite;
+}
+
+@keyframes patternShift {
+  0% {
+    background-position: 0 0, 0 0;
+  }
+  100% {
+    background-position: 120px 120px, -120px 120px;
+  }
+}
+
+/* Animated Geometric Background Pattern */
+.about-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100%;
+  height: auto;
   background-image: 
     radial-gradient(circle at 25% 25%, rgba(19, 200, 255, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 75% 75%, rgba(255, 181, 39, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 50% 10%, rgba(147, 51, 234, 0.08) 0%, transparent 60%),
+    radial-gradient(circle at 80% 60%, rgba(19, 200, 255, 0.06) 0%, transparent 70%),
     linear-gradient(45deg, transparent 49%, rgba(255, 255, 255, 0.02) 50%, transparent 51%),
     linear-gradient(-45deg, transparent 49%, rgba(255, 255, 255, 0.02) 50%, transparent 51%);
-  background-size: 800px 800px, 600px 600px, 60px 60px, 60px 60px;
+  background-size: 800px 800px, 600px 600px, 900px 900px, 700px 700px, 60px 60px, 60px 60px;
+  background-attachment: local;
   animation: backgroundFlow 20s ease-in-out infinite;
   pointer-events: none;
   z-index: -2;
@@ -31,22 +73,31 @@
 
 @keyframes backgroundFlow {
   0%, 100% {
-    background-position: 0% 0%, 100% 100%, 0px 0px, 30px 30px;
+    background-position: 0% 0%, 100% 100%, 50% 10%, 80% 60%, 0px 0px, 30px 30px;
     opacity: 0.8;
   }
-  50% {
-    background-position: 100% 100%, 0% 0%, 30px 30px, 0px 0px;
+  33% {
+    background-position: 50% 50%, 50% 50%, 100% 50%, 20% 80%, 20px 20px, 10px 10px;
     opacity: 1;
+  }
+  66% {
+    background-position: 100% 100%, 0% 0%, 0% 90%, 90% 20%, 40px 40px, 20px 20px;
+    opacity: 0.9;
+  }
+  100% {
+    background-position: 0% 0%, 100% 100%, 50% 10%, 80% 60%, 0px 0px, 30px 30px;
+    opacity: 0.8;
   }
 }
 
 /* Enhanced Floating Light Orbs */
 .floating-orb {
-  position: absolute;
+  position: fixed;
   border-radius: 50%;
   filter: blur(40px);
   pointer-events: none;
   animation: floatOrb 15s ease-in-out infinite;
+  z-index: -1;
 }
 
 .floating-orb-1 {
@@ -93,12 +144,13 @@
 
 /* Modern Vector Arrow Decorations */
 .vector-arrow {
-  position: absolute;
+  position: fixed;
   width: 60px;
   height: 60px;
   opacity: 0.1;
   pointer-events: none;
   animation: arrowFloat 12s ease-in-out infinite;
+  z-index: -1;
 }
 
 .vector-arrow::before {
@@ -364,11 +416,12 @@
 
 /* استایل‌های پس‌زمینه انیمیشن‌دار */
 .about-background {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  min-height: 100%;
+  height: auto;
   z-index: -1;
   overflow: hidden;
 }
@@ -380,10 +433,14 @@
   left: 0;
   right: 0;
   bottom: 0;
+  min-height: 100vh;
   background: 
     radial-gradient(circle at 30% 20%, rgba(19, 200, 255, 0.15), transparent 60%),
     radial-gradient(circle at 70% 80%, rgba(255, 181, 39, 0.12), transparent 60%),
-    radial-gradient(circle at 50% 50%, rgba(147, 51, 234, 0.08), transparent 70%);
+    radial-gradient(circle at 50% 50%, rgba(147, 51, 234, 0.08), transparent 70%),
+    radial-gradient(circle at 20% 60%, rgba(19, 200, 255, 0.1), transparent 50%),
+    radial-gradient(circle at 90% 30%, rgba(255, 181, 39, 0.08), transparent 55%);
+  background-attachment: local;
   animation: backgroundPulse 15s ease-in-out infinite;
   pointer-events: none;
   z-index: 0;
@@ -402,9 +459,10 @@
 
 /* Add floating geometric shapes */
 .geometric-shape {
-  position: absolute;
+  position: fixed;
   pointer-events: none;
   animation: geometricFloat 20s ease-in-out infinite;
+  z-index: -1;
 }
 
 .geometric-triangle {
@@ -620,20 +678,43 @@
   }
 }
 
-/* افکت اورلی برای کنترل بهتر نور */
-.about-page::before {
+/* Enhanced grid overlay for better pattern visibility */
+.about-page .about-container::after {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 50px 50px;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(45deg, transparent 49%, rgba(19, 200, 255, 0.01) 50%, transparent 51%),
+    linear-gradient(-45deg, transparent 49%, rgba(255, 181, 39, 0.01) 50%, transparent 51%);
+  background-size: 80px 80px, 80px 80px, 40px 40px, 40px 40px;
   background-position: center center;
-  animation: gridMove 20s linear infinite;
-  opacity: 0.5;
+  animation: enhancedGridMove 30s linear infinite;
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes enhancedGridMove {
+  0% {
+    background-position: 0 0, 0 0, 0 0, 0 0;
+  }
+  25% {
+    background-position: 20px 20px, -20px 20px, 10px 10px, -10px 10px;
+  }
+  50% {
+    background-position: 40px 40px, -40px 40px, 20px 20px, -20px 20px;
+  }
+  75% {
+    background-position: 60px 60px, -60px 60px, 30px 30px, -30px 30px;
+  }
+  100% {
+    background-position: 80px 80px, -80px 80px, 40px 40px, -40px 40px;
+  }
 }
 
 @keyframes gridMove {
@@ -749,6 +830,36 @@
   padding: 0 36px; /* increase horizontal padding */
   animation: containerReveal 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   transform-style: preserve-3d;
+}
+
+/* Ensure patterns are visible throughout scroll */
+.about-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 200%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(19, 200, 255, 0.03), transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(255, 181, 39, 0.03), transparent 40%),
+    radial-gradient(circle at 50% 10%, rgba(147, 51, 234, 0.02), transparent 35%),
+    radial-gradient(circle at 90% 90%, rgba(19, 200, 255, 0.02), transparent 35%);
+  background-size: 600px 600px, 800px 800px, 400px 400px, 500px 500px;
+  pointer-events: none;
+  z-index: -1;
+  animation: containerPatternFlow 25s ease-in-out infinite;
+}
+
+@keyframes containerPatternFlow {
+  0%, 100% {
+    background-position: 0% 0%, 100% 100%, 50% 0%, 0% 100%;
+    opacity: 0.8;
+  }
+  50% {
+    background-position: 100% 50%, 0% 50%, 0% 100%, 100% 0%;
+    opacity: 1;
+  }
 }
 
 @keyframes containerReveal {

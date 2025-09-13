@@ -238,15 +238,32 @@ export default function AboutClient({ data }) {
             <div className="floating-orb floating-orb-2"></div>
             <div className="floating-orb floating-orb-3"></div>
             
-            {/* Modern Vector Arrows */}
-            <div className="vector-arrow vector-arrow-1" style={{'--rotation': '45deg'}}></div>
-            <div className="vector-arrow vector-arrow-2" style={{'--rotation': '-30deg'}}></div>
-            <div className="vector-arrow vector-arrow-3" style={{'--rotation': '120deg'}}></div>
+            {/* Modern Vector Arrows - Multiple instances for scroll visibility */}
+            <div className="vector-arrow vector-arrow-1" style={{'--rotation': '45deg', top: '15%', right: '25%'}}></div>
+            <div className="vector-arrow vector-arrow-2" style={{'--rotation': '-30deg', top: '45%', left: '15%'}}></div>
+            <div className="vector-arrow vector-arrow-3" style={{'--rotation': '120deg', bottom: '25%', right: '20%'}}></div>
             
-            {/* Geometric Shapes */}
-            <div className="geometric-shape geometric-triangle"></div>
-            <div className="geometric-shape geometric-circle"></div>
-            <div className="geometric-shape geometric-diamond"></div>
+            {/* Additional arrows for scroll areas */}
+            <div className="vector-arrow" style={{'--rotation': '75deg', top: '150%', left: '70%', animationDelay: '6s'}}></div>
+            <div className="vector-arrow" style={{'--rotation': '-60deg', top: '220%', right: '30%', animationDelay: '10s'}}></div>
+            <div className="vector-arrow" style={{'--rotation': '200deg', top: '300%', left: '25%', animationDelay: '14s'}}></div>
+            
+            <div className="vector-arrow" style={{'--rotation': '30deg', top: '380%', right: '15%', animationDelay: '18s'}}></div>
+            <div className="vector-arrow" style={{'--rotation': '-120deg', top: '450%', left: '60%', animationDelay: '22s'}}></div>
+            
+            {/* Geometric Shapes - Multiple instances for scroll visibility */}
+            <div className="geometric-shape geometric-triangle" style={{top: '20%', left: '80%'}}></div>
+            <div className="geometric-shape geometric-circle" style={{top: '70%', left: '10%'}}></div>
+            <div className="geometric-shape geometric-diamond" style={{top: '40%', right: '5%'}}></div>
+            
+            {/* Additional shapes for scroll areas */}
+            <div className="geometric-shape geometric-triangle" style={{top: '120%', right: '20%', animationDelay: '5s'}}></div>
+            <div className="geometric-shape geometric-circle" style={{top: '180%', left: '70%', animationDelay: '8s'}}></div>
+            <div className="geometric-shape geometric-diamond" style={{top: '250%', left: '15%', animationDelay: '12s'}}></div>
+            
+            <div className="geometric-shape geometric-triangle" style={{top: '320%', left: '60%', animationDelay: '15s'}}></div>
+            <div className="geometric-shape geometric-circle" style={{top: '400%', right: '25%', animationDelay: '18s'}}></div>
+            <div className="geometric-shape geometric-diamond" style={{top: '480%', left: '40%', animationDelay: '22s'}}></div>
         </div>
       
         <div className="about-container">
